@@ -1,8 +1,11 @@
 
+// Unidad Léxica, contiene información sobre la clase léxica, el lexema, la línea y la columna.
+
 public class UL {
 
 	String lexema;
 	CL clase;
+	
 	int linea;
 	int columna;
 	
@@ -15,7 +18,8 @@ public class UL {
 	
 	public String toString() {
 		
-		return "Clase: " + this.clase + ", lexema: '" + this.lexema + "' en linea " + linea + " y columna " + columna;
+		// Si es multivaluada mostrará el lexema, si no, no es necesario
+		return "Clase: " + this.clase + (clase.multivaluada?", lexema: '" + this.lexema + "'":"") + " en linea " + linea + " y columna " + columna;
 		
 	}
 	

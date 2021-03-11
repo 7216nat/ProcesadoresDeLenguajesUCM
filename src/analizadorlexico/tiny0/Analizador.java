@@ -1,5 +1,7 @@
+import java.util.HashMap;
+import java.util.Map;
 
-public class MaquinaEstados {
+public class Analizador {
 
 	Nodo nodo;
 	Nodo nodoInicial;
@@ -7,12 +9,18 @@ public class MaquinaEstados {
 	int linea = 0;
 	int columna = 0;
 	
+	Map<String, CL> palabrasReservadas = new HashMap<String, CL>();
+	
 	String texto;
 	
-	public MaquinaEstados(Nodo nodoInicial, String texto) {
+	public Analizador(Nodo nodoInicial, String texto) {
 		this.texto = texto;
 		this.nodoInicial = nodoInicial;
 		this.nodo = nodoInicial;
+	}
+	
+	public void addPalabraReservada(String palabra, CL clase) {
+		palabrasReservadas.put(palabra, clase);
 	}
 	
 	public UL getToken() throws Exception {
@@ -21,8 +29,12 @@ public class MaquinaEstados {
 
 		while(true) {
 
+			if(nodo.estado == Estado.INICIO) lexema = "";
+			
 			// Se quita el primer carácter			
 			char c = texto.charAt(0);
+			
+			//System.out.println("Analizando " + c + " val " + (int) c + " en nodo " + nodo.estado);
 			
 			texto = texto.substring(1);
 			
@@ -40,7 +52,7 @@ public class MaquinaEstados {
 			
 				nodo = nodo.siguienteNodo(c);
 							
-				// Solo añadimos el carácter al lexema si no es un carácter omitible
+				// Solo añadimos el carácter al lexema si no es un carácter omitible y si no estamos en el inicio
 				if(!"\n\r\t\b ".contains(c + ""))
 					lexema += c;
 				
@@ -59,9 +71,15 @@ public class MaquinaEstados {
 				
 				// Se devuelve el caracter a su posición
 				texto = c + texto;
-										
+				
+				// En caso de que se trate de una palabra reservada, elegimos la clase correcta;
+				CL clase = estado.clase;
+				
+				if(palabrasReservadas.containsKey(lexema))
+					clase = palabrasReservadas.get(lexema);				
+				
 				// Se devuelve una unidad léxica con los datos propios
-				return new UL(estado.clase, lexema, linea, columna);
+				return new UL(clase, lexema, linea, columna);
 				
 			} finally {
 				columna++;

@@ -34,7 +34,7 @@ public class Nodo {
 						
 			i++;
 		}
-		
+		// En caso de que no se pueda transitar se lanzará una excepción
 		throw new Exception();			
 	}
 }

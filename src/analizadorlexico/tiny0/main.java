@@ -5,13 +5,22 @@ import java.io.IOException;
 
 public class main {
 
+	
 		
 	public static void main(String args[]) throws Exception {
 		
+		if(args.length < 1) throw new Exception("Elige el nombre de archivo como argumento de entrada");
+		
+		// Cadenas de caracteres que serán útiles para abreviar código
 		String enteros = "123456789";
 		String minusculas = "abcdefghijklmnopqrstuvwxyz";
 		String mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		String todos = "";
 		
+		for(int i = 0; i < 255; i++) todos += (char) i;
+		
+
+		// Definimos los nodos de la máquina de estados y su estado asociado si se trata de un nodo final
 		Nodo nodoInicio = new Nodo(Estado.INICIO);		
 		Nodo nodoPor = new Nodo(Estado.POR);
 		Nodo nodoDiv = new Nodo(Estado.DIV);
@@ -26,22 +35,24 @@ public class main {
 		Nodo nodoNE_1 = new Nodo(null);
 		Nodo nodoNE = new Nodo(Estado.NE);
 		Nodo nodoPC = new Nodo(Estado.PC);
-		Nodo nodoSEP_1 = new Nodo(null);
-		Nodo nodoSEP = new Nodo(Estado.SEP);
+		Nodo nodoSep_1 = new Nodo(null);
+		Nodo nodoSep = new Nodo(Estado.SEP);
 		Nodo nodoMenos 	= new Nodo(Estado.MENOS);
 		Nodo nodoCero = new Nodo(Estado.CERO);
-		Nodo nodoENTERO = new Nodo(Estado.ENTERO);
-		Nodo nodoMAS = new Nodo(Estado.MAS);
-		Nodo nodoVAR = new Nodo(Estado.VAR);
+		Nodo nodoEntero = new Nodo(Estado.ENTERO);
+		Nodo nodoMas = new Nodo(Estado.MAS);
+		Nodo nodoVar = new Nodo(Estado.IDEN);
 		Nodo nodoEOF = new Nodo(Estado.EOF);
-		Nodo nodoCOM = new Nodo(null);
-		Nodo nodoREAL_1 = new Nodo(null);
-		Nodo nodoREAL1 = new Nodo(Estado.REAL1);
-		Nodo nodoREAL_2 = new Nodo(null);
-		Nodo nodoREAL2 = new Nodo(Estado.REAL2);
-		Nodo nodoREAL_3 = new Nodo(null);
-		Nodo nodoREAL3 = new Nodo(Estado.REAL3);				
+		Nodo nodoCom = new Nodo(null);
+		Nodo nodoReal_1 = new Nodo(null);
+		Nodo nodoR0 = new Nodo(null);
+		Nodo nodoReal = new Nodo(Estado.REAL);
+		Nodo nodoExp_1 = new Nodo(null);
+		Nodo nodoExp = new Nodo(Estado.REAL);
+		Nodo nodoSign = new Nodo(null);		
 		
+		
+		// Se modelan las conexiones de los nodos, y que caracteres se usan para ir de uno a otro
 		nodoInicio.addVecino(nodoPor, "*");
 		nodoInicio.addVecino(nodoDiv, "/");
 		nodoInicio.addVecino(nodoPAp, "(");
@@ -51,56 +62,63 @@ public class main {
 		nodoInicio.addVecino(nodoAsig, "=");
 		nodoInicio.addVecino(nodoNE_1, "!");
 		nodoInicio.addVecino(nodoPC, ";");
-		nodoInicio.addVecino(nodoSEP_1, "&");
+		nodoInicio.addVecino(nodoSep_1, "&");
 		nodoInicio.addVecino(nodoMenos, "-");
 		nodoInicio.addVecino(nodoCero, "0");
-		nodoInicio.addVecino(nodoENTERO, enteros);
-		nodoInicio.addVecino(nodoMAS, "+");
-		nodoInicio.addVecino(nodoVAR, mayusculas + minusculas);
+		nodoInicio.addVecino(nodoEntero, enteros);
+		nodoInicio.addVecino(nodoMas, "+");
+		nodoInicio.addVecino(nodoVar, mayusculas + minusculas);
 		nodoInicio.addVecino(nodoEOF, "");
-		nodoInicio.addVecino(nodoCOM, "#");
+		nodoInicio.addVecino(nodoCom, "#");
 		
 		nodoGT.addVecino(nodoGE, "=");
 		nodoLT.addVecino(nodoLE, "=");
 		nodoAsig.addVecino(nodoEq, "=");
 		nodoNE_1.addVecino(nodoNE, "=");
 		
-		nodoSEP_1.addVecino(nodoSEP, "&");
+		nodoSep_1.addVecino(nodoSep, "&");
+		
+		nodoMas.addVecino(nodoCero, "0");
+		nodoMas.addVecino(nodoEntero, enteros);
 		
 		nodoMenos.addVecino(nodoCero, "0");
-		nodoMenos.addVecino(nodoENTERO, enteros);
+		nodoMenos.addVecino(nodoEntero, enteros);
 
-		nodoCero.addVecino(nodoREAL1, ".");
-
-		nodoENTERO.addVecino(nodoENTERO, enteros + "0");
-		nodoENTERO.addVecino(nodoREAL1, ".");
+		nodoEntero.addVecino(nodoEntero, enteros + "0");
+		nodoEntero.addVecino(nodoReal_1, ".");
+		nodoEntero.addVecino(nodoExp_1, "eE");
 		
-		nodoMAS.addVecino(nodoCero, "0");
-		nodoMAS.addVecino(nodoENTERO, enteros);
+		nodoCero.addVecino(nodoReal_1, ".");
+		nodoCero.addVecino(nodoExp_1, "eE");
 		
-		nodoVAR.addVecino(nodoVAR, minusculas + mayusculas + enteros + "0" + "_");
+		nodoReal_1.addVecino(nodoReal, "0" + enteros);
 		
-		nodoCOM.addVecino(nodoCOM, minusculas + mayusculas + enteros + "0" + "_"); // AQUÍ IRÍA CUALQUIER CARÁCTER
-		//nodoCOM.addVecino(nodoInicio, NL);
+		nodoReal.addVecino(nodoReal, enteros);
+		nodoReal.addVecino(nodoR0, "0");
+		nodoReal.addVecino(nodoExp_1, "eE");
+		
+		nodoR0.addVecino(nodoReal, enteros);
+		
+		nodoExp_1.addVecino(nodoSign, "+-");
+		nodoExp_1.addVecino(nodoExp, enteros);
+		
+		nodoExp.addVecino(nodoExp, "0");
+		
+		nodoVar.addVecino(nodoVar, minusculas + mayusculas + enteros + "0" + "_");
+		
+		nodoCom.addVecino(nodoCom, todos.replace('\n', ' '));
+		nodoCom.addVecino(nodoInicio, "\n");
+		
+		nodoSign.addVecino(nodoExp, enteros);
 		
 		nodoInicio.addVecino(nodoInicio, " " + '\n' + '\r' + '\t' + '\b');
 		
-		nodoREAL_1.addVecino(nodoREAL_1, "0");
-		nodoREAL_1.addVecino(nodoREAL1, enteros);
+
 		
-		nodoREAL1.addVecino(nodoREAL1, "0" + enteros);
-		nodoREAL1.addVecino(nodoREAL_2, "eE");
 		
-		nodoREAL_2.addVecino(nodoREAL2, enteros);
-		nodoREAL_2.addVecino(nodoREAL_3, "+-");
-		nodoREAL_2.addVecino(nodoREAL3, "0");
+		// Se carga el archivo y se guarda en un string
 		
-		nodoREAL2.addVecino(nodoREAL2, enteros + "0");
-		
-		nodoREAL_3.addVecino(nodoREAL2, enteros);
-		nodoREAL_3.addVecino(nodoREAL3, "0");
-				
-		File f = new File("file.txt");
+		File f = new File(args[0]);
 		
 	    FileReader fr = new FileReader(f);
 	    
@@ -117,17 +135,27 @@ public class main {
 	    	str += character;    	
 
 	    }
-	    
-	    System.out.println(str);
-  
-		MaquinaEstados me = new MaquinaEstados(nodoInicio, str);
+	      
+	    // Se crea una máquina de estados con el nodo inicial y el código que hay que analizar léxicamente
+	    Analizador analizador = new Analizador(nodoInicio, str);
 			    	
+		
+		//Se añaden las palabras reservadas y sus clases léxicas asociadas
+	    analizador.addPalabraReservada("int", CL.CINT);
+	    analizador.addPalabraReservada("real", CL.CREAL);
+	    analizador.addPalabraReservada("bool", CL.CBOOL);
+	    analizador.addPalabraReservada("true", CL.CTRUE);
+	    analizador.addPalabraReservada("false", CL.CFALSE);
+	    analizador.addPalabraReservada("and", CL.CAND);
+	    analizador.addPalabraReservada("or", CL.COR);
+	    analizador.addPalabraReservada("not", CL.CNOT);
+		
 		while(true) {
 						
 			try {
 				
 				// Tratamos de obtener una unidad léxica hasta que demos con un EOF
-			    UL ul = me.getToken();			    
+			    UL ul = analizador.getToken();			    
 			   
 			    System.out.println(ul.toString());
 			    
