@@ -36,7 +36,7 @@ public class Analizador {
 			// Se quita el primer car�cter			
 			char c = texto.charAt(0);
 			
-			//System.out.println("Analizando " + c + " val " + (int) c + " en nodo " + nodo.estado);
+			// System.out.println("Analizando " + c + " val " + (int) c + " en nodo " + nodo.estado);
 			
 			texto = texto.substring(1);
 			
@@ -73,6 +73,7 @@ public class Analizador {
 				
 				// Se devuelve el caracter a su posici�n
 				texto = c + texto;
+				columna--;
 				
 				// En caso de que se trate de una palabra reservada, elegimos la clase correcta;
 				CL clase = estado.clase;
