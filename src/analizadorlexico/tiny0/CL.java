@@ -1,4 +1,5 @@
-// Clase léxica, algunas será univaluada y otras multivaluadas
+// Clase lï¿½xica, algunas serï¿½ univaluada y otras multivaluadas
+package tiny0;
 
 public enum CL {
 	CINT, CREAL, CBOOL, CTRUE, CFALSE, CAND, COR, CNOT,

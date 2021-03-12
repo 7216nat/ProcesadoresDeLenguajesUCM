@@ -1,3 +1,4 @@
+package tiny0;
 
 public enum Estado {
 

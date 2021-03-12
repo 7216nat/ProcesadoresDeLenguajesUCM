@@ -1,3 +1,5 @@
+package tiny0;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,14 +33,14 @@ public class Analizador {
 
 			if(nodo.estado == Estado.INICIO) lexema = "";
 			
-			// Se quita el primer carácter			
+			// Se quita el primer carï¿½cter			
 			char c = texto.charAt(0);
 			
 			//System.out.println("Analizando " + c + " val " + (int) c + " en nodo " + nodo.estado);
 			
 			texto = texto.substring(1);
 			
-			// En caso de salto de línea se incrementa el contador
+			// En caso de salto de lï¿½nea se incrementa el contador
 			if(c == '\n') {
 				linea++;
 				columna = 0;
@@ -52,24 +54,24 @@ public class Analizador {
 			
 				nodo = nodo.siguienteNodo(c);
 							
-				// Solo añadimos el carácter al lexema si no es un carácter omitible y si no estamos en el inicio
+				// Solo aï¿½adimos el carï¿½cter al lexema si no es un carï¿½cter omitible y si no estamos en el inicio
 				if(!"\n\r\t\b ".contains(c + ""))
 					lexema += c;
 				
 			} catch (Exception e){	
 				
 				// En caso de que estemos en un nodo sin salida pueden pasar dos cosas:
-				// 1: que sea un estado válido (con token asociado)
-				// 2: que sea un error léxico
+				// 1: que sea un estado vï¿½lido (con token asociado)
+				// 2: que sea un error lï¿½xico
 				Estado estado = nodo.estado;
 				
-				// Si no es un estado final, es decir, no tiene clase léxica asociada, es un error.
+				// Si no es un estado final, es decir, no tiene clase lï¿½xica asociada, es un error.
 				if(estado.clase == null) throw new Exception();
 				
 				// Se reestablece el nodo
 				nodo = nodoInicial;
 				
-				// Se devuelve el caracter a su posición
+				// Se devuelve el caracter a su posiciï¿½n
 				texto = c + texto;
 				
 				// En caso de que se trate de una palabra reservada, elegimos la clase correcta;
@@ -78,7 +80,7 @@ public class Analizador {
 				if(palabrasReservadas.containsKey(lexema))
 					clase = palabrasReservadas.get(lexema);				
 				
-				// Se devuelve una unidad léxica con los datos propios
+				// Se devuelve una unidad lï¿½xica con los datos propios
 				return new UL(clase, lexema, linea, columna);
 				
 			} finally {

@@ -1,0 +1,7 @@
+real peso;
+bool pesado
+&&
+peso = (45.0 * 12e-56) / -2.05;
+# hello wold        
+
+pesado = (peso > 10.0) or (peso / 2 <= +0e10) 

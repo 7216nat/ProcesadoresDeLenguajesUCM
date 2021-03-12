@@ -1,27 +1,23 @@
+package tiny0;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 
-public class main {
-
-	
-		
-	public static void main(String args[]) throws Exception {
-		
-		if(args.length < 1) throw new Exception("Elige el nombre de archivo como argumento de entrada");
-		
-		// Cadenas de caracteres que serán útiles para abreviar código
+public class Main {
+	public static void main(String[] args) throws Exception {
+		if(args.length < 1)
+			throw new Exception("Elige el nombre de archivo como argumento de entrada");
+		// Cadenas de caracteres que serï¿½n ï¿½tiles para abreviar cï¿½digo
 		String enteros = "123456789";
 		String minusculas = "abcdefghijklmnopqrstuvwxyz";
 		String mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		String todos = "";
 		
 		for(int i = 0; i < 255; i++) todos += (char) i;
-		
 
-		// Definimos los nodos de la máquina de estados y su estado asociado si se trata de un nodo final
-		Nodo nodoInicio = new Nodo(Estado.INICIO);		
+		// Definimos los nodos de la mï¿½quina de estados y su estado asociado si se trata de un nodo final
+		Nodo nodoInicio = new Nodo(Estado.INICIO);	
 		Nodo nodoPor = new Nodo(Estado.POR);
 		Nodo nodoDiv = new Nodo(Estado.DIV);
 		Nodo nodoPAp = new Nodo(Estado.PAP);
@@ -49,6 +45,7 @@ public class main {
 		Nodo nodoReal = new Nodo(Estado.REAL);
 		Nodo nodoExp_1 = new Nodo(null);
 		Nodo nodoExp = new Nodo(Estado.REAL);
+		Nodo nodoExpCero = new Nodo(Estado.REAL);
 		Nodo nodoSign = new Nodo(null);		
 		
 		
@@ -101,8 +98,9 @@ public class main {
 		
 		nodoExp_1.addVecino(nodoSign, "+-");
 		nodoExp_1.addVecino(nodoExp, enteros);
+		nodoExp_1.addVecino(nodoExpCero, "0");	
 		
-		nodoExp.addVecino(nodoExp, "0");
+		nodoExp.addVecino(nodoExp, "0" + enteros);
 		
 		nodoVar.addVecino(nodoVar, minusculas + mayusculas + enteros + "0" + "_");
 		
@@ -136,11 +134,11 @@ public class main {
 
 	    }
 	      
-	    // Se crea una máquina de estados con el nodo inicial y el código que hay que analizar léxicamente
+	    // Se crea una mï¿½quina de estados con el nodo inicial y el cï¿½digo que hay que analizar lï¿½xicamente
 	    Analizador analizador = new Analizador(nodoInicio, str);
 			    	
 		
-		//Se añaden las palabras reservadas y sus clases léxicas asociadas
+		//Se aï¿½aden las palabras reservadas y sus clases lï¿½xicas asociadas
 	    analizador.addPalabraReservada("int", CL.CINT);
 	    analizador.addPalabraReservada("real", CL.CREAL);
 	    analizador.addPalabraReservada("bool", CL.CBOOL);
@@ -154,7 +152,7 @@ public class main {
 						
 			try {
 				
-				// Tratamos de obtener una unidad léxica hasta que demos con un EOF
+				// Tratamos de obtener una unidad lï¿½xica hasta que demos con un EOF
 			    UL ul = analizador.getToken();			    
 			   
 			    System.out.println(ul.toString());

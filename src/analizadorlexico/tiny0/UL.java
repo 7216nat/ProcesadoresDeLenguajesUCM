@@ -1,5 +1,5 @@
-
-// Unidad Léxica, contiene información sobre la clase léxica, el lexema, la línea y la columna.
+package tiny0;
+// Unidad Lï¿½xica, contiene informaciï¿½n sobre la clase lï¿½xica, el lexema, la lï¿½nea y la columna.
 
 public class UL {
 
@@ -18,7 +18,7 @@ public class UL {
 	
 	public String toString() {
 		
-		// Si es multivaluada mostrará el lexema, si no, no es necesario
+		// Si es multivaluada mostrarï¿½ el lexema, si no, no es necesario
 		return "Clase: " + this.clase + (clase.multivaluada?", lexema: '" + this.lexema + "'":"") + " en linea " + linea + " y columna " + columna;
 		
 	}
