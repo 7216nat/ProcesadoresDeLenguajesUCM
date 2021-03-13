@@ -1,4 +1,4 @@
-// Clase l�xica, algunas ser� univaluada y otras multivaluadas
+// Clase lexica, algunas seran univaluada y otras multivaluadas
 package tiny0;
 
 public enum CL {

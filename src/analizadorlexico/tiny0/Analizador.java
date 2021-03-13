@@ -33,14 +33,12 @@ public class Analizador {
 
 			if(nodo.estado == Estado.INICIO) lexema = "";
 			
-			// Se quita el primer car�cter			
+			// Se quita el primer caracter			
 			char c = texto.charAt(0);
-			
-			// System.out.println("Analizando " + c + " val " + (int) c + " en nodo " + nodo.estado);
-			
+					
 			texto = texto.substring(1);
 			
-			// En caso de salto de l�nea se incrementa el contador
+			// En caso de salto de linea se incrementa el contador
 			if(c == '\n') {
 				linea++;
 				columna = 0;
@@ -54,24 +52,24 @@ public class Analizador {
 			
 				nodo = nodo.siguienteNodo(c);
 							
-				// Solo a�adimos el car�cter al lexema si no es un car�cter omitible y si no estamos en el inicio
+				// Solo anadimos el caracter al lexema si no es un caracter omitible y si no estamos en el inicio
 				if(!"\n\r\t\b ".contains(c + ""))
 					lexema += c;
 				
 			} catch (Exception e){	
 				
 				// En caso de que estemos en un nodo sin salida pueden pasar dos cosas:
-				// 1: que sea un estado v�lido (con token asociado)
-				// 2: que sea un error l�xico
+				// 1: que sea un estado valido (con token asociado)
+				// 2: que sea un error lexico
 				Estado estado = nodo.estado;
 				
-				// Si no es un estado final, es decir, no tiene clase l�xica asociada, es un error.
+				// Si no es un estado final, es decir, no tiene clase lexica asociada, es un error.
 				if(estado.clase == null) throw new Exception();
 				
 				// Se reestablece el nodo
 				nodo = nodoInicial;
 				
-				// Se devuelve el caracter a su posici�n
+				// Se devuelve el caracter a su posicion
 				texto = c + texto;
 				columna--;
 				
@@ -81,7 +79,7 @@ public class Analizador {
 				if(palabrasReservadas.containsKey(lexema))
 					clase = palabrasReservadas.get(lexema);				
 				
-				// Se devuelve una unidad l�xica con los datos propios
+				// Se devuelve una unidad lexica con los datos propios
 				return new UL(clase, lexema, linea, columna);
 				
 			} finally {

@@ -3,8 +3,8 @@ package tiny0;
 import java.util.ArrayList;
 import java.util.List;
 
-// Clase nodo para la m�quina de estados
-// Cada nodo tiene un estado asociado y una transici�n, estas transiciones se definen con
+// Clase nodo para la maquina de estados
+// Cada nodo tiene un estado asociado y una transicion, estas transiciones se definen con
 // un nodo y bajo que caracteres acceden a este
 
 public class Nodo {
@@ -36,7 +36,7 @@ public class Nodo {
 						
 			i++;
 		}
-		// En caso de que no se pueda transitar se lanzar� una excepci�n
+		// En caso de que no se pueda transitar se lanzara una excepcion
 		throw new Exception();			
 	}
 }

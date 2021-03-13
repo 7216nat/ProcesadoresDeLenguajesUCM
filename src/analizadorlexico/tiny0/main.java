@@ -6,9 +6,11 @@ import java.io.FileReader;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
+		
 		if(args.length < 1)
 			throw new Exception("Elige el nombre de archivo como argumento de entrada");
-		// Cadenas de caracteres que ser�n �tiles para abreviar c�digo
+		
+		// Cadenas de caracteres que seran utiles para abreviar codigo
 		String enteros = "123456789";
 		String minusculas = "abcdefghijklmnopqrstuvwxyz";
 		String mayusculas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -16,7 +18,7 @@ public class Main {
 		
 		for(int i = 0; i < 255; i++) todos += (char) i;
 
-		// Definimos los nodos de la m�quina de estados y su estado asociado si se trata de un nodo final
+		// Definimos los nodos de la maquina de estados y su estado asociado si se trata de un nodo final
 		Nodo nodoInicio = new Nodo(Estado.INICIO);	
 		Nodo nodoPor = new Nodo(Estado.POR);
 		Nodo nodoDiv = new Nodo(Estado.DIV);
@@ -134,11 +136,11 @@ public class Main {
 
 	    }
 	      
-	    // Se crea una m�quina de estados con el nodo inicial y el c�digo que hay que analizar l�xicamente
+	    // Se crea una maquina de estados con el nodo inicial y el codigo que hay que analizar lexicamente
 	    Analizador analizador = new Analizador(nodoInicio, str);
 			    	
 		
-		//Se a�aden las palabras reservadas y sus clases l�xicas asociadas
+		//Se anaden las palabras reservadas y sus clases lexicas asociadas
 	    analizador.addPalabraReservada("int", CL.CINT);
 	    analizador.addPalabraReservada("real", CL.CREAL);
 	    analizador.addPalabraReservada("bool", CL.CBOOL);
@@ -152,7 +154,7 @@ public class Main {
 						
 			try {
 				
-				// Tratamos de obtener una unidad l�xica hasta que demos con un EOF
+				// Tratamos de obtener una unidad lexica hasta que demos con un EOF
 			    UL ul = analizador.getToken();			    
 			   
 			    System.out.println(ul.toString());
