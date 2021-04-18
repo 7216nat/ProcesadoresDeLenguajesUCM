@@ -1,15 +1,42 @@
-package tiny0;
+package tiny0.analizadorlexico;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.io.IOException;
+import java.io.Reader;
+import tiny0.errors.GestionErroresTiny;
 
-public class Main {
-	public static void main(String[] args) throws Exception {
-		
-		if(args.length < 1)
-			throw new Exception("Elige el nombre de archivo como argumento de entrada");
-		
+public class Analizador {
+
+	Nodo nodo;
+	Nodo nodoInicial;
+	
+	int linea = 0;
+	int columna = 0;
+	
+	Map<String, CL> palabrasReservadas = new HashMap<String, CL>();
+	
+	Reader input;
+	String texto;
+	
+	GestionErroresTiny errores;
+
+	public Analizador(Reader input) {
+		this.input = input;
+		try {
+			start();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+
+	public void fijaGestionErrores(GestionErroresTiny errores){
+		this.errores = errores;
+	}
+
+	private void start() throws IOException{
 		// Cadenas de caracteres que seran utiles para abreviar codigo
 		String enteros = "123456789";
 		String minusculas = "abcdefghijklmnopqrstuvwxyz";
@@ -113,62 +140,97 @@ public class Main {
 		
 		nodoInicio.addVecino(nodoInicio, " " + '\n' + '\r' + '\t' + '\b');
 		
-
-		
-		
-		// Se carga el archivo y se guarda en un string
-		
-		File f = new File(args[0]);
-		
-	    FileReader fr = new FileReader(f);
-	    
-	    BufferedReader br = new BufferedReader(fr);
-	    
-	    int c = 0;  
-	    
-	    String str = "";
-	    
-	    while((c = br.read()) != -1){
-	    	
-	    	char character = (char) c;
-	    	
-	    	str += character;    	
-
-	    }
-	      
-	    // Se crea una maquina de estados con el nodo inicial y el codigo que hay que analizar lexicamente
-	    Analizador analizador = new Analizador(nodoInicio, str);
-			    	
-		
 		//Se anaden las palabras reservadas y sus clases lexicas asociadas
-	    analizador.addPalabraReservada("int", CL.CINT);
-	    analizador.addPalabraReservada("real", CL.CREAL);
-	    analizador.addPalabraReservada("bool", CL.CBOOL);
-	    analizador.addPalabraReservada("true", CL.CTRUE);
-	    analizador.addPalabraReservada("false", CL.CFALSE);
-	    analizador.addPalabraReservada("and", CL.CAND);
-	    analizador.addPalabraReservada("or", CL.COR);
-	    analizador.addPalabraReservada("not", CL.CNOT);
+		addPalabraReservada("int", CL.CINT);
+		addPalabraReservada("real", CL.CREAL);
+		addPalabraReservada("bool", CL.CBOOL);
+		addPalabraReservada("true", CL.CTRUE);
+		addPalabraReservada("false", CL.CFALSE);
+		addPalabraReservada("and", CL.CAND);
+		addPalabraReservada("or", CL.COR);
+		addPalabraReservada("not", CL.CNOT);
+
+		// Se carga el archivo y se guarda en un string
+	    int c = 0;  
+	    StringBuilder bld = new StringBuilder();
+	    while((c = input.read()) != -1){
+	    	char character = (char) c;
+	    	bld.append(character);  	
+	    }
+		this.texto = bld.toString();
 		
+		this.nodoInicial = nodoInicio;
+		this.nodo = nodoInicial;
+	}
+	private void addPalabraReservada(String palabra, CL clase) {
+		palabrasReservadas.put(palabra, clase);
+	}
+	
+	public UL getToken() throws IOException{
+		
+		String lexema = "";
+
 		while(true) {
-						
-			try {
-				
-				// Tratamos de obtener una unidad lexica hasta que demos con un EOF
-			    UL ul = analizador.getToken();			    
-			   
-			    System.out.println(ul.toString());
-			    
-			    if(ul.clase == CL.EOF) break;
-			    
-			} catch(Exception e) {
-				
-				System.out.println("Error parseando");
-				break;
-			}
+
+			if(nodo.estado == Estado.INICIO) lexema = "";
 			
+			// Caso especial para el manejo de EOF (cuando no quedan caracteres)
+			if(texto.length() == 0) return new UL(CL.EOF, "", linea, columna-1);
+
+			// Se quita el primer caracter			
+			char c = texto.charAt(0);
+					
+			texto = texto.substring(1);
+			
+			// En caso de salto de linea se incrementa el contador
+			if(c == '\n') {
+				linea++;
+				columna = 0;
+			}
+									
+			
+			// Se comprueba si se puede acceder a otro estado
+			try {
+			
+				nodo = nodo.siguienteNodo(c);
+							
+				// Solo anadimos el caracter al lexema si no es un caracter omitible y si no estamos en el inicio
+				if(!"\n\r\t\b ".contains(c + ""))
+					lexema += c;
+				
+			} catch (Exception e){	
+				
+				// En caso de que estemos en un nodo sin salida pueden pasar dos cosas:
+				// 1: que sea un estado valido (con token asociado)
+				// 2: que sea un error lexico
+				Estado estado = nodo.estado;
+				
+				// Si no es un estado final, es decir, no tiene clase lexica asociada, es un error.
+				if(estado == null) {
+					errores.errorLexico(linea, columna, lexema);
+					System.exit(1);
+				}
+				
+				// Se reestablece el nodo
+				nodo = nodoInicial;
+				
+				// Se devuelve el caracter a su posicion
+				texto = c + texto;
+				columna--;			
+				
+				CL clase = estado.clase;
+
+				if(palabrasReservadas.containsKey(lexema))
+					clase = palabrasReservadas.get(lexema);				
+				
+				// Se devuelve una unidad lexica con los datos propios
+				return new UL(clase, lexema, linea, columna);
+				
+			} finally {
+				columna++;
+			}
 		}	
-		
 	}
 	
 }
+	

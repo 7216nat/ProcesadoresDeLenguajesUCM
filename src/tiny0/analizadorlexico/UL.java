@@ -1,4 +1,5 @@
-package tiny0;
+package tiny0.analizadorlexico;
+
 // Unidad Lexica, contiene informacion sobre la clase lexica, el lexema, la linea y la columna.
 
 public class UL {
@@ -14,6 +15,21 @@ public class UL {
 		this.lexema = lexema;
 		this.linea = linea;
 		this.columna = columna;
+	}
+
+	public String lexema(){
+		return lexema;
+	}
+
+	public int fila(){
+		return linea;
+	}
+
+	public int columna(){
+		return columna;
+	}
+	public CL clase(){
+		return clase;
 	}
 	
 	public String toString() {

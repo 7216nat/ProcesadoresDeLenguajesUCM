@@ -1,4 +1,4 @@
-package tiny0;
+package tiny0.analizadorlexico;
 
 import java.util.ArrayList;
 import java.util.List;

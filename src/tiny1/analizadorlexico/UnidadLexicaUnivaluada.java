@@ -1,4 +1,4 @@
-package tiny1;
+package tiny1.analizadorlexico;
 
 public class UnidadLexicaUnivaluada extends UnidadLexica{
     public String lexema() {throw new UnsupportedOperationException();}   

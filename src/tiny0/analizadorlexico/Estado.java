@@ -1,4 +1,4 @@
-package tiny0;
+package tiny0.analizadorlexico;
 
 public enum Estado {
 

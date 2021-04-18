@@ -1,6 +1,6 @@
-// Clase lexica, algunas seran univaluada y otras multivaluadas
-package tiny0;
+package tiny0.analizadorlexico;
 
+// Clase lexica, algunas seran univaluada y otras multivaluadas
 public enum CL {
 	CINT, CREAL, CBOOL, CTRUE, CFALSE, CAND, COR, CNOT,
 	IDEN(true), ENTERO(true), REAL(true), SEP, PC,

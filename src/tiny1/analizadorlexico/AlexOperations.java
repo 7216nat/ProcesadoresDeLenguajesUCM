@@ -1,4 +1,4 @@
-package tiny1;
+package tiny1.analizadorlexico;
 
 public class AlexOperations {
     private AnalizadorLexicoTiny alex;

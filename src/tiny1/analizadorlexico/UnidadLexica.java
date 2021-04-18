@@ -1,4 +1,4 @@
-package tiny1;
+package tiny1.analizadorlexico;
 
 public abstract class UnidadLexica {
     private ClaseLexica clase;
