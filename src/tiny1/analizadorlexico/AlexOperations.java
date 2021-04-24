@@ -81,6 +81,9 @@ public class AlexOperations {
     public UnidadLexica unidadArr() {
         return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(),ClaseLexica.ARR); 
     }
+    public UnidadLexica unidadType() {
+        return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(),ClaseLexica.TYPE); 
+    }
     public UnidadLexica unidadOf() {
         return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(),ClaseLexica.OF); 
     }

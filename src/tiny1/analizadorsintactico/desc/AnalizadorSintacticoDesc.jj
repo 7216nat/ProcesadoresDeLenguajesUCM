@@ -1,0 +1,110 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */options{  static = true;}PARSER_BEGIN(AnalizadorSintacticoDesc)
+package tiny1.analizadorsintactico.desc;
+
+
+public class AnalizadorSintacticoDesc{ }
+PARSER_END(AnalizadorSintacticoDesc)
+
+SKIP :{
+	< COM >|  " "| "\r"| "\t"| "\n"}
+
+void Start()  : { } { Prog() < EOF > }
+void Prog()   : { } { Decs() Insts() }
+
+void Decs()   : { } { LDec() "&&" | { }}
+void LDec()   : { } { Dec() RLDec() }
+void RLDec()  : { } {";" Dec() RLDec() | { }}
+void Dec()    : { } { DVar() | DTipo() | DProc() }
+
+void DVar()   : { }  { "var"  Tipo() Iden()}
+void DTipo()  : { } { "type" Tipo() Iden()}
+void DProc()  : { } { "proc" Iden() "(" Pars() ")" Bloque() }
+
+// Parámetros para el procedimiento
+void Pars()	  : { } { Par() RPar() | { }}
+void RPar()	  : { } { "," Pars() RPar() | { } }
+void Par() 	  : { } { Tipo() ("&")? Iden()}
+
+void Tipo()   : { } { "int" | "real" | "bool" | "string" | Iden() | Array() | Registro() | Pointer() }
+
+void Array()    : { } { "array" "[" Int() "]" "of" Tipo() }
+void Registro() : { } { "record" "{" Campos() "}" }
+void Campos()   : { } { Campo() RCampo() }
+void RCampo()   : { } { ";" Campo() RCampo() | { }}
+void Campo()    : { } { Tipo() Iden() }
+void Pointer()  : { } { "pointer" Tipo() }
+
+void Bloque() 	: { } { "{" Prog() "}" }
+
+void Insts() : { } { Inst() RInst() }
+void RInst() : { } { ";" Inst() RInst() | { }}
+void Inst()  : { } { IAsig() | IIfThenElse() | IWhile() | IRead() | IWrite() | INl() | INew() | IDelete() | ICall() | Bloque()}
+
+void IIfThenElse() : { } { "if" EXP() "then" (Insts())? ("else" (Insts())?)? "endif"}
+
+void INl() : { } { "nl"}
+
+void IAsig() :	 { } { EXP() "=" EXP() }
+void IWhile():	 { } { "while" EXP() "do" (Insts())? "endwhile" }
+void IRead() :	 { } { "read" EXP() }
+void IWrite() :	 { } { "write" EXP() }
+void INew() : 	 { } { "new" EXP() }
+void IDelete() : { } { "delete" EXP() }
+void ICall() : { } { ("call" Iden() "(" (EXP())? ")")}
+
+void EXPs(): { } { EXP() REXPs() }
+void REXPs(): { } {"," EXP() REXPs() | ("+" EXP()) | ("-" E1()) |{ }}
+
+void CMP(): { } { "<" | ">" | ">=" | "<=" | "==" | "!=" }
+void Op3NA(): { } { "*" | "/" | "%" }
+
+void EXP():  { } { E1() REXP() }
+void REXP(): { } { ("+" EXP()) | ("-" E1()) | { }}
+
+void E1():   { } { E2() RE1() }
+void RE1(): { } { ("and" E2() RE1()) | ("or" E2() RE1()) | { }}
+
+void E2(): { }  { E3() RE2()}
+void RE2(): { } { (CMP() E3() RE2()) | { }}
+
+void E3(): { } { E4() RE3()}
+void RE3(): { } { Op3NA() E4() RE3() | { }}
+
+void E4(): { } { ("not" E5()) | ("-" E5()) | E5() }
+
+void E5(): { } { E6() RE5()}
+void RE5(): { } { ("[" EXP() "]" RE5()) | ("." Iden() RE5()) | ("->" Iden() RE5()) | { }}
+
+void E6(): { } { ("*" E6()) | E7()}
+
+void E7(): { } { ("("EXP()")") | Int() | Real() | Bool() | String() | Iden() | "null"}
+
+
+void Iden()    		: { } { < IDEN >}
+void Int() 			: { } { < INT >}
+void Real() 		: { } { < REAL >}
+void Bool() 		: { } { < BOOL >}
+void String() 		: { } { < STRING >}
+
+
+TOKEN:{
+  
+	< #LETRA 	: ["a"-"z","A"-"Z"] > |
+	< #DIGP  	: ["1"-"9"] > |
+	< #DIG   	: ["0"-"9"] > |
+	< #PARTEENT : (< DIGP >) (< DIG >)* > |
+	< #PARTEDEC : (< DIG >)* (< DIGP >) > |
+
+	< INT : ("+"|"-")? (< PARTEENT >|"0") > |
+	< IDEN : < LETRA > (< LETRA > | < DIG > | "_" )*> | 
+	< REAL :  ("+"|"-")? (< PARTEENT >|"0") > |
+	< BOOL : ("true" | "false") > |
+	< STRING : "\"" (~["\""])* "\"" >
+	
+}
+SPECIAL_TOKEN :
+{
+  <COM: "#" (("\u2019")*~["\n","\r"]("\u2019")*)* ("\n"|"\r"|"\r\n")>
+}

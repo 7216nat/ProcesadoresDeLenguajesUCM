@@ -1,0 +1,91 @@
+/*
+   Simple +/-/* expression language; 
+   parser evaluates constant expressions on the fly
+*/
+
+package tiny1.analizadorsintactico.asc;
+
+import java_cup.runtime.*;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import tiny1.analizadorlexico.AnalizadorLexicoTiny;
+import tiny1.analizadorlexico.UnidadLexica;
+import tiny1.errors.GestionErroresTiny;
+
+
+scan with {: return getScanner().next_token(); :};
+
+parser code {:
+
+	private GestionErroresTiny errores;
+	public void syntax_error(Symbol unidadLexica){
+		errores.errorSintactico((UnidadLexica) unidadLexica);
+	}
+:};
+
+init with {:
+	errores = new GestionErroresTiny();
+	AnalizadorLexicoTiny analizadorLexico = (AnalizadorLexicoTiny) getScanner();
+:};
+
+
+non terminal Prog, Decs, LDec, Dec,	DVar, DTipo, DProc, Pars, Par, Tipo, Array, Registro, Campos, Campo,
+		     Pointer, Insts, Inst, IAsig, IIfThen, IIfThenElse, IWhile, IRead, IWrite, INew, IDelete, ICall, Bloque, Exps, Cmp,
+			 Op3NA,Exp, E1, E2, E3,	E4,	E5,	E6, E7;	
+
+terminal    IDEN, ENT, LREAL, CADENA,
+   		 // constantes literales
+    INT, STRING, BOOL, TRUE, FALSE, REAL, AND, OR,
+    NOT, NULL, PROC, IF, THEN, ELSE, ENDIF, 
+    WHILE, DO, ENDWHILE, CALL, TYPE, RECORD, ARR, OF,
+    PTR, NEW, DEL, READ, WRITE, NL, VAR,
+    // Operadores
+    PAP, PCIE, LLAP, LLCIE, CAP, CCIE,
+    
+    COMA, PUNTO, PUNTOCOMA, FLECHA, AMP,
+    
+    IGUAL, MAS, MENOS, POR, DIV, MOD,
+    GT, GE, LT, LE, EQ, NE,
+    // otros
+    SEPSECCION;
+
+
+Prog	::= Decs Insts | Insts;
+Decs	::= LDec SEPSECCION;
+LDec	::= LDec PUNTOCOMA Dec | Dec;
+Dec 	::= DVar | DTipo | DProc;
+DVar	::= VAR Tipo IDEN;
+DTipo	::= TYPE Tipo IDEN;
+DProc	::= PROC IDEN PAP Pars PCIE Bloque | PROC IDEN PAP PCIE Bloque;
+Pars	::= Pars COMA Par | Par;
+Par		::= Tipo AMP IDEN | Tipo IDEN;
+Tipo	::= INT | REAL | BOOL | STRING | IDEN | Array | Registro | Pointer;
+Array	::= ARR CAP ENT CCIE OF Tipo;
+Registro ::= RECORD LLAP Campos LLCIE;
+Campos	::= Campos PUNTOCOMA Campo | Campo;
+Campo	::= Tipo IDEN;
+Pointer ::= PTR Tipo;
+Insts	::= Insts PUNTOCOMA Inst | Inst;
+Inst	::= IAsig |IIfThen |IIfThenElse | IWhile | IRead | IWrite | NL | INew | IDelete | ICall | Bloque;
+IAsig	::= Exp IGUAL Exp;
+IIfThen ::= IF Exp THEN Insts ENDIF | IF Exp THEN ENDIF;
+IIfThenElse ::= IF Exp THEN Insts ELSE Insts ENDIF | IF Exp THEN ELSE Insts ENDIF| IF Exp THEN Insts ELSE ENDIF| IF Exp THEN ELSE ENDIF;
+IWhile	::= WHILE Exp DO Insts ENDWHILE | WHILE Exp DO ENDWHILE;
+IRead	::= READ Exp;
+IWrite	::= WRITE Exp;
+INew	::= NEW Exp;
+IDelete	::= DEL Exp;
+ICall	::= CALL IDEN PAP Exps PCIE | CALL IDEN PAP PCIE;
+Bloque	::= LLAP Prog LLCIE;
+Exps	::= Exps COMA Exp | Exp;
+Cmp 	::= LT | GT | GE | LE | EQ | NE;
+Op3NA 	::= POR | DIV | MOD;
+Exp 	::= E1 MAS Exp | E1 MENOS E1 | E1;
+E1 		::= E1 AND E2 | E1 OR E2 | E2;
+E2		::= E2 Cmp E3 | E3;
+E3		::= E3 Op3NA E4 | E4;
+E4		::= NOT E5 | MENOS E5 | E5;
+E5		::= E5 CAP Exp CCIE | E5 PUNTO IDEN | E5 FLECHA IDEN | E6;
+E6 		::= POR E6 | E7;
+E7		::= PAP Exp PCIE | ENT | LREAL | TRUE | FALSE | CADENA | IDEN | NULL;
