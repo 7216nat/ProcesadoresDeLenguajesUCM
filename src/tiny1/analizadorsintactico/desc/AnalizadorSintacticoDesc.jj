@@ -99,7 +99,7 @@ TOKEN:{
 
 	< INT : ("+"|"-")? (< PARTEENT >|"0") > |
 	< IDEN : < LETRA > (< LETRA > | < DIG > | "_" )*> | 
-	< REAL :  ("+"|"-")? (< PARTEENT >|"0") > |
+	< REAL :  ("+"|"-")? (< PARTEENT >|"0") (("." (< PARTEDEC > | "0")) | (("e"|"E") < INT >) | ("." (< PARTEDEC > | "0")) (("e"|"E") < INT >)) > |
 	< BOOL : ("true" | "false") > |
 	< STRING : "\"" (~["\""])* "\"" >
 	

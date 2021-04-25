@@ -2,6 +2,7 @@ package tiny1.analizadorlexico;
 
 %%
 %cup
+%public
 %line
 %column
 %class AnalizadorLexicoTiny
@@ -62,7 +63,7 @@ nl = nl
 var = var
 identificador = {letra}({letra}|{digito}|\_)*
 numeroEntero = [\+,\-]?({parteEntera}|0)
-numeroReal = [\+,\-]?({parteEntera}|0)\.{parteDecimal}((e|E){numeroEntero})?
+numeroReal = [\+,\-]?({parteEntera}|0)(\.({parteDecimal}|0) | ((e|E){numeroEntero}) | \.({parteDecimal}|0)((e|E){numeroEntero}))
 cadena = \"[^\b\r\n\"]*\"
 operadorSuma = \+
 operadorResta = \-
