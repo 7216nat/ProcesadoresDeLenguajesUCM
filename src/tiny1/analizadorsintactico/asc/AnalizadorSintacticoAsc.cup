@@ -9,37 +9,53 @@ import java_cup.runtime.*;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
-import tiny1.analizadorlexico.AnalizadorLexicoTiny;
+import tiny1.analizadorlexico.AnalizadorLexico;
 import tiny1.analizadorlexico.UnidadLexica;
-import tiny1.errors.GestionErroresTiny;
+import tiny1.errors.GestionErrores;
+import tiny1.asint.TinyASint;
+import tiny1.asint.TinyASint.*;
 
 
 scan with {: return getScanner().next_token(); :};
-
+action code {:
+   private TinyASint asint = new TinyASint();
+:};
 parser code {:
 
-	private GestionErroresTiny errores;
+	private GestionErrores errores;
 	public void syntax_error(Symbol unidadLexica){
 		errores.errorSintactico((UnidadLexica) unidadLexica);
 	}
 :};
 
 init with {:
-	errores = new GestionErroresTiny();
-	AnalizadorLexicoTiny analizadorLexico = (AnalizadorLexicoTiny) getScanner();
+	errores = new GestionErrores();
+	AnalizadorLexico alex = (AnalizadorLexico) getScanner();
+   alex.fijaGestionErrores(errores);
 :};
 
 
-non terminal Prog, Decs, LDec, Dec,	DVar, DTipo, DProc, Pars, Par, Tipo, Array, Registro, Campos, Campo,
-		     Pointer, Insts, Inst, IAsig, IIfThen, IIfThenElse, IWhile, IRead, IWrite, INew, IDelete, ICall, Bloque, Exps, Cmp,
-			 Op3NA,Exp, E1, E2, E3,	E4,	E5,	E6, E7;	
+non terminal Prog Prog;
+non terminal Decs Decs, LDec;
+non terminal Dec Dec, DVar, DTipo, DProc;	
+non terminal Pars Pars;
+non terminal Par Par;
+non terminal Tipo Tipo, Array, Registro, Pointer;
+non terminal Campos Campos;
+non terminal Campo Campo;
+non terminal Insts Insts;
+non terminal Inst Inst, IAsig, IIfThen, IIfThenElse, IWhile, IRead, IWrite, INew, IDelete, ICall, Inl, Bloque;
+non terminal Exps Exps;
+non terminal String Cmp,Op3NA;
+non terminal Exp E0, E1, E2, E3, E4, E5, E6, E7;	
 
-terminal    IDEN, ENT, LREAL, CADENA,
+terminal StringLocalizado IDEN, ENT, LREAL, CADENA, INT, STRING, BOOL, TRUE, FALSE, REAL, NULL;
+
    		 // constantes literales
-    INT, STRING, BOOL, TRUE, FALSE, REAL, AND, OR,
-    NOT, NULL, PROC, IF, THEN, ELSE, ENDIF, 
+terminal  AND, OR,
+    NOT, PROC, IF, THEN, ELSE, ENDIF, 
     WHILE, DO, ENDWHILE, CALL, TYPE, RECORD, ARR, OF,
-    PTR, NEW, DEL, READ, WRITE, NL, VAR,
+    PTR, NEW, DEL, READ, WRITE, VAR, NL,
     // Operadores
     PAP, PCIE, LLAP, LLCIE, CAP, CCIE,
     
@@ -51,41 +67,161 @@ terminal    IDEN, ENT, LREAL, CADENA,
     SEPSECCION;
 
 
-Prog	::= Decs Insts | Insts;
-Decs	::= LDec SEPSECCION;
-LDec	::= LDec PUNTOCOMA Dec | Dec;
-Dec 	::= DVar | DTipo | DProc;
-DVar	::= VAR Tipo IDEN;
-DTipo	::= TYPE Tipo IDEN;
-DProc	::= PROC IDEN PAP Pars PCIE Bloque | PROC IDEN PAP PCIE Bloque;
-Pars	::= Pars COMA Par | Par;
-Par		::= Tipo AMP IDEN | Tipo IDEN;
-Tipo	::= INT | REAL | BOOL | STRING | IDEN | Array | Registro | Pointer;
-Array	::= ARR CAP ENT CCIE OF Tipo;
-Registro ::= RECORD LLAP Campos LLCIE;
-Campos	::= Campos PUNTOCOMA Campo | Campo;
-Campo	::= Tipo IDEN;
-Pointer ::= PTR Tipo;
-Insts	::= Insts PUNTOCOMA Inst | Inst;
-Inst	::= IAsig |IIfThen |IIfThenElse | IWhile | IRead | IWrite | NL | INew | IDelete | ICall | Bloque;
-IAsig	::= Exp IGUAL Exp;
-IIfThen ::= IF Exp THEN Insts ENDIF | IF Exp THEN ENDIF;
-IIfThenElse ::= IF Exp THEN Insts ELSE Insts ENDIF | IF Exp THEN ELSE Insts ENDIF| IF Exp THEN Insts ELSE ENDIF| IF Exp THEN ELSE ENDIF;
-IWhile	::= WHILE Exp DO Insts ENDWHILE | WHILE Exp DO ENDWHILE;
-IRead	::= READ Exp;
-IWrite	::= WRITE Exp;
-INew	::= NEW Exp;
-IDelete	::= DEL Exp;
-ICall	::= CALL IDEN PAP Exps PCIE | CALL IDEN PAP PCIE;
-Bloque	::= LLAP Prog LLCIE;
-Exps	::= Exps COMA Exp | Exp;
-Cmp 	::= LT | GT | GE | LE | EQ | NE;
-Op3NA 	::= POR | DIV | MOD;
-Exp 	::= E1 MAS Exp | E1 MENOS E1 | E1;
-E1 		::= E1 AND E2 | E1 OR E2 | E2;
-E2		::= E2 Cmp E3 | E3;
-E3		::= E3 Op3NA E4 | E4;
-E4		::= NOT E5 | MENOS E5 | E5;
-E5		::= E5 CAP Exp CCIE | E5 PUNTO IDEN | E5 FLECHA IDEN | E6;
-E6 		::= POR E6 | E7;
-E7		::= PAP Exp PCIE | ENT | LREAL | TRUE | FALSE | CADENA | IDEN | NULL;
+Prog	::= Decs:decs Insts:insts
+            {: RESULT = asint.progConDecs(decs, insts); :};
+Prog  ::= Insts:insts
+            {: RESULT = asint.progSinDecs(insts); :};
+Decs	::= LDec:decs SEPSECCION
+            {: RESULT = decs; :};
+LDec	::= LDec:decs PUNTOCOMA Dec:dec 
+            {: RESULT = asint.decComp(decs, dec); :};
+LDec  ::= Dec:dec
+            {: RESULT = asint.decSimp(dec); :};
+Dec 	::= DVar:dec {: RESULT = dec; :}
+         | DTipo:dec {: RESULT = dec; :} 
+         | DProc:dec {: RESULT = dec; :};
+DVar	::= VAR Tipo:tipo IDEN:id
+            {: RESULT = asint.dVar(tipo, id); :};
+DTipo	::= TYPE Tipo:tipo IDEN:id
+            {: RESULT = asint.dTipo(tipo, id); :};
+DProc	::= PROC IDEN:id PAP Pars:pars PCIE Bloque:bloque
+            {: RESULT =  asint.dProcConPars(id, pars, bloque);:};
+DProc ::= PROC IDEN:id PAP PCIE Bloque:bloque
+            {: RESULT =  asint.dProcSinPars(id, bloque);:};
+Pars	::= Pars:pars COMA Par:par
+            {: RESULT = asint.parsComp(pars, par); :}; 
+Pars  ::= Par:par
+            {: RESULT = asint.parsSimp(par); :}; 
+Par   ::= Tipo:tipo AMP IDEN:id
+            {: RESULT = asint.parRef(tipo, id); :};
+Par   ::= Tipo:tipo IDEN:id
+            {: RESULT = asint.parSinRef(tipo, id); :};
+Tipo	::= INT:i
+            {: RESULT = asint.intint(i); :} 
+         | REAL:real
+            {: RESULT = asint.real(real); :} 
+         | BOOL:bool
+            {: RESULT = asint.boolbool(bool); :} 
+         | STRING:string
+            {: RESULT = asint.stringstring(string); :} 
+         | IDEN:id
+            {: RESULT = asint.idenTipo(id); :} 
+         | Array:array
+            {: RESULT = array;:} 
+         | Registro:reg
+            {: RESULT = reg; :} 
+         | Pointer:ptr
+            {: RESULT = ptr; :};
+Array	::= ARR CAP ENT:ent CCIE OF Tipo:tipo
+            {: RESULT = asint.array(ent, tipo); :};
+Registro ::= RECORD LLAP Campos:campos LLCIE
+            {: RESULT = asint.registro(campos); :};
+Campos	::= Campos:campos PUNTOCOMA Campo:campo
+            {: RESULT = asint.camposComp(campos, campo); :} 
+         | Campo:campo
+            {: RESULT = asint.camposSimp(campo); :};
+Campo	::= Tipo:tipo IDEN:id
+            {: RESULT = asint.campo(tipo, id); :};
+Pointer ::= PTR Tipo:tipo
+            {: RESULT = asint.pointer(tipo); :};
+Insts	::= Insts:insts PUNTOCOMA Inst:inst 
+            {: RESULT = asint.instsComp(insts, inst); :}
+         | Inst:inst
+            {: RESULT = asint.instsSimp(inst); :};
+Inst	::= IAsig:inst {: RESULT = inst; :} | IIfThen:inst {: RESULT = inst; :} 
+         | IIfThenElse:inst {: RESULT = inst; :} | IWhile:inst {: RESULT = inst; :} 
+         | IRead:inst {: RESULT = inst; :} | IWrite:inst {: RESULT = inst; :} 
+         | INew:inst {: RESULT = inst; :} | IDelete:inst {: RESULT = inst; :} 
+         | ICall:inst {: RESULT = inst; :} | Bloque:inst {: RESULT = inst; :}
+         | Inl:inst {: RESULT = inst; :};
+IAsig	::= E0:e0 IGUAL E0:e1
+            {: RESULT = asint.iAsig(e0, e1); :};
+IIfThen ::= IF E0:e THEN Insts:insts ENDIF
+            {: RESULT = asint.iIfThen1(e, insts); :} 
+         | IF E0:e THEN ENDIF
+            {: RESULT = asint.iIfThen0(e); :};
+IIfThenElse ::= IF E0:e THEN Insts:insts1 ELSE Insts:insts2 ENDIF
+            {: RESULT =  asint.iIfThenElse11(e, insts1, insts2); :}
+         | IF E0:e THEN ELSE Insts:insts ENDIF
+            {: RESULT =  asint.iIfThenElse01(e, insts); :}
+         | IF E0:e THEN Insts:insts ELSE ENDIF
+            {: RESULT =  asint.iIfThenElse10(e, insts); :}
+         | IF E0:e THEN ELSE ENDIF
+            {: RESULT =  asint.iIfThenElse00(e); :};
+IWhile::= WHILE E0:e DO Insts:insts ENDWHILE
+            {: RESULT =  asint.iWhile1(e, insts); :}
+         | WHILE E0:e DO ENDWHILE
+            {: RESULT =  asint.iWhile0(e); :};
+IRead	::= READ E0:e
+            {: RESULT =  asint.iRead(e); :};
+IWrite::= WRITE E0:e
+            {: RESULT =  asint.iWrite(e); :};
+INew	::= NEW E0:e
+            {: RESULT =  asint.iNew(e); :};
+IDelete ::= DEL E0:e
+            {: RESULT =  asint.iDelete(e); :};
+Inl   ::= NL
+            {: RESULT =  asint.iNl(); :};
+ICall	::= CALL IDEN:id PAP Exps:exps PCIE
+            {: RESULT =  asint.iCall1(id, exps); :}
+         | CALL IDEN:id PAP PCIE
+            {: RESULT =  asint.iCall0(id); :};
+Bloque::= LLAP Prog:prog LLCIE
+            {: RESULT = asint.bloque(prog); :};
+Exps	::= Exps:exps COMA E0:exp 
+            {: RESULT = asint.exps1(exps, exp); :}   
+         | E0:exp
+            {: RESULT = asint.exps0(exp); :};
+Cmp 	::= LT {: RESULT = "<";:} | GT {: RESULT = ">";:} 
+         | GE {: RESULT = ">=";:} | LE {: RESULT = "<=";:} 
+         | EQ {: RESULT = "==";:} | NE {: RESULT = "!=";:};
+Op3NA ::= POR {: RESULT = "*";:} 
+         | DIV {: RESULT = "/";:} 
+         | MOD {: RESULT = "%";:};
+E0 	::= E1:e0 MAS E0:e1 
+            {: RESULT = asint.suma(e0, e1); :}
+         | E1:e0 MENOS E1:e1
+            {: RESULT = asint.resta(e0, e1); :}
+         | E1:e 
+            {: RESULT = e; :};
+E1 	::= E1:e0 AND E2:e1 
+            {: RESULT = asint.and(e0, e1); :}
+         | E1:e0 OR E2:e1
+            {: RESULT = asint.or(e0, e1); :}
+         | E2:e
+            {: RESULT = e; :};
+E2		::= E2:e0 Cmp:cmp E3:e1
+            {: RESULT = asint.cmp(cmp, e0, e1); :}
+         | E3:e
+            {: RESULT = e; :};
+E3		::= E4:e0 Op3NA:op E4:e1 
+            {: RESULT = asint.op3na(op, e0, e1); :}
+         | E4:e
+            {: RESULT = e; :};
+E4		::= NOT E4:e 
+            {: RESULT = asint.not(e); :}
+         | MENOS E5:e 
+            {: RESULT = asint.neg(e); :}
+         | E5:e
+            {: RESULT = e; :};
+E5		::= E5:e0 CAP E0:e1 CCIE 
+            {: RESULT = asint.index(e0, e1); :}         
+         | E5:e PUNTO IDEN:id 
+            {: RESULT = asint.atr(e, id); :}         
+         | E5:e FLECHA IDEN:id 
+            {: RESULT = asint.ptr(e, id); :}         
+         | E6:e
+            {: RESULT = e; :};
+E6 	::= POR E6:e
+            {: RESULT = asint.indir(e); :}
+         | E7:e
+            {: RESULT = e; :};
+E7		::= PAP E0:e PCIE 
+            {: RESULT = asint.parentesis(e); :}
+         | ENT:ent {: RESULT = asint.ent(ent); :}
+         | LREAL:lreal {: RESULT = asint.lreal(lreal); :}
+         | TRUE:t {: RESULT = asint.truetrue(t); :} 
+         | FALSE:f {: RESULT = asint.falsefalse(f); :}
+         | CADENA:cad {: RESULT = asint.cadena(cad); :} 
+         | IDEN:id {: RESULT = asint.idenExp(id); :}
+         | NULL:n {: RESULT = asint.nullnull(n); :};

@@ -1,94 +1,249 @@
-/**
- * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
- */options{  static = true;}PARSER_BEGIN(AnalizadorSintacticoDesc)
-package tiny1.analizadorsintactico.desc;
+options{
+  STATIC = false;
+}
+
+PARSER_BEGIN(AnalizadorSintacticoDesc)
+package tiny1.analizadorsintactico.desc;
+
+import tiny1.asint.TinyASint;
+import tiny1.asint.TinyASint.*;
+
+public class AnalizadorSintacticoDesc{
+	private TinyASint asint = new TinyASint();
+}
+
+PARSER_END(AnalizadorSintacticoDesc)
 
 
-public class AnalizadorSintacticoDesc{ }
-PARSER_END(AnalizadorSintacticoDesc)
+Prog Init()  : {Prog prog;} 
+				{prog=Prog() <EOF> {return prog;}
+				}
+Prog Prog()   : {Decs decs; Insts insts;} 
+				{decs=Decs() insts=Insts(){return asint.progConDecs(decs, insts);} |
+				 insts=Insts() {return asint.progSinDecs(insts);}
+				 }
+Decs Decs()   : {Decs decs;} 
+				{decs=LDec() "&&" {return decs;}}
+Decs LDec()   : {Dec dec; Decs decs;} 
+				{dec=Dec() decs=RLDec(asint.decSimp(dec)){return decs;}
+				}
+Decs RLDec(Decs decsh)  : {Dec dec; Decs decs;} 
+				{";" dec=Dec() decs=RLDec(asint.decComp(decsh, dec)) {return decs;} |
+				 {return decsh;}
+				 }
+Dec Dec()    : {Dec dec;} { dec=DVar() {return dec;} | 
+				dec=DTipo() {return dec;} | 
+				dec=DProc() {return dec;}
+				}
 
-SKIP :{
-	< COM >|  " "| "\r"| "\t"| "\n"}
+Dec DVar()   : {Tipo tipo; Token id;}  
+				{"var" tipo=Tipo() id=<IDEN> {return asint.dVar(tipo, asint.str(id.image,id.beginLine,id.beginColumn));}
+				}
+Dec DTipo()  : {Tipo tipo; Token id;} 
+				{ "type" tipo=Tipo() id=<IDEN> {return asint.dTipo(tipo, asint.str(id.image,id.beginLine,id.beginColumn));}
+				}
+Dec DProc()  : {Token id; Dec dec;} 
+				{ "proc" id=<IDEN> "(" dec=FDProc(id) {return dec;}
+				}
+Dec FDProc(Token idh) : {Pars pars; Inst bloque;}
+				{pars=Pars() ")" bloque=Bloque() {return asint.dProcConPars(asint.str(idh.image,idh.beginLine,idh.beginColumn), pars, bloque);} |
+				")" bloque=Bloque() {return asint.dProcSinPars(asint.str(idh.image,idh.beginLine,idh.beginColumn), bloque);}	
+				}
+// Parï¿½metros para el procedimiento
+Pars Pars()	  : {Par par; Pars pars;} 
+				{par=Par() pars=RPar(asint.parsSimp(par)) {return pars;}
+				}
+Pars RPar(Pars parsh): {Par par; Pars pars;} 
+				{ "," par=Par() pars=RPar(asint.parsComp(parsh, par)) {return pars;} | 
+				{return parsh;}
+				}
+Par Par() 	  : {Tipo tipo; Par par;} 
+				{tipo=Tipo() par=FPar(tipo) {return par;}
+				}
+Par FPar(Tipo tipoh): {Token id;}
+				{"&" id=<IDEN> {return asint.parRef(tipoh, asint.str(id.image,id.beginLine,id.beginColumn));} |
+				id=<IDEN> {return asint.parSinRef(tipoh, asint.str(id.image,id.beginLine,id.beginColumn));}
+				}
+Tipo Tipo()   : {Token id; Tipo tipo;} 
+				{id=<INT> {return asint.intint(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<REAL>  {return asint.real(asint.str(id.image,id.beginLine,id.beginColumn));} | 
+				 id=<BOOL> {return asint.boolbool(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<STRING> {return asint.stringstring(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<IDEN> {return asint.idenTipo(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 tipo=Array() {return tipo;} |
+				 tipo=Registro() {return tipo;} |
+				 tipo=Pointer() {return tipo;}
+				 }
 
-void Start()  : { } { Prog() < EOF > }
-void Prog()   : { } { Decs() Insts() }
+Tipo Array()    : {Token ent; Tipo tipo;} 
+				  { "array" "[" ent=<ENT> "]" "of" tipo=Tipo() {return asint.array(asint.str(ent.image,ent.beginLine,ent.beginColumn), tipo);}
+				  }
+Tipo Registro() : {Campos campos;} 
+				{ "record" "{" campos=Campos() "}" {return asint.registro(campos);}}
+Campos Campos()   : {Campos campos; Campo campo;} 
+				{ campo=Campo() campos=RCampo(asint.camposSimp(campo)) {return campos;}}
+Campos RCampo(Campos camposh): {Campos campos; Campo campo;} 
+				{ ";" campo=Campo() campos=RCampo(asint.camposComp(camposh, campo)) {return campos;} |
+				{return camposh;}
+				}
+Campo Campo()    : {Tipo tipo; Token id;} 
+				{ tipo=Tipo() id=<IDEN> {return asint.campo(tipo, asint.str(id.image,id.beginLine,id.beginColumn));}
+				}
+Tipo Pointer()  : {Tipo tipo;} 
+				{ "pointer" tipo=Tipo() {return asint.pointer(tipo);}
+				}
+Inst Bloque() 	: {Prog prog;} 
+				{ "{" prog=Prog() "}" {return asint.bloque(prog);}
+				}
 
-void Decs()   : { } { LDec() "&&" | { }}
-void LDec()   : { } { Dec() RLDec() }
-void RLDec()  : { } {";" Dec() RLDec() | { }}
-void Dec()    : { } { DVar() | DTipo() | DProc() }
+Insts Insts() : {Inst i; Insts is;} 
+				{ i=Inst() is=RInsts(asint.instsSimp(i)) {return is;} 
+				}
+Insts RInsts(Insts ih) : {Inst i; Insts is;} 
+				{ ";" i=Inst() is=RInsts(asint.instsComp(ih, i)) {return is;} |
+				{return ih;}
+				}
+Inst Inst()  : {Inst i;} 
+				{ i=IAsig() {return i;} |
+				 i=IIfThen() {return i;} | 
+				 i=IWhile() {return i;} |
+				 i=IRead() {return i;} |
+				 i=IWrite() {return i;} |
+				 i=INl() {return i;} | 
+				 i=INew() {return i;} | 
+				 i=IDelete() {return i;} | 
+				 i=ICall() {return i;} | 
+				 i=Bloque() {return i;}
+				 }
+			
+Inst IIfThen(): {Exp e; Inst i;}
+				{"if" e=E0() "then" i=FIIfThen(e) {return i;}
+				}
+Inst FIIfThen(Exp eh): {Inst is; Insts iss;}
+				{iss=Insts() is=F1IIfThenElse(eh, iss) {return is;}|
+				"endif" {return asint.iIfThen0(eh);} |
+				"else" is=F3IIfThenElse(eh) {return is;}
+				}
+Inst F1IIfThenElse(Exp eh, Insts iss): {Inst is;}
+				{"else" is=F2IIfThenElse(eh, iss) {return is;} |
+				"endif" {return asint.iIfThen1(eh, iss);;}
+				}
+Inst F2IIfThenElse(Exp eh, Insts ish): {Insts iss;}
+				{iss=Insts() "endif" {return asint.iIfThenElse11(eh,ish,iss);} |
+				"endif" {return asint.iIfThenElse10(eh,ish);}
+				}
+Inst F3IIfThenElse(Exp eh): {Insts iss;}
+				{iss=Insts() "endif" {return asint.iIfThenElse01(eh,iss);} |
+				"endif" {return asint.iIfThenElse00(eh);}
+				}					
+Inst INl() : {} { "nl" {return asint.iNl();}}
 
-void DVar()   : { }  { "var"  Tipo() Iden()}
-void DTipo()  : { } { "type" Tipo() Iden()}
-void DProc()  : { } { "proc" Iden() "(" Pars() ")" Bloque() }
+Inst IAsig() : 	{Exp e, ee;} 
+				{ e=E0() "=" ee=E0() {return asint.iAsig(e,ee);}}
+Inst IWhile():	 {Exp e; Inst is;} 
+				{"while" e=E0() "do" is=FIWhile(e) {return is;}
+				}
+Inst FIWhile(Exp eh): {Insts is;}
+				{is=Insts() "endwhile" {return asint.iWhile1(eh,is);} |
+				"endwhile" {return asint.iWhile0(eh);}
+				}
+Inst IRead() :	 {Exp e;} 
+				{ "read" e=E0() {return asint.iRead(e);}}
+Inst IWrite() :	 {Exp e;} 
+				{ "write" e=E0() {return asint.iWrite(e);}}
+Inst INew() : 	 {Exp e;} 
+				{ "new" e=E0() {return asint.iNew(e);}}
+Inst IDelete() : {Exp e;} 
+				{ "delete" e=E0() {return asint.iDelete(e);}}
+Inst ICall() : {Token id; Inst i;} 
+				{ "call" id=<IDEN> "(" i=FICall(id) {return i;}
+				}
+Inst FICall(Token idh): {Exps e;}
+				{e=EXPs() ")" {return asint.iCall1(asint.str(idh.image,idh.beginLine,idh.beginColumn), e);} |
+				")" {return asint.iCall0(asint.str(idh.image,idh.beginLine,idh.beginColumn));}
+				}
+Exps EXPs(): {Exps es; Exp e;} 
+				{ e=E0() es=REXPs(asint.exps0(e)) {return es;}}
+Exps REXPs(Exps esh): {Exps es; Exp e;} 
+				{"," e=E0() es=REXPs(asint.exps1(esh, e)) {return es;}| 
+				{return esh;}
+				}
 
-// Parámetros para el procedimiento
-void Pars()	  : { } { Par() RPar() | { }}
-void RPar()	  : { } { "," Pars() RPar() | { } }
-void Par() 	  : { } { Tipo() ("&")? Iden()}
+String CMP(): {} { "<" {return "<";} |
+				 ">" {return ">";} | 
+				 ">=" {return ">=";} | 
+				 "<=" {return "<=";} | 
+				 "==" {return "==";} | 
+				 "!=" {return "!=";} }
+String Op3NA(): {} { "*" {return "*";} |
+				 "/" {return "/";} |
+				 "%" {return "%";} }
 
-void Tipo()   : { } { "int" | "real" | "bool" | "string" | Iden() | Array() | Registro() | Pointer() }
+Exp E0():  {Exp e, ee;} 
+				{ e=E1() ee=FE0(e) {return ee;} 
+				}
+Exp FE0(Exp eh): {Exp e;} 
+				{ "+" e=E0() {return asint.suma(eh, e);} |
+				 "-" e=E1() {return asint.resta(eh,e);} |
+				 {return eh;}
+				}
+				
+Exp E1():   {Exp e, ee;} 
+				{ e=E2() ee=RE1(e) {return ee;}
+				}
+Exp RE1(Exp eh): {Exp e, ee;} 
+				{ "and" e=E2() ee=RE1(asint.and(eh, e)) {return ee;} | 
+				"or" e=E2() ee=RE1(asint.or(eh,e)) {return ee;} |
+				{return eh;}
+				}
+Exp E2(): {Exp e, ee;}  
+				{ e=E3() ee=RE2(e) {return ee;}
+				}
+Exp RE2(Exp eh): {String cmp; Exp e, ee;} 
+				{ cmp=CMP() e=E3() ee=RE2(asint.cmp(cmp, eh, e)) {return ee;} |
+				{ return eh;}}
 
-void Array()    : { } { "array" "[" Int() "]" "of" Tipo() }
-void Registro() : { } { "record" "{" Campos() "}" }
-void Campos()   : { } { Campo() RCampo() }
-void RCampo()   : { } { ";" Campo() RCampo() | { }}
-void Campo()    : { } { Tipo() Iden() }
-void Pointer()  : { } { "pointer" Tipo() }
+Exp E3(): {Exp e, ee;} 
+				{ e=E4() ee=FE3(e) {return ee;}
+				}
+Exp FE3(Exp eh): {String op; Exp e;} 
+				{ op=Op3NA() e=E4() {return asint.op3na(op,eh,e);} | 
+				{return eh;}
+				}
+Exp E4(): {Exp e;} 
+				{ "not" e=E4() {return asint.not(e);} |
+				"-" e=E5()  {return asint.neg(e);} | 
+				e=E5() {return e;}
+				}
+Exp E5(): {Exp e, ee;} 
+				{ e=E6() ee=FE5(e) {return ee;}
+				}
+Exp FE5(Exp eh): {Exp e, ee; Token id;} 
+				{ "[" e=E0() "]" ee=FE5(asint.index(eh, e)) {return ee;} |
+				"." id=<IDEN> ee=FE5(asint.atr(eh, asint.str(id.image,id.beginLine,id.beginColumn))) {return ee;} |
+				"->" id=<IDEN> ee=FE5(asint.ptr(eh, asint.str(id.image,id.beginLine,id.beginColumn))) {return ee;} |
+				{return eh;}
+				}
+Exp E6(): {Exp e;} 
+				{ "*" e=E6() {return asint.indir(e);}|
+				 e=E7() {return e;}
+				 }
 
-void Bloque() 	: { } { "{" Prog() "}" }
-
-void Insts() : { } { Inst() RInst() }
-void RInst() : { } { ";" Inst() RInst() | { }}
-void Inst()  : { } { IAsig() | IIfThenElse() | IWhile() | IRead() | IWrite() | INl() | INew() | IDelete() | ICall() | Bloque()}
-
-void IIfThenElse() : { } { "if" EXP() "then" (Insts())? ("else" (Insts())?)? "endif"}
-
-void INl() : { } { "nl"}
-
-void IAsig() :	 { } { EXP() "=" EXP() }
-void IWhile():	 { } { "while" EXP() "do" (Insts())? "endwhile" }
-void IRead() :	 { } { "read" EXP() }
-void IWrite() :	 { } { "write" EXP() }
-void INew() : 	 { } { "new" EXP() }
-void IDelete() : { } { "delete" EXP() }
-void ICall() : { } { ("call" Iden() "(" (EXP())? ")")}
-
-void EXPs(): { } { EXP() REXPs() }
-void REXPs(): { } {"," EXP() REXPs() | ("+" EXP()) | ("-" E1()) |{ }}
-
-void CMP(): { } { "<" | ">" | ">=" | "<=" | "==" | "!=" }
-void Op3NA(): { } { "*" | "/" | "%" }
-
-void EXP():  { } { E1() REXP() }
-void REXP(): { } { ("+" EXP()) | ("-" E1()) | { }}
-
-void E1():   { } { E2() RE1() }
-void RE1(): { } { ("and" E2() RE1()) | ("or" E2() RE1()) | { }}
-
-void E2(): { }  { E3() RE2()}
-void RE2(): { } { (CMP() E3() RE2()) | { }}
-
-void E3(): { } { E4() RE3()}
-void RE3(): { } { Op3NA() E4() RE3() | { }}
-
-void E4(): { } { ("not" E5()) | ("-" E5()) | E5() }
-
-void E5(): { } { E6() RE5()}
-void RE5(): { } { ("[" EXP() "]" RE5()) | ("." Iden() RE5()) | ("->" Iden() RE5()) | { }}
-
-void E6(): { } { ("*" E6()) | E7()}
-
-void E7(): { } { ("("EXP()")") | Int() | Real() | Bool() | String() | Iden() | "null"}
-
-
-void Iden()    		: { } { < IDEN >}
-void Int() 			: { } { < INT >}
-void Real() 		: { } { < REAL >}
-void Bool() 		: { } { < BOOL >}
-void String() 		: { } { < STRING >}
-
-
+Exp E7(): {Exp e; Token id;} 
+				{ "(" e=E0() ")" {return asint.parentesis(e);} |
+				 id=<ENT> {return asint.ent(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<LREAL> {return asint.lreal(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<TRUE> {return asint.truetrue(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<FALSE> {return asint.falsefalse(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<CADENA> {return asint.cadena(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<IDEN> {return asint.idenExp(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<NULL> {return asint.nullnull(asint.str(id.image,id.beginLine,id.beginColumn));}
+				 }
+SKIP :
+{
+<["\t"," ","\r","\b","\n"]> |
+<"#"(~["\n"])*>
+}
 TOKEN:{
   
 	< #LETRA 	: ["a"-"z","A"-"Z"] > |
@@ -97,14 +252,16 @@ TOKEN:{
 	< #PARTEENT : (< DIGP >) (< DIG >)* > |
 	< #PARTEDEC : (< DIG >)* (< DIGP >) > |
 
-	< INT : ("+"|"-")? (< PARTEENT >|"0") > |
-	< IDEN : < LETRA > (< LETRA > | < DIG > | "_" )*> | 
-	< REAL :  ("+"|"-")? (< PARTEENT >|"0") (("." (< PARTEDEC > | "0")) | (("e"|"E") < INT >) | ("." (< PARTEDEC > | "0")) (("e"|"E") < INT >)) > |
-	< BOOL : ("true" | "false") > |
-	< STRING : "\"" (~["\""])* "\"" >
-	
-}
-SPECIAL_TOKEN :
-{
-  <COM: "#" (("\u2019")*~["\n","\r"]("\u2019")*)* ("\n"|"\r"|"\r\n")>
-}
+	< ENT : ("+"|"-")? (< PARTEENT >|"0") > |
+	< LREAL :  ("+"|"-")? (< PARTEENT >|"0") (("." (< PARTEDEC > | "0")) | (("e"|"E") < INT >) | ("." (< PARTEDEC > | "0")) (("e"|"E") < INT >)) > |
+	< INT: "int" > |
+	< STRING: "string" > |
+	< BOOL: "bool" > |
+	< TRUE: "true" > |
+	< FALSE: "false" > |
+	< REAL: "real" > |
+	< NULL: "null" > |
+	< IDEN : < LETRA > (< LETRA > | < DIG > | "_" )*> |
+	< CADENA : "\"" (~["\""])* "\"" > 
+}
+
