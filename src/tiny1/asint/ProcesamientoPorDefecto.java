@@ -43,7 +43,8 @@ public class ProcesamientoPorDefecto implements Procesamiento {
    public void procesa(INl exp) {   }
    public void procesa(ICall1 exp) {   }
    public void procesa(ICall0 exp) {   }
-   public void procesa(Bloque exp) {   }
+   public void procesa(Bloque1 exp) {   }
+   public void procesa(Bloque0 exp) {   }
    public void procesa(Exps1 exp) {   }
    public void procesa(Exps0 exp) {   }
    public void procesa(And exp) {   }

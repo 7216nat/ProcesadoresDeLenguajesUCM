@@ -167,7 +167,9 @@ ICall	::= CALL IDEN:id PAP Exps:exps PCIE
          | CALL IDEN:id PAP PCIE
             {: RESULT =  asint.iCall0(id); :};
 Bloque::= LLAP Prog:prog LLCIE
-            {: RESULT = asint.bloque(prog); :};
+            {: RESULT = asint.bloque1(prog); :} 
+         | LLAP LLCIE
+            {: RESULT = asint.bloque0(); :};
 Exps	::= Exps:exps COMA E0:exp 
             {: RESULT = asint.exps1(exps, exp); :}   
          | E0:exp

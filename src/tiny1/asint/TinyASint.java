@@ -655,13 +655,21 @@ public class TinyASint {
             p.procesa(this); 
         }      
     }
-    public static class Bloque extends Inst {
+    public static class Bloque1 extends Inst {
         private Prog prog;
-        public Bloque(Prog prog) {
+        public Bloque1(Prog prog) {
             super();
             this.prog = prog;
         }
         public Prog prog() {return prog;}
+        public void procesa(Procesamiento p) {
+            p.procesa(this); 
+        }      
+    }
+    public static class Bloque0 extends Inst {
+        public Bloque0() {
+            super();
+        }
         public void procesa(Procesamiento p) {
             p.procesa(this); 
         }      
@@ -1049,7 +1057,8 @@ public class TinyASint {
     public Inst iNl(){ return new INl();}
     public Inst iCall1(StringLocalizado id, Exps exps) {return new ICall1(id, exps);}
     public Inst iCall0(StringLocalizado id) {return new ICall0(id);}
-    public Inst bloque(Prog prog) {return new Bloque(prog);}
+    public Inst bloque1(Prog prog) {return new Bloque1(prog);}
+    public Inst bloque0() {return new Bloque0();}
     public Exps exps1(Exps exps, Exp exp) {return new Exps1(exps, exp);}
     public Exps exps0(Exp exp) {return new Exps0(exp);}
 

@@ -92,7 +92,8 @@ padre->izq->nombre = nombres.nombres[i];
  i=0;
  while i < nombres.cont do
  call inserta_nombre(arbol);
- i = i + 1
+ i = i + 1;
+ i=not not not 6
  endwhile
  }; # Fin del procedimiento construye_arbol
  
@@ -100,13 +101,8 @@ padre->izq->nombre = nombres.nombres[i];
  # dicho árbol en inorden.
  # Por tanto, los nombres se listan ordenados alfabéticamente,
  # y sin duplicados
- proc escribe_nombres(tArbol arbol) {
- if arbol != null then
- call escribe_nombres(arbol->izq);
- write arbol->nombre; nl;
- call escribe_nombres(arbol->der)
- endif
- } # Fin de procedimiento escribe_nombres
+ proc escribe_nombres(tArbol arbol) {} 
+ # Fin de procedimiento escribe_nombres
  &&
  
  # Programa principal

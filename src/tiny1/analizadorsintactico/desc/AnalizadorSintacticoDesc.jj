@@ -91,11 +91,7 @@ Campo Campo()    : {Tipo tipo; Token id;}
 				}
 Tipo Pointer()  : {Tipo tipo;} 
 				{ "pointer" tipo=Tipo() {return asint.pointer(tipo);}
-				}
-Inst Bloque() 	: {Prog prog;} 
-				{ "{" prog=Prog() "}" {return asint.bloque(prog);}
-				}
-
+				}			 
 Insts Insts() : {Inst i; Insts is;} 
 				{ i=Inst() is=RInsts(asint.instsSimp(i)) {return is;} 
 				}
@@ -162,6 +158,13 @@ Inst FICall(Token idh): {Exps e;}
 				{e=EXPs() ")" {return asint.iCall1(asint.str(idh.image,idh.beginLine,idh.beginColumn), e);} |
 				")" {return asint.iCall0(asint.str(idh.image,idh.beginLine,idh.beginColumn));}
 				}
+Inst Bloque() 	: {Inst inst;} 
+				{ "{" inst=FBloque() {return inst;}
+				}
+Inst FBloque() 	: {Prog prog;} 
+				{prog=Prog() "}" {return asint.bloque1(prog);} |
+				"}" {return asint.bloque0();}
+				}	
 Exps EXPs(): {Exps es; Exp e;} 
 				{ e=E0() es=REXPs(asint.exps0(e)) {return es;}}
 Exps REXPs(Exps esh): {Exps es; Exp e;} 

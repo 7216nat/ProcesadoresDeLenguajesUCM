@@ -230,8 +230,11 @@ public class Impresion implements Procesamiento {
     public void procesa(ICall0 i) {
         System.out.print(tabs+ "call "+ i.id() + "()");
     }
-    public void procesa(Bloque i) {
+    public void procesa(Bloque1 i) {
         i.prog().procesa(this);
+    }
+    public void procesa(Bloque0 i) {
+        return;
     }
     public void procesa(Exps1 exp) {
         exp.exps().procesa(this);

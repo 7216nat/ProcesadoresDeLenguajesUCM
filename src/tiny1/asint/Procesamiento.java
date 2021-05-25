@@ -42,7 +42,8 @@ public interface Procesamiento {
     void procesa(INl exp);
     void procesa(ICall1 exp);
     void procesa(ICall0 exp);
-    void procesa(Bloque exp);
+    void procesa(Bloque1 exp);
+    void procesa(Bloque0 exp);
     void procesa(Exps1 exp);
     void procesa(Exps0 exp);
     void procesa(Suma exp);
