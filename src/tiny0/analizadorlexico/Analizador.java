@@ -159,7 +159,7 @@ public class Analizador {
 	    	bld.append(character);  	
 	    }
 	    
-		this.texto = bld.toString();
+		this.texto = bld.toString() + " ";
 		
 		this.nodoInicial = nodoInicio;
 		this.nodo = nodoInicial;
