@@ -11,8 +11,8 @@ public class Analizador {
 	Nodo nodo;
 	Nodo nodoInicial;
 	
-	int linea = 0;
-	int columna = 0;
+	int linea = 1;
+	int columna = 1;
 	
 	Map<String, CL> palabrasReservadas = new HashMap<String, CL>();
 	
@@ -153,10 +153,12 @@ public class Analizador {
 		// Se carga el archivo y se guarda en un string
 	    int c = 0;  
 	    StringBuilder bld = new StringBuilder();
+	    
 	    while((c = input.read()) != -1){
 	    	char character = (char) c;
 	    	bld.append(character);  	
 	    }
+	    
 		this.texto = bld.toString();
 		
 		this.nodoInicial = nodoInicio;
@@ -175,7 +177,7 @@ public class Analizador {
 			if(nodo.estado == Estado.INICIO) lexema = "";
 			
 			// Caso especial para el manejo de EOF (cuando no quedan caracteres)
-			if(texto.length() == 0) return new UL(CL.EOF, "", linea, columna-1);
+			if(texto.length() <= 0) return new UL(CL.EOF, "", linea, columna-1);
 
 			// Se quita el primer caracter			
 			char c = texto.charAt(0);
@@ -185,7 +187,7 @@ public class Analizador {
 			// En caso de salto de linea se incrementa el contador
 			if(c == '\n') {
 				linea++;
-				columna = 0;
+				columna = 1;
 			}
 									
 			
