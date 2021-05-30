@@ -1083,9 +1083,13 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     throw new Error("Missing return statement in function");
   }
 
+  /** Generated Token Manager. */
   public AnalizadorSintacticoDescTokenManager token_source;
   SimpleCharStream jj_input_stream;
-  public Token token, jj_nt;
+  /** Current token. */
+  public Token token;
+  /** Next token. */
+  public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
   final private int[] jj_la1 = new int[28];
@@ -1093,22 +1097,27 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
   static {
-      jj_la1_0();
-      jj_la1_1();
-      jj_la1_2();
+      jj_la1_init_0();
+      jj_la1_init_1();
+      jj_la1_init_2();
    }
-   private static void jj_la1_0() {
+   private static void jj_la1_init_0() {
       jj_la1_0 = new int[] {0xf9448078,0x4,0x38,0x24480,0x100,0x200,0x24400,0x4,0x4,0xf9448040,0xf9748040,0x300000,0xf9548040,0xf9548040,0xfd448040,0xc0,0xf9458078,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x800,0x40,0x40,};
    }
-   private static void jj_la1_1() {
+   private static void jj_la1_init_1() {
       jj_la1_1 = new int[] {0xb1802440,0x0,0x0,0x4e000000,0x0,0x0,0x4e000000,0x0,0x0,0xb1802440,0xb1802440,0x0,0xb1802440,0xb1802440,0xb1802440,0xb1802440,0xb1802440,0x0,0x3f,0x1c0,0x600,0x1800,0x3f,0x1c0,0xb1802440,0xc000,0xb1800040,0xb1800000,};
    }
-   private static void jj_la1_2() {
+   private static void jj_la1_init_2() {
       jj_la1_2 = new int[] {0x3,0x0,0x0,0x1,0x0,0x1,0x1,0x0,0x0,0x3,0x3,0x0,0x3,0x3,0x3,0x3,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x0,0x3,0x3,};
    }
 
+  /** Constructor with InputStream. */
   public AnalizadorSintacticoDesc(java.io.InputStream stream) {
-    jj_input_stream = new SimpleCharStream(stream, 1, 1);
+     this(stream, null);
+  }
+  /** Constructor with InputStream and supplied encoding */
+  public AnalizadorSintacticoDesc(java.io.InputStream stream, String encoding) {
+    try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new AnalizadorSintacticoDescTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -1116,8 +1125,13 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
+  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream) {
-    jj_input_stream.ReInit(stream, 1, 1);
+     ReInit(stream, null);
+  }
+  /** Reinitialise. */
+  public void ReInit(java.io.InputStream stream, String encoding) {
+    try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -1125,6 +1139,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
+  /** Constructor. */
   public AnalizadorSintacticoDesc(java.io.Reader stream) {
     jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new AnalizadorSintacticoDescTokenManager(jj_input_stream);
@@ -1134,6 +1149,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
+  /** Reinitialise. */
   public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
@@ -1143,6 +1159,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
+  /** Constructor with generated Token Manager. */
   public AnalizadorSintacticoDesc(AnalizadorSintacticoDescTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -1151,6 +1168,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
+  /** Reinitialise. */
   public void ReInit(AnalizadorSintacticoDescTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -1159,7 +1177,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
-  final private Token jj_consume_token(int kind) throws ParseException {
+  private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -1173,6 +1191,8 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     throw generateParseException();
   }
 
+
+/** Get the next Token. */
   final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -1181,6 +1201,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     return token;
   }
 
+/** Get the specific Token. */
   final public Token getToken(int index) {
     Token t = token;
     for (int i = 0; i < index; i++) {
@@ -1190,23 +1211,21 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     return t;
   }
 
-  final private int jj_ntk() {
+  private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  private java.util.Vector jj_expentries = new java.util.Vector();
+  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
   private int[] jj_expentry;
   private int jj_kind = -1;
 
+  /** Generate ParseException. */
   public ParseException generateParseException() {
-    jj_expentries.removeAllElements();
+    jj_expentries.clear();
     boolean[] la1tokens = new boolean[66];
-    for (int i = 0; i < 66; i++) {
-      la1tokens[i] = false;
-    }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1230,19 +1249,21 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
-        jj_expentries.addElement(jj_expentry);
+        jj_expentries.add(jj_expentry);
       }
     }
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
-      exptokseq[i] = (int[])jj_expentries.elementAt(i);
+      exptokseq[i] = jj_expentries.get(i);
     }
     return new ParseException(token, exptokseq, tokenImage);
   }
 
+  /** Enable tracing. */
   final public void enable_tracing() {
   }
 
+  /** Disable tracing. */
   final public void disable_tracing() {
   }
 
