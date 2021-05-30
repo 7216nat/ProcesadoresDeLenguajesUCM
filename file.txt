@@ -2,4 +2,4 @@ real peso;
 bool pesado
 &&
 peso = 45 * (12 / -2);
-pesado = (peso > 10) or (peso / 2 <= 5.0 )
+pesado = (peso > 10) or (peso / 2 <= 5.0)
