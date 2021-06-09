@@ -3,6 +3,7 @@ import tiny1.asint.TinyASint.*;
 public interface Procesamiento {
     void procesa(ProgConDecs exp);
     void procesa(ProgSinDecs exp);
+    void procesa(NoDecs exp);
     void procesa(LDecSimp exp);
     void procesa(LDecComp exp);
     void procesa(DVar exp);

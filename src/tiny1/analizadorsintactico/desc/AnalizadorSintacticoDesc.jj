@@ -19,11 +19,12 @@ Prog Init()  : {Prog prog;}
 				{prog=Prog() <EOF> {return prog;}
 				}
 Prog Prog()   : {Decs decs; Insts insts;} 
-				{decs=Decs() insts=Insts(){return asint.progConDecs(decs, insts);} |
-				 insts=Insts() {return asint.progSinDecs(insts);}
+				{decs=Decs() insts=Insts(){return asint.progConDecs(decs, insts);} 
 				 }
 Decs Decs()   : {Decs decs;} 
-				{decs=LDec() "&&" {return decs;}}
+				{decs=LDec() "&&" {return decs;} |
+				{return asint.noDecs;}
+				}
 Decs LDec()   : {Dec dec; Decs decs;} 
 				{dec=Dec() decs=RLDec(asint.decSimp(dec)){return decs;}
 				}
@@ -65,10 +66,10 @@ Par FPar(Tipo tipoh): {Token id;}
 				id=<IDEN> {return asint.parSinRef(tipoh, asint.str(id.image,id.beginLine,id.beginColumn));}
 				}
 Tipo Tipo()   : {Token id; Tipo tipo;} 
-				{id=<INT> {return asint.intint(asint.str(id.image,id.beginLine,id.beginColumn));} |
-				 id=<REAL>  {return asint.real(asint.str(id.image,id.beginLine,id.beginColumn));} | 
-				 id=<BOOL> {return asint.boolbool(asint.str(id.image,id.beginLine,id.beginColumn));} |
-				 id=<STRING> {return asint.stringstring(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				{id=<INT> {return asint.TypeInt;} |
+				 id=<REAL>  {return asint.TypeReal;} | 
+				 id=<BOOL> {return asint.TypeBool;} |
+				 id=<STRING> {return asint.TypeString;} |
 				 id=<IDEN> {return asint.idenTipo(asint.str(id.image,id.beginLine,id.beginColumn));} |
 				 tipo=Array() {return tipo;} |
 				 tipo=Registro() {return tipo;} |
@@ -236,11 +237,11 @@ Exp E7(): {Exp e; Token id;}
 				{ "(" e=E0() ")" {return asint.parentesis(e);} |
 				 id=<ENT> {return asint.ent(asint.str(id.image,id.beginLine,id.beginColumn));} |
 				 id=<LREAL> {return asint.lreal(asint.str(id.image,id.beginLine,id.beginColumn));} |
-				 id=<TRUE> {return asint.truetrue(asint.str(id.image,id.beginLine,id.beginColumn));} |
-				 id=<FALSE> {return asint.falsefalse(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<TRUE> {return asint.TRUE;} |
+				 id=<FALSE> {return asint.FALSE;} |
 				 id=<CADENA> {return asint.cadena(asint.str(id.image,id.beginLine,id.beginColumn));} |
 				 id=<IDEN> {return asint.idenExp(asint.str(id.image,id.beginLine,id.beginColumn));} |
-				 id=<NULL> {return asint.nullnull(asint.str(id.image,id.beginLine,id.beginColumn));}
+				 id=<NULL> {return asint.NULL;}
 				 }
 SKIP :
 {

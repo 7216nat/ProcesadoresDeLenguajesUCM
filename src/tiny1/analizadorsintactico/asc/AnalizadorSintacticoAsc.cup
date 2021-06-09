@@ -69,10 +69,11 @@ terminal  AND, OR,
 
 Prog	::= Decs:decs Insts:insts
             {: RESULT = asint.progConDecs(decs, insts); :};
-Prog  ::= Insts:insts
-            {: RESULT = asint.progSinDecs(insts); :};
+//Prog  ::= Insts:insts
+//            {: RESULT = asint.progSinDecs(insts); :};
 Decs	::= LDec:decs SEPSECCION
-            {: RESULT = decs; :};
+            {: RESULT = decs; :}
+         | {: RESULT = asint.noDecs;:};   
 LDec	::= LDec:decs PUNTOCOMA Dec:dec 
             {: RESULT = asint.decComp(decs, dec); :};
 LDec  ::= Dec:dec
@@ -86,24 +87,25 @@ DTipo	::= TYPE Tipo:tipo IDEN:id
             {: RESULT = asint.dTipo(tipo, id); :};
 DProc	::= PROC IDEN:id PAP Pars:pars PCIE Bloque:bloque
             {: RESULT =  asint.dProcConPars(id, pars, bloque);:};
-DProc ::= PROC IDEN:id PAP PCIE Bloque:bloque
-            {: RESULT =  asint.dProcSinPars(id, bloque);:};
+//DProc ::= PROC IDEN:id PAP PCIE Bloque:bloque
+//            {: RESULT =  asint.dProcSinPars(id, bloque);:};
 Pars	::= Pars:pars COMA Par:par
             {: RESULT = asint.parsComp(pars, par); :}; 
 Pars  ::= Par:par
             {: RESULT = asint.parsSimp(par); :}; 
+Pars  ::= {:RESULT=asint.noPars;:};
 Par   ::= Tipo:tipo AMP IDEN:id
             {: RESULT = asint.parRef(tipo, id); :};
 Par   ::= Tipo:tipo IDEN:id
             {: RESULT = asint.parSinRef(tipo, id); :};
-Tipo	::= INT:i
-            {: RESULT = asint.intint(i); :} 
-         | REAL:real
-            {: RESULT = asint.real(real); :} 
-         | BOOL:bool
-            {: RESULT = asint.boolbool(bool); :} 
-         | STRING:string
-            {: RESULT = asint.stringstring(string); :} 
+Tipo	::= INT
+            {: RESULT = asint.TypeInt; :} 
+         | REAL
+            {: RESULT = asint.TypeReal; :} 
+         | BOOL
+            {: RESULT = asint.TypeBool; :} 
+         | STRING
+            {: RESULT = asint.TypeString; :} 
          | IDEN:id
             {: RESULT = asint.idenTipo(id); :} 
          | Array:array
@@ -127,7 +129,8 @@ Pointer ::= PTR Tipo:tipo
 Insts	::= Insts:insts PUNTOCOMA Inst:inst 
             {: RESULT = asint.instsComp(insts, inst); :}
          | Inst:inst
-            {: RESULT = asint.instsSimp(inst); :};
+            {: RESULT = asint.instsSimp(inst); :} 
+         | {: RESULT = asint.noInsts;:};
 Inst	::= IAsig:inst {: RESULT = inst; :} | IIfThen:inst {: RESULT = inst; :} 
          | IIfThenElse:inst {: RESULT = inst; :} | IWhile:inst {: RESULT = inst; :} 
          | IRead:inst {: RESULT = inst; :} | IWrite:inst {: RESULT = inst; :} 
@@ -137,21 +140,21 @@ Inst	::= IAsig:inst {: RESULT = inst; :} | IIfThen:inst {: RESULT = inst; :}
 IAsig	::= E0:e0 IGUAL E0:e1
             {: RESULT = asint.iAsig(e0, e1); :};
 IIfThen ::= IF E0:e THEN Insts:insts ENDIF
-            {: RESULT = asint.iIfThen1(e, insts); :} 
-         | IF E0:e THEN ENDIF
-            {: RESULT = asint.iIfThen0(e); :};
+            {: RESULT = asint.iIfThen1(e, insts); :}; 
+//         | IF E0:e THEN ENDIF
+//            {: RESULT = asint.iIfThen0(e); :};
 IIfThenElse ::= IF E0:e THEN Insts:insts1 ELSE Insts:insts2 ENDIF
-            {: RESULT =  asint.iIfThenElse11(e, insts1, insts2); :}
-         | IF E0:e THEN ELSE Insts:insts ENDIF
-            {: RESULT =  asint.iIfThenElse01(e, insts); :}
-         | IF E0:e THEN Insts:insts ELSE ENDIF
-            {: RESULT =  asint.iIfThenElse10(e, insts); :}
-         | IF E0:e THEN ELSE ENDIF
-            {: RESULT =  asint.iIfThenElse00(e); :};
+            {: RESULT =  asint.iIfThenElse11(e, insts1, insts2); :};
+//         | IF E0:e THEN ELSE Insts:insts ENDIF
+//            {: RESULT =  asint.iIfThenElse01(e, insts); :}
+//         | IF E0:e THEN Insts:insts ELSE ENDIF
+//            {: RESULT =  asint.iIfThenElse10(e, insts); :}
+//        | IF E0:e THEN ELSE ENDIF
+//            {: RESULT =  asint.iIfThenElse00(e); :};
 IWhile::= WHILE E0:e DO Insts:insts ENDWHILE
-            {: RESULT =  asint.iWhile1(e, insts); :}
-         | WHILE E0:e DO ENDWHILE
-            {: RESULT =  asint.iWhile0(e); :};
+            {: RESULT =  asint.iWhile1(e, insts); :};
+//         | WHILE E0:e DO ENDWHILE
+//            {: RESULT =  asint.iWhile0(e); :};
 IRead	::= READ E0:e
             {: RESULT =  asint.iRead(e); :};
 IWrite::= WRITE E0:e
@@ -163,17 +166,18 @@ IDelete ::= DEL E0:e
 Inl   ::= NL
             {: RESULT =  asint.iNl(); :};
 ICall	::= CALL IDEN:id PAP Exps:exps PCIE
-            {: RESULT =  asint.iCall1(id, exps); :}
-         | CALL IDEN:id PAP PCIE
-            {: RESULT =  asint.iCall0(id); :};
+            {: RESULT =  asint.iCall1(id, exps); :};
+//         | CALL IDEN:id PAP PCIE
+//            {: RESULT =  asint.iCall0(id); :};
 Bloque::= LLAP Prog:prog LLCIE
-            {: RESULT = asint.bloque1(prog); :} 
-         | LLAP LLCIE
-            {: RESULT = asint.bloque0(); :};
+            {: RESULT = asint.bloque1(prog); :}; 
+//         | LLAP LLCIE
+//            {: RESULT = asint.bloque0(); :};
 Exps	::= Exps:exps COMA E0:exp 
             {: RESULT = asint.exps1(exps, exp); :}   
          | E0:exp
-            {: RESULT = asint.exps0(exp); :};
+            {: RESULT = asint.exps0(exp); :}
+         | {:RESULT = asint.noExps;:};
 Cmp 	::= LT {: RESULT = "<";:} | GT {: RESULT = ">";:} 
          | GE {: RESULT = ">=";:} | LE {: RESULT = "<=";:} 
          | EQ {: RESULT = "==";:} | NE {: RESULT = "!=";:};
@@ -222,8 +226,8 @@ E7		::= PAP E0:e PCIE
             {: RESULT = asint.parentesis(e); :}
          | ENT:ent {: RESULT = asint.ent(ent); :}
          | LREAL:lreal {: RESULT = asint.lreal(lreal); :}
-         | TRUE:t {: RESULT = asint.truetrue(t); :} 
-         | FALSE:f {: RESULT = asint.falsefalse(f); :}
+         | TRUE {: RESULT = asint.TRUE; :} 
+         | FALSE {: RESULT = asint.FALSE; :}
          | CADENA:cad {: RESULT = asint.cadena(cad); :} 
          | IDEN:id {: RESULT = asint.idenExp(id); :}
-         | NULL:n {: RESULT = asint.nullnull(n); :};
+         | NULL {: RESULT = asint.NULL; :};

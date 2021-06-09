@@ -17,50 +17,26 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
 
   final public Prog Prog() throws ParseException {
                  Decs decs; Insts insts;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 3:
-    case 4:
-    case 5:
-      decs = Decs();
-      insts = Insts();
+    decs = Decs();
+    insts = Insts();
                                                            {if (true) return asint.progConDecs(decs, insts);}
-      break;
-    case 6:
-    case 15:
-    case 18:
-    case 22:
-    case 24:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-    case 38:
-    case 42:
-    case 45:
-    case ENT:
-    case LREAL:
-    case TRUE:
-    case FALSE:
-    case NULL:
-    case IDEN:
-    case CADENA:
-      insts = Insts();
-                                                {if (true) return asint.progSinDecs(insts);}
-      break;
-    default:
-      jj_la1[0] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
     throw new Error("Missing return statement in function");
   }
 
   final public Decs Decs() throws ParseException {
                  Decs decs;
-    decs = LDec();
-    jj_consume_token(1);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 3:
+    case 4:
+    case 5:
+      decs = LDec();
+      jj_consume_token(1);
                                                    {if (true) return decs;}
+      break;
+    default:
+      jj_la1[0] = jj_gen;
+                                 {if (true) return asint.noDecs;}
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -226,19 +202,19 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INT:
       id = jj_consume_token(INT);
-                                           {if (true) return asint.intint(asint.str(id.image,id.beginLine,id.beginColumn));}
+                                           {if (true) return asint.TypeInt;}
       break;
     case REAL:
       id = jj_consume_token(REAL);
-                                             {if (true) return asint.real(asint.str(id.image,id.beginLine,id.beginColumn));}
+                                             {if (true) return asint.TypeReal;}
       break;
     case BOOL:
       id = jj_consume_token(BOOL);
-                                            {if (true) return asint.boolbool(asint.str(id.image,id.beginLine,id.beginColumn));}
+                                            {if (true) return asint.TypeBool;}
       break;
     case STRING:
       id = jj_consume_token(STRING);
-                                              {if (true) return asint.stringstring(asint.str(id.image,id.beginLine,id.beginColumn));}
+                                              {if (true) return asint.TypeString;}
       break;
     case IDEN:
       id = jj_consume_token(IDEN);
@@ -1057,11 +1033,11 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
       break;
     case TRUE:
       id = jj_consume_token(TRUE);
-                                            {if (true) return asint.truetrue(asint.str(id.image,id.beginLine,id.beginColumn));}
+                                            {if (true) return asint.TRUE;}
       break;
     case FALSE:
       id = jj_consume_token(FALSE);
-                                             {if (true) return asint.falsefalse(asint.str(id.image,id.beginLine,id.beginColumn));}
+                                             {if (true) return asint.FALSE;}
       break;
     case CADENA:
       id = jj_consume_token(CADENA);
@@ -1073,7 +1049,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
       break;
     case NULL:
       id = jj_consume_token(NULL);
-                                            {if (true) return asint.nullnull(asint.str(id.image,id.beginLine,id.beginColumn));}
+                                            {if (true) return asint.NULL;}
       break;
     default:
       jj_la1[27] = jj_gen;
@@ -1083,13 +1059,9 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     throw new Error("Missing return statement in function");
   }
 
-  /** Generated Token Manager. */
   public AnalizadorSintacticoDescTokenManager token_source;
   SimpleCharStream jj_input_stream;
-  /** Current token. */
-  public Token token;
-  /** Next token. */
-  public Token jj_nt;
+  public Token token, jj_nt;
   private int jj_ntk;
   private int jj_gen;
   final private int[] jj_la1 = new int[28];
@@ -1097,27 +1069,22 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
   static {
-      jj_la1_init_0();
-      jj_la1_init_1();
-      jj_la1_init_2();
+      jj_la1_0();
+      jj_la1_1();
+      jj_la1_2();
    }
-   private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xf9448078,0x4,0x38,0x24480,0x100,0x200,0x24400,0x4,0x4,0xf9448040,0xf9748040,0x300000,0xf9548040,0xf9548040,0xfd448040,0xc0,0xf9458078,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x800,0x40,0x40,};
+   private static void jj_la1_0() {
+      jj_la1_0 = new int[] {0x38,0x4,0x38,0x24480,0x100,0x200,0x24400,0x4,0x4,0xf9448040,0xf9748040,0x300000,0xf9548040,0xf9548040,0xfd448040,0xc0,0xf9458078,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x800,0x40,0x40,};
    }
-   private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0xb1802440,0x0,0x0,0x4e000000,0x0,0x0,0x4e000000,0x0,0x0,0xb1802440,0xb1802440,0x0,0xb1802440,0xb1802440,0xb1802440,0xb1802440,0xb1802440,0x0,0x3f,0x1c0,0x600,0x1800,0x3f,0x1c0,0xb1802440,0xc000,0xb1800040,0xb1800000,};
+   private static void jj_la1_1() {
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x4e000000,0x0,0x0,0x4e000000,0x0,0x0,0xb1802440,0xb1802440,0x0,0xb1802440,0xb1802440,0xb1802440,0xb1802440,0xb1802440,0x0,0x3f,0x1c0,0x600,0x1800,0x3f,0x1c0,0xb1802440,0xc000,0xb1800040,0xb1800000,};
    }
-   private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x3,0x0,0x0,0x1,0x0,0x1,0x1,0x0,0x0,0x3,0x3,0x0,0x3,0x3,0x3,0x3,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x0,0x3,0x3,};
+   private static void jj_la1_2() {
+      jj_la1_2 = new int[] {0x0,0x0,0x0,0x1,0x0,0x1,0x1,0x0,0x0,0x3,0x3,0x0,0x3,0x3,0x3,0x3,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x0,0x3,0x3,};
    }
 
-  /** Constructor with InputStream. */
   public AnalizadorSintacticoDesc(java.io.InputStream stream) {
-     this(stream, null);
-  }
-  /** Constructor with InputStream and supplied encoding */
-  public AnalizadorSintacticoDesc(java.io.InputStream stream, String encoding) {
-    try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
+    jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new AnalizadorSintacticoDescTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -1125,13 +1092,8 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
-  /** Reinitialise. */
   public void ReInit(java.io.InputStream stream) {
-     ReInit(stream, null);
-  }
-  /** Reinitialise. */
-  public void ReInit(java.io.InputStream stream, String encoding) {
-    try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
+    jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -1139,7 +1101,6 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
-  /** Constructor. */
   public AnalizadorSintacticoDesc(java.io.Reader stream) {
     jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new AnalizadorSintacticoDescTokenManager(jj_input_stream);
@@ -1149,7 +1110,6 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
-  /** Reinitialise. */
   public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
@@ -1159,7 +1119,6 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
-  /** Constructor with generated Token Manager. */
   public AnalizadorSintacticoDesc(AnalizadorSintacticoDescTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -1168,7 +1127,6 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
-  /** Reinitialise. */
   public void ReInit(AnalizadorSintacticoDescTokenManager tm) {
     token_source = tm;
     token = new Token();
@@ -1177,7 +1135,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     for (int i = 0; i < 28; i++) jj_la1[i] = -1;
   }
 
-  private Token jj_consume_token(int kind) throws ParseException {
+  final private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -1191,8 +1149,6 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     throw generateParseException();
   }
 
-
-/** Get the next Token. */
   final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -1201,7 +1157,6 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     return token;
   }
 
-/** Get the specific Token. */
   final public Token getToken(int index) {
     Token t = token;
     for (int i = 0; i < index; i++) {
@@ -1211,21 +1166,23 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     return t;
   }
 
-  private int jj_ntk() {
+  final private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+  private java.util.Vector jj_expentries = new java.util.Vector();
   private int[] jj_expentry;
   private int jj_kind = -1;
 
-  /** Generate ParseException. */
   public ParseException generateParseException() {
-    jj_expentries.clear();
+    jj_expentries.removeAllElements();
     boolean[] la1tokens = new boolean[66];
+    for (int i = 0; i < 66; i++) {
+      la1tokens[i] = false;
+    }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -1249,21 +1206,19 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
-        jj_expentries.add(jj_expentry);
+        jj_expentries.addElement(jj_expentry);
       }
     }
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
-      exptokseq[i] = jj_expentries.get(i);
+      exptokseq[i] = (int[])jj_expentries.elementAt(i);
     }
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  /** Enable tracing. */
   final public void enable_tracing() {
   }
 
-  /** Disable tracing. */
   final public void disable_tracing() {
   }
 

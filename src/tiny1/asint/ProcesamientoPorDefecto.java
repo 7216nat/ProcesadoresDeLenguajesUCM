@@ -1,77 +1,255 @@
 package tiny1.asint;
-
 import tiny1.asint.TinyASint.*;
 public class ProcesamientoPorDefecto implements Procesamiento {
-   public void procesa(ProgConDecs exp) {}
-   public void procesa(ProgSinDecs exp) {}
-   public void procesa(LDecSimp exp) {}
-   public void procesa(LDecComp exp) {   }
-   public void procesa(DVar exp) {   }
-   public void procesa(DTipo exp) {   }
-   public void procesa(DProcConPars exp) {   }
-   public void procesa(DProcSinPars exp) {   }
-   public void procesa(ParsComp exp) {   }
-   public void procesa(ParsSimp exp) {   }
-   public void procesa(ParRef exp) {   }
-   public void procesa(ParSinRef exp) {   }
-   public void procesa(INT exp) {   }
-   public void procesa(REAL exp) {   }
-   public void procesa(BOOL exp) {   }
-   public void procesa(STRING exp) {   }
-   public void procesa(IdenTipo exp) {   }
-   public void procesa(ARRAY exp) {   }
-   public void procesa(REGISTRO exp) {   }
-   public void procesa(CamposSimp exp) {   }
-   public void procesa(CamposComp exp) {   }
-   public void procesa(Campo exp) {   }
-   public void procesa(POINTER exp) {   }
-   public void procesa(InstsComp exp) {   }
-   public void procesa(InstsSimp exp) {   }
-   public void procesa(IAsig exp) {   }
-   public void procesa(IIfThen1 exp) {   }
-   public void procesa(IIfThen0 exp) {   }
-   public void procesa(IIfThenElse11 exp) {   }
-   public void procesa(IIfThenElse10 exp) {   }
-   public void procesa(IIfThenElse01 exp) {   }
-   public void procesa(IIfThenElse00 exp) {   }
-   public void procesa(IWhile1 exp) {   }
-   public void procesa(IWhile0 exp) {   }
-   public void procesa(IRead exp) {   }
-   public void procesa(IWrite exp) {   }
-   public void procesa(INew exp) {   }
-   public void procesa(IDelete exp) {   }
-   public void procesa(INl exp) {   }
-   public void procesa(ICall1 exp) {   }
-   public void procesa(ICall0 exp) {   }
-   public void procesa(Bloque1 exp) {   }
-   public void procesa(Bloque0 exp) {   }
-   public void procesa(Exps1 exp) {   }
-   public void procesa(Exps0 exp) {   }
-   public void procesa(And exp) {   }
-   public void procesa(Or exp) {   }
-   public void procesa(LT exp) {   }
-   public void procesa(GT exp) {   }
-   public void procesa(LE exp) {   }
-   public void procesa(GE exp) {   }
-   public void procesa(NE exp) {   }
-   public void procesa(EQ exp) {   }
-   public void procesa(Mod exp) {   }
-   public void procesa(Not exp) {   }
-   public void procesa(Neg exp) {   }
-   public void procesa(Index exp) {   }
-   public void procesa(Ptr exp) {   }
-   public void procesa(Atr exp) {   }
-   public void procesa(Indir exp) {   }
-   public void procesa(Parentesis exp) {   }
-   public void procesa(Ent exp) {   }
-   public void procesa(IdenExp exp) {   }
-   public void procesa(Lreal exp) {   }
-   public void procesa(True exp) {   }
-   public void procesa(False exp) {   }
-   public void procesa(Cadena exp) {   }
-   public void procesa(Null exp) {   }
-   public void procesa(Suma exp) {   }
-   public void procesa(Resta exp) {   }
-   public void procesa(Mul exp) {   }
-   public void procesa(Div exp) {   }    
-}
+    public ProcesamientoPorDefecto() {
+    }
+    public void procesa(ProgConDecs prog) {
+        prog.decs().procesa(this);
+        prog.insts().procesa(this);
+    }
+    public void procesa(ProgSinDecs prog) {
+        prog.insts().procesa(this);
+    }
+    public void procesa(NoDecs decs){
+        // naa
+    }
+    public void procesa(LDecSimp decs) {
+        decs.dec().procesa(this);
+    }
+    public void procesa(LDecComp decs) {
+        decs.decs().procesa(this);
+        decs.dec().procesa(this);
+    }
+    public void procesa(DVar dec) { 
+        dec.tipo().procesa(this);
+    }
+    public void procesa(DTipo dec) {
+        dec.tipo().procesa(this);
+    }
+    public void procesa(DProcConPars dec) {
+        dec.pars().procesa(this);
+        dec.bloque().procesa(this);
+    }
+    public void procesa(DProcSinPars dec) {
+        dec.bloque().procesa(this);
+    }
+    public void procesa(ParsComp pars) {
+        pars.pars().procesa(this);
+        pars.par().procesa(this);
+    }
+    public void procesa(ParsSimp pars) {
+        pars.par().procesa(this);
+    }
+    public void procesa(ParRef par) {
+        par.tipo().procesa(this);
+    }
+    public void procesa(ParSinRef par) {
+        par.tipo().procesa(this);
+    }
+    public void procesa(INT t) {
+        // naa
+    }
+    public void procesa(REAL t) {
+        // naa
+    }
+    public void procesa(BOOL t) {
+        // naa
+    }
+    public void procesa(STRING t) {
+        // naa
+    }
+    public void procesa(IdenTipo t) {
+        // naa
+    }
+    public void procesa(ARRAY t) {
+        t.tipo().procesa(this);
+    }
+    public void procesa(REGISTRO t) {
+        t.campos().procesa(this);
+    }
+    public void procesa(CamposSimp cs) {
+        cs.campo().procesa(this);
+    }
+    public void procesa(CamposComp cs) {
+        cs.campos().procesa(this);
+        cs.campo().procesa(this);
+    }
+    public void procesa(Campo c) {
+        c.tipo().procesa(this);
+    }
+    public void procesa(POINTER t) {
+        t.tipo().procesa(this);
+    }
+    public void procesa(InstsComp is) {
+        is.insts().procesa(this);
+        is.inst().procesa(this);
+    }
+    public void procesa(InstsSimp is) {
+        is.inst().procesa(this);
+    }
+    public void procesa(IAsig i) {
+        i.exp0().procesa(this);
+        i.exp1().procesa(this);
+    }
+    public void procesa(IIfThen1 i) {
+        i.exp().procesa(this);
+        i.insts().procesa(this);
+    }
+    public void procesa(IIfThen0 i) {
+        i.exp().procesa(this);
+    }
+    public void procesa(IIfThenElse11 i) {
+        i.exp().procesa(this);
+        i.insts0().procesa(this);
+        i.insts1().procesa(this);
+    }
+    public void procesa(IIfThenElse10 i) {
+        i.exp().procesa(this);
+        i.insts().procesa(this);
+    }
+    public void procesa(IIfThenElse01 i) {
+        i.exp().procesa(this);
+        i.insts().procesa(this);
+    }
+    public void procesa(IIfThenElse00 i) {
+        i.exp().procesa(this);
+    }
+    public void procesa(IWhile1 i) {
+        i.exp().procesa(this);
+        i.insts().procesa(this);
+    }
+    public void procesa(IWhile0 i) {
+        i.exp().procesa(this);
+    }
+    public void procesa(IRead i) {
+        i.exp().procesa(this);
+    }
+    public void procesa(IWrite i) {
+        i.exp().procesa(this);
+    }
+    public void procesa(INew i) {
+        i.exp().procesa(this);
+    }
+    public void procesa(IDelete i) {
+        i.exp().procesa(this);
+    }
+    public void procesa(INl i) {
+        // naa
+    }
+    public void procesa(ICall1 i) {
+        i.exps().procesa(this);
+    }
+    public void procesa(ICall0 i) {
+        // naa
+    }
+    public void procesa(Bloque1 i) {
+        i.prog().procesa(this);
+    }
+    public void procesa(Bloque0 i) {
+        // naa
+    }
+    public void procesa(Exps1 exp) {
+        exp.exps().procesa(this);
+        exp.exp().procesa(this);
+    }
+    public void procesa(Exps0 exp) {
+        exp.exp().procesa(this);
+    }
+    public void procesa(And exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(Or exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(LT exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(GT exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(LE exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(GE exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(NE exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(EQ exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(Mod exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(Not exp) {
+        exp.arg().procesa(this);
+    }
+    public void procesa(Neg exp) {
+        exp.arg().procesa(this);
+    }
+    public void procesa(Index exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(Ptr exp) {
+        exp.exp().procesa(this);
+    }
+    public void procesa(Atr exp) {
+        exp.exp().procesa(this);
+    }
+    public void procesa(Indir exp) {
+        exp.arg().procesa(this);
+    }
+    public void procesa(Parentesis exp) {
+        exp.arg().procesa(this);
+    }
+    public void procesa(Ent exp) {
+        // naa
+    }
+    public void procesa(IdenExp exp) {
+        // naa
+    }
+    public void procesa(Lreal exp) {
+        // naa
+    }
+    public void procesa(True exp) {
+        // naa
+    }
+    public void procesa(False exp) {
+        // naa
+    }
+    public void procesa(Cadena exp) {
+        // naa
+    }
+    public void procesa(Null exp) {
+        // naa
+    }
+    public void procesa(Suma exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(Resta exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(Mul exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }
+    public void procesa(Div exp) {
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
+    }   
+}   
+
+            

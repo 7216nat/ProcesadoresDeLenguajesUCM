@@ -26,8 +26,20 @@ public class TinyASint {
         }
     }
 
+    public enum Type{
+        INT, BOOL, REAL, STRING, NULL, ERROR, OK, ARRAY, RECORD, POINTER
+    }
     public static abstract class Exp  {
-        public Exp() {}   
+        public Exp() {}
+        public boolean esDesignador(){
+            return false;
+        }
+        public Dec vinculo(){
+            throw new UnsupportedOperationException("Vinculo unsupported.");
+        }
+        public void setVinculo(Dec dec){
+            throw new UnsupportedOperationException("Set vinculo unsupported.");
+        }  
         public abstract int prioridad();
         public abstract void procesa(Procesamiento procesamiento);
     }
@@ -243,6 +255,10 @@ public class TinyASint {
         public Index(Exp exp0, Exp exp1) {
             super(exp0, exp1);
         }
+        @Override
+        public boolean esDesignador(){
+            return true;
+        }
         public final int prioridad() {
             return 5;
         }
@@ -254,6 +270,10 @@ public class TinyASint {
         public Atr(Exp arg0, StringLocalizado arg1) {
             super(arg0,arg1);
         }
+        @Override
+        public boolean esDesignador(){
+            return true;
+        }
         public void procesa(Procesamiento p) {
             p.procesa(this); 
         }   
@@ -261,6 +281,10 @@ public class TinyASint {
     public static class Ptr extends ExpAcc {
         public Ptr(Exp arg0, StringLocalizado arg1) {
             super(arg0,arg1);
+        }
+        @Override
+        public boolean esDesignador(){
+            return true;
         }
         public void procesa(Procesamiento p) {
             p.procesa(this); 
@@ -270,6 +294,10 @@ public class TinyASint {
     public static class Indir extends ExpUni {
         public Indir(Exp arg) {
             super(arg);
+        }
+        @Override
+        public boolean esDesignador(){
+            return true;
         }
         public void procesa(Procesamiento p) {
             p.procesa(this); 
@@ -306,9 +334,14 @@ public class TinyASint {
     }
     public static class IdenExp extends Exp{
         private StringLocalizado id;
+        private Dec vinculo;
         public IdenExp(StringLocalizado id) {
             super();
             this.id = id;
+        }
+        @Override
+        public boolean esDesignador(){
+            return true;
         }
         public StringLocalizado id() {return id;}
         public void procesa(Procesamiento p) {
@@ -317,6 +350,14 @@ public class TinyASint {
         public final int prioridad() {
             return 7;
         }
+        @Override
+        public Dec vinculo(){
+            return vinculo;
+        }
+        @Override
+        public void setVinculo(Dec dec){
+            this.vinculo = dec;
+        }  
     }
     public static class Lreal extends Exp {
         private StringLocalizado lreal;
@@ -333,12 +374,9 @@ public class TinyASint {
         }
     }
     public static class True extends Exp {
-        private StringLocalizado bool;
-        public True(StringLocalizado bool) {
+        public True() {
             super();
-            this.bool = bool;
         }
-        public StringLocalizado bool() {return bool;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
@@ -347,12 +385,9 @@ public class TinyASint {
         }
     }
     public static class False extends Exp {
-        private StringLocalizado bool;
-        public False(StringLocalizado bool) {
+        public False() {
             super();
-            this.bool = bool;
         }
-        public StringLocalizado bool() {return bool;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
@@ -375,12 +410,9 @@ public class TinyASint {
         }
     }
     public static class Null extends Exp {
-        private StringLocalizado none;
-        public Null(StringLocalizado none) {
+        public Null() {
             super();
-            this.none = none;
         }
-        public StringLocalizado none() {return none;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
@@ -420,12 +452,12 @@ public class TinyASint {
         }     
     }    
 
+
     public static abstract class Insts {
         public Insts(){
         }
         public abstract void procesa(Procesamiento p);
     }
-
     public static class InstsComp extends Insts {
         private Inst inst;
         private Insts insts;
@@ -452,12 +484,13 @@ public class TinyASint {
         }      
     } 
 
+
     public static abstract class Inst {
         public Inst(){
         }
+        public Prog prog() {throw new UnsupportedOperationException("No insts exception.");}
         public abstract void procesa(Procesamiento p);
     }
-
     public static class IAsig extends Inst {
         private Exp exp0;
         private Exp exp1;
@@ -633,6 +666,7 @@ public class TinyASint {
     public static class ICall1 extends Inst {
         private StringLocalizado id;
         private Exps exps;
+        private Dec vinculo;
         public ICall1(StringLocalizado id, Exps exps) {
             super();
             this.id = id;
@@ -640,20 +674,21 @@ public class TinyASint {
         }
         public StringLocalizado id() {return id;}
         public Exps exps() { return exps;}
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        }      
+        public void procesa(Procesamiento p) { p.procesa(this); }
+        public Dec vinculo(){return this.vinculo;}
+        public void setVinculo(Dec dec){this.vinculo = dec;}      
     }
     public static class ICall0 extends Inst {
         private StringLocalizado id;
+        private Dec vinculo;
         public ICall0(StringLocalizado id) {
             super();
             this.id = id;
         }
         public StringLocalizado id() {return id;}
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        }      
+        public void procesa(Procesamiento p) { p.procesa(this); }
+        public Dec vinculo(){return this.vinculo;}
+        public void setVinculo(Dec dec){this.vinculo = dec;}      
     }
     public static class Bloque1 extends Inst {
         private Prog prog;
@@ -661,6 +696,7 @@ public class TinyASint {
             super();
             this.prog = prog;
         }
+        @Override
         public Prog prog() {return prog;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
@@ -674,62 +710,69 @@ public class TinyASint {
             p.procesa(this); 
         }      
     }
-    
+
+
     public static abstract class Tipo{
-        public Tipo(){
-        }
+        public Tipo(){}
+        public abstract Type type();
         public abstract void procesa(Procesamiento p);
     }
-
     public static class INT extends Tipo {
-        private StringLocalizado str;
-        public INT(StringLocalizado str){
+        public INT(){
             super();
-            this.str = str;
         }
-        public StringLocalizado str(){return str;}
         public void procesa(Procesamiento p){
             p.procesa(this);
+        }
+        public Type type() {
+            return Type.INT;
         }
     }
     public static class REAL extends Tipo {
-        private StringLocalizado str;
-        public REAL(StringLocalizado str){
+        public REAL(){
             super();
-            this.str = str;
         }
-        public StringLocalizado str(){return str;}
         public void procesa(Procesamiento p){
             p.procesa(this);
+        }
+        public Type type() {
+            return Type.REAL;
         }
     }
     public static class BOOL extends Tipo {
-        private StringLocalizado str;
-        public BOOL(StringLocalizado str){
+        public BOOL(){
             super();
-            this.str = str;
         }
-        public StringLocalizado str(){return str;}
         public void procesa(Procesamiento p){
             p.procesa(this);
+        }
+        public Type type() {
+            return Type.BOOL;
         }
     }
     public static class STRING extends Tipo {
-        private StringLocalizado str;
-        public STRING(StringLocalizado str){
+        public STRING(){
             super();
-            this.str = str;
         }
-        public StringLocalizado str(){return str;}
         public void procesa(Procesamiento p){
             p.procesa(this);
+        }
+        public Type type() {
+            return Type.STRING;
         }
     }
     public static class IdenTipo extends Tipo {
         private StringLocalizado str;
+        private Dec vinculo = null;
+
         public IdenTipo(StringLocalizado str){
             super();
             this.str = str;
+        }
+        public Dec vinculo(){return this.vinculo;}
+        public void setVinculo(Dec dec){this.vinculo = dec;}
+        public Type type(){
+            return vinculo.tipo().type();
         }
         public StringLocalizado str(){return str;}
         public void procesa(Procesamiento p){
@@ -749,6 +792,10 @@ public class TinyASint {
         public void procesa(Procesamiento p){
             p.procesa(this);
         }
+        @Override
+        public Type type() {
+            return tipo.type();
+        }
     }
     public static class REGISTRO extends Tipo {
         private Campos campos;
@@ -760,6 +807,49 @@ public class TinyASint {
         public void procesa(Procesamiento p){
             p.procesa(this);
         }
+        @Override
+        public Type type() {
+            return Type.RECORD;
+        }
+    }
+    public static class POINTER extends Tipo {
+        private Tipo tipo;
+        public POINTER(Tipo tipo){
+            super();
+            this.tipo = tipo;
+        }
+        public Tipo tipo(){return tipo;}
+        public void procesa(Procesamiento p){
+            p.procesa(this);
+        }
+        @Override
+        public Type type() {
+            return tipo.type();
+        }
+    }
+    public static class ERROR extends Tipo {
+        public ERROR(){
+            super();
+        }
+        @Override
+        public Type type() {return Type.ERROR;}
+
+        @Override
+        public void procesa(Procesamiento p) {
+            // naa
+        }
+    }
+    public static class OK extends Tipo {
+        public OK(){
+            super();
+        }
+        @Override
+        public Type type() {return Type.OK;}
+
+        @Override
+        public void procesa(Procesamiento p) {
+            // naa
+        }
     }
 
     public static abstract class Campos{
@@ -767,7 +857,6 @@ public class TinyASint {
         }
         public abstract void procesa(Procesamiento p);
     }
-
     public static class CamposComp extends Campos{
         private Campos campos;
         private Campo campo;
@@ -793,85 +882,111 @@ public class TinyASint {
             p.procesa(this);
         }
     }
-    public static class Campo{
-        private Tipo tipo;
-        private StringLocalizado id;
+    public static class Campo extends Dec{
         public Campo(Tipo tipo, StringLocalizado id){
-            this.tipo = tipo;
-            this.id = id;
+            super(tipo, id);
         }
-        public Tipo tipo(){return tipo;}
-        public StringLocalizado id(){return id;}
         public void procesa(Procesamiento p){
             p.procesa(this);
         }
     }
 
-    public static class POINTER extends Tipo {
-        private Tipo tipo;
-        public POINTER(Tipo tipo){
-            super();
-            this.tipo = tipo;
-        }
-        public Tipo tipo(){return tipo;}
-        public void procesa(Procesamiento p){
-            p.procesa(this);
-        }
-    }
 
     public static abstract class Decs {
         public Decs() {
         }
         public abstract void procesa(Procesamiento p);
     }
-    public static abstract class Dec {
-        public Dec() {
+    public static class NoDecs extends Decs{
+        public NoDecs(){
+            super();
         }
+        public void procesa(Procesamiento p) {
+            p.procesa(this); 
+        }
+    }
+    public static class LDecSimp extends Decs {
+        private Dec dec; 
+        public LDecSimp(Dec dec) {
+           super();
+           this.dec = dec;
+        }   
+        public Dec dec() {return dec;}
+        public void procesa(Procesamiento p) {
+            p.procesa(this); 
+         }     
+     }
+    public static class LDecComp extends Decs {
+         private Dec dec;
+         private Decs decs;
+         public LDecComp(Decs decs, Dec dec) {
+             super();
+             this.dec = dec;
+             this.decs = decs;
+         }
+         public Dec dec() {return dec;}
+         public Decs decs() {return decs;}
+         public void procesa(Procesamiento p) {
+             p.procesa(this); 
+         }     
+     }
+ 
+    
+    public static abstract class Dec {
+        int ambito;
+        int dir;
+        private StringLocalizado id;
+        private Tipo tipo;
+        private Type type;
+        public Dec(Tipo tipo, StringLocalizado id) {
+            this.tipo = tipo;
+            this.id = id;
+        }
+        public Tipo tipo() {return tipo;}
+        public void setTipo(Tipo tipo){this.tipo = tipo;}
+        public Type type(){return type;}
+        public void setType(Type type){this.type = type;}
+        public StringLocalizado id() {return id;}
+        public void setEspacio(int ambito, int dir){
+            this.ambito = ambito;
+            this.dir = dir;
+        }
+        public int ambito(){ return ambito;}
+        public int dir(){ return dir;}
         public abstract void procesa(Procesamiento p);
     }
     public static class DVar extends Dec  {
-        private Tipo tipo;
-        private StringLocalizado id;
         public DVar(Tipo tipo, StringLocalizado id) {
-            this.id = id;
-            this.tipo = tipo;
+            super(tipo, id);
         }
-        public StringLocalizado id() {return id;}
-        public Tipo tipo() {return tipo;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
     }
     public static class DTipo extends Dec  {
-        private Tipo tipo;
-        private StringLocalizado id;
         public DTipo(Tipo tipo, StringLocalizado id) {
-            this.id = id;
-            this.tipo = tipo;
+            super(tipo, id);
         }
-        public StringLocalizado id() {return id;}
-        public Tipo tipo() {return tipo;}
+        @Override
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
     }
     private static abstract class DProc extends Dec{
-        public DProc() {
-            super();
+        public DProc(StringLocalizado id) {
+            super(TypeOk, id);
+            setType(Type.OK);
         }
         public abstract void procesa(Procesamiento p);
     }
     public static class DProcConPars extends DProc{
-        private StringLocalizado id;
         private Pars pars;
         private Inst bloque;
         public DProcConPars(StringLocalizado id, Pars pars, Inst bloque){
-            super();
-            this.id = id;
+            super(id);
             this.pars = pars;
             this.bloque = bloque;
         }
-        public StringLocalizado id() {return id;}
         public Pars pars() {return pars;}
         public Inst bloque(){return bloque;}
         public void procesa(Procesamiento p) {
@@ -879,19 +994,17 @@ public class TinyASint {
         } 
     }
     public static class DProcSinPars extends DProc{
-        private StringLocalizado id;
         private Inst bloque;
         public DProcSinPars(StringLocalizado id, Inst bloque){
-            super();
-            this.id = id;
+            super(id);
             this.bloque = bloque;
         }
-        public StringLocalizado id() {return id;}
         public Inst bloque(){return bloque;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
         } 
     }
+
 
     public static abstract class Pars {
         public Pars() {
@@ -924,69 +1037,36 @@ public class TinyASint {
         }
     }
 
-    public static abstract class Par {
-        public Par() {
+
+    public static abstract class Par extends Dec{
+        public Par(Tipo tipo, StringLocalizado id) {
+            super(tipo, id);
         }
         public abstract void procesa(Procesamiento p);
     }
-    public static class ParRef extends Par{
-        private StringLocalizado id;
-        private Tipo tipo;
+    public static class ParRef extends Par{      
         public ParRef(Tipo tipo, StringLocalizado id) {
-            super();
-            this.id = id;
-            this.tipo= tipo;
+            super(tipo, id);  
         }
-        public StringLocalizado id(){return id;}
-        public Tipo tipo(){return tipo;}
         public void procesa(Procesamiento p){
             p.procesa(this); 
         }
     }
     public static class ParSinRef extends Par{
-        private StringLocalizado id;
-        private Tipo tipo;
         public ParSinRef(Tipo tipo, StringLocalizado id) {
-            super();
-            this.id = id;
-            this.tipo= tipo;
+            super(tipo, id);  
         }
-        public StringLocalizado id(){return id;}
-        public Tipo tipo(){return tipo;}
         public void procesa(Procesamiento p){
             p.procesa(this); 
         }
     }
 
-    public static class LDecSimp extends Decs {
-       private Dec dec; 
-       public LDecSimp(Dec dec) {
-          super();
-          this.dec = dec;
-       }   
-       public Dec dec() {return dec;}
-       public void procesa(Procesamiento p) {
-           p.procesa(this); 
-        }     
-    }
-    public static class LDecComp extends Decs {
-        private Dec dec;
-        private Decs decs;
-        public LDecComp(Decs decs, Dec dec) {
-            super();
-            this.dec = dec;
-            this.decs = decs;
-        }
-        public Dec dec() {return dec;}
-        public Decs decs() {return decs;}
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        }     
-    }
 
     public static abstract class Prog  {
        public Prog() {
        }   
+       public Insts insts(){throw new UnsupportedOperationException("No insts exception.");}
+       public Decs decs(){throw new UnsupportedOperationException("No decs exception."); }
        public abstract void procesa(Procesamiento p); 
     }
     public static class ProgSinDecs extends Prog {
@@ -995,6 +1075,7 @@ public class TinyASint {
             super();
             this.insts = insts;
         }   
+        @Override
         public Insts insts() {return insts;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
@@ -1008,7 +1089,9 @@ public class TinyASint {
             this.insts = insts;
             this.decs = decs;
         }   
+        @Override
         public Insts insts() {return insts;}
+        @Override
         public Decs decs() {return decs;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
@@ -1018,6 +1101,7 @@ public class TinyASint {
     // Constructoras    
     public Prog progConDecs(Decs decs, Insts insts) {return new ProgConDecs(decs, insts);}
     public Prog progSinDecs(Insts insts) {return new ProgSinDecs(insts);}
+    public static final Decs noDecs = new NoDecs();
     public Decs decSimp(Dec dec) {return new LDecSimp(dec);}
     public Decs decComp(Decs decs, Dec dec) {return new LDecComp(decs, dec);}
     public Dec dVar(Tipo tipo, StringLocalizado id) {return new DVar(tipo,id);}
@@ -1028,13 +1112,15 @@ public class TinyASint {
     public Pars parsSimp(Par par) {return new ParsSimp(par);}
     public Par parRef(Tipo tipo, StringLocalizado id) {return new ParRef(tipo,id);}
     public Par parSinRef(Tipo tipo, StringLocalizado id) {return new ParSinRef(tipo,id);}
-    public Tipo intint(StringLocalizado str) {return new INT(str);}
-    public Tipo real(StringLocalizado str) {return new REAL(str);}
-    public Tipo boolbool(StringLocalizado str) {return new BOOL(str);}
-    public Tipo stringstring(StringLocalizado str) {return new STRING(str);}
+    public static final Tipo TypeInt = new INT();
+    public static final Tipo TypeReal = new REAL();
+    public static final Tipo TypeBool = new BOOL();
+    public static final Tipo TypeString = new STRING();
     public Tipo idenTipo(StringLocalizado str) {return new IdenTipo(str);}
     public Tipo array(StringLocalizado num, Tipo tipo) {return new ARRAY(num, tipo);}
     public Tipo registro(Campos campos) {return new REGISTRO(campos);}
+    public static final Tipo TypeError = new ERROR();
+    public static final Tipo TypeOk = new OK();
     public Campos camposComp(Campos campos, Campo campo) {return new CamposComp(campos, campo);}
     public Campos camposSimp(Campo campo) {return new CamposSimp(campo);}
     public Campo campo(Tipo tipo, StringLocalizado id) {return new Campo(tipo, id);}
@@ -1104,10 +1190,10 @@ public class TinyASint {
     public Exp ent(StringLocalizado num) {return new Ent(num);}
     public Exp idenExp(StringLocalizado id) {return new IdenExp(id);}
     public Exp lreal(StringLocalizado num) {return new Lreal(num);}
-    public Exp truetrue(StringLocalizado id) {return new True(id);}
-    public Exp falsefalse(StringLocalizado id) {return new False(id);}
+    public static final Exp TRUE = new True();
+    public static final Exp FALSE = new False();
     public Exp cadena(StringLocalizado id) {return new Cadena(id);}
-    public Exp nullnull(StringLocalizado id) {return new Null(id);}
+    public static final Exp NULL = new Null();
 
     public StringLocalizado str(String s, int fila, int col) {
         return new StringLocalizado(s,fila,col);

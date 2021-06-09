@@ -15,6 +15,9 @@ public class Impresion implements Procesamiento {
         prog.insts().procesa(this);
         System.out.println();
     }
+    public void procesa(NoDecs decs){
+        //naa
+    }
     public void procesa(LDecSimp decs) {
         decs.dec().procesa(this);
     }
@@ -36,20 +39,13 @@ public class Impresion implements Procesamiento {
     public void procesa(DProcConPars dec) {
         System.out.print(tabs + "proc " + dec.id()+ " (" );
         dec.pars().procesa(this);
-        System.out.println("){");
-        String tmp = tabs;
-        tabs += "\t";
+        System.out.println(")");
         dec.bloque().procesa(this);
-        tabs = tmp;
-        System.out.print(tabs + "}");
     }
     public void procesa(DProcSinPars dec) {
-        System.out.println(tabs + "proc " + dec.id()+ " (){");
+        System.out.println(tabs + "proc " + dec.id()+ " ()");
         String tmp = tabs;
-        tabs += "\t";
         dec.bloque().procesa(this);
-        tabs = tmp;
-        System.out.print(tabs + "}");
     }
     public void procesa(ParsComp pars) {
         pars.pars().procesa(this);
@@ -68,16 +64,16 @@ public class Impresion implements Procesamiento {
         System.out.print( " " + par.id());
     }
     public void procesa(INT t) {
-        System.out.print(t.str());
+        System.out.print("int");
     }
     public void procesa(REAL t) {
-        System.out.print(t.str());
+        System.out.print("real");
     }
     public void procesa(BOOL t) {
-        System.out.print(t.str());
+        System.out.print("bool");
     }
     public void procesa(STRING t) {
-        System.out.print(t.str());
+        System.out.print("string");
     }
     public void procesa(IdenTipo t) {
         System.out.print(t.str());
@@ -231,10 +227,16 @@ public class Impresion implements Procesamiento {
         System.out.print(tabs+ "call "+ i.id() + "()");
     }
     public void procesa(Bloque1 i) {
+        System.out.println(tabs + "{");
+        String tmp = tabs;
+        tabs += "\t";
         i.prog().procesa(this);
+        tabs = tmp;
+        System.out.print(tabs + "}");
     }
     public void procesa(Bloque0 i) {
-        return;
+        System.out.println(tabs + "{");
+        System.out.print(tabs + "}");
     }
     public void procesa(Exps1 exp) {
         exp.exps().procesa(this);
@@ -330,16 +332,16 @@ public class Impresion implements Procesamiento {
         System.out.print(exp.lreal());
     }
     public void procesa(True exp) {
-        System.out.print(exp.bool());
+        System.out.print("true");
     }
     public void procesa(False exp) {
-        System.out.print(exp.bool());
+        System.out.print("false");
     }
     public void procesa(Cadena exp) {
         System.out.print(exp.cadena());
     }
     public void procesa(Null exp) {
-        System.out.print(exp.none());
+        System.out.print("null");
     }
     public void procesa(Suma exp) {
         exp.arg0().procesa(this);
