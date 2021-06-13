@@ -15,7 +15,7 @@ public class Comprobacion implements Procesamiento{
         
     }
     @Override
-    public void procesa(ProgConDecs exp) {
+    public void procesa(Prog exp) {
         // TODO Auto-generated method stub
         
     }
@@ -26,9 +26,8 @@ public class Comprobacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(ProgSinDecs exp) {
-        // TODO Auto-generated method stub
-        
+    public void procesa(AuxDecs exp) {
+        // TODO
     }
 
     @Override
@@ -56,15 +55,14 @@ public class Comprobacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(DProcConPars exp) {
+    public void procesa(DProc exp) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void procesa(DProcSinPars exp) {
-        // TODO Auto-generated method stub
-        
+    public void procesa(NoPars exp) {
+        // TODO
     }
 
     @Override
@@ -158,6 +156,11 @@ public class Comprobacion implements Procesamiento{
     }
 
     @Override
+    public void procesa(NoInsts exp) {
+        // TODO
+    }
+
+    @Override
     public void procesa(InstsComp exp) {
         // TODO Auto-generated method stub
         
@@ -176,49 +179,19 @@ public class Comprobacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(IIfThen1 exp) {
+    public void procesa(IIfThen exp) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void procesa(IIfThen0 exp) {
+    public void procesa(IIfThenElse exp) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void procesa(IIfThenElse11 exp) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void procesa(IIfThenElse10 exp) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void procesa(IIfThenElse01 exp) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void procesa(IIfThenElse00 exp) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void procesa(IWhile1 exp) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void procesa(IWhile0 exp) {
+    public void procesa(IWhile exp) {
         // TODO Auto-generated method stub
         
     }
@@ -254,27 +227,20 @@ public class Comprobacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(ICall1 exp) {
+    public void procesa(ICall exp) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void procesa(ICall0 exp) {
+    public void procesa(Bloque exp) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void procesa(Bloque1 exp) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void procesa(Bloque0 exp) {
-        // TODO Auto-generated method stub
-        
+    public void procesa(NoExps exp) {
+        // TODO
     }
 
     @Override

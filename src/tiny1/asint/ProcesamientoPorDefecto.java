@@ -3,15 +3,15 @@ import tiny1.asint.TinyASint.*;
 public class ProcesamientoPorDefecto implements Procesamiento {
     public ProcesamientoPorDefecto() {
     }
-    public void procesa(ProgConDecs prog) {
+    public void procesa(Prog prog) {
         prog.decs().procesa(this);
-        prog.insts().procesa(this);
-    }
-    public void procesa(ProgSinDecs prog) {
         prog.insts().procesa(this);
     }
     public void procesa(NoDecs decs){
         // naa
+    }
+    public void procesa(AuxDecs decs){
+        decs.decs().procesa(this);
     }
     public void procesa(LDecSimp decs) {
         decs.dec().procesa(this);
@@ -26,12 +26,12 @@ public class ProcesamientoPorDefecto implements Procesamiento {
     public void procesa(DTipo dec) {
         dec.tipo().procesa(this);
     }
-    public void procesa(DProcConPars dec) {
+    public void procesa(DProc dec) {
         dec.pars().procesa(this);
         dec.bloque().procesa(this);
     }
-    public void procesa(DProcSinPars dec) {
-        dec.bloque().procesa(this);
+    public void procesa(NoPars decs){
+        // naa
     }
     public void procesa(ParsComp pars) {
         pars.pars().procesa(this);
@@ -80,6 +80,9 @@ public class ProcesamientoPorDefecto implements Procesamiento {
     public void procesa(POINTER t) {
         t.tipo().procesa(this);
     }
+    public void procesa(NoInsts decs){
+        // naa
+    }
     public void procesa(InstsComp is) {
         is.insts().procesa(this);
         is.inst().procesa(this);
@@ -91,35 +94,18 @@ public class ProcesamientoPorDefecto implements Procesamiento {
         i.exp0().procesa(this);
         i.exp1().procesa(this);
     }
-    public void procesa(IIfThen1 i) {
+    public void procesa(IIfThen i) {
         i.exp().procesa(this);
         i.insts().procesa(this);
     }
-    public void procesa(IIfThen0 i) {
-        i.exp().procesa(this);
-    }
-    public void procesa(IIfThenElse11 i) {
+    public void procesa(IIfThenElse i) {
         i.exp().procesa(this);
         i.insts0().procesa(this);
         i.insts1().procesa(this);
     }
-    public void procesa(IIfThenElse10 i) {
+    public void procesa(IWhile i) {
         i.exp().procesa(this);
         i.insts().procesa(this);
-    }
-    public void procesa(IIfThenElse01 i) {
-        i.exp().procesa(this);
-        i.insts().procesa(this);
-    }
-    public void procesa(IIfThenElse00 i) {
-        i.exp().procesa(this);
-    }
-    public void procesa(IWhile1 i) {
-        i.exp().procesa(this);
-        i.insts().procesa(this);
-    }
-    public void procesa(IWhile0 i) {
-        i.exp().procesa(this);
     }
     public void procesa(IRead i) {
         i.exp().procesa(this);
@@ -136,16 +122,13 @@ public class ProcesamientoPorDefecto implements Procesamiento {
     public void procesa(INl i) {
         // naa
     }
-    public void procesa(ICall1 i) {
+    public void procesa(ICall i) {
         i.exps().procesa(this);
     }
-    public void procesa(ICall0 i) {
-        // naa
-    }
-    public void procesa(Bloque1 i) {
+    public void procesa(Bloque i) {
         i.prog().procesa(this);
     }
-    public void procesa(Bloque0 i) {
+    public void procesa(NoExps decs){
         // naa
     }
     public void procesa(Exps1 exp) {

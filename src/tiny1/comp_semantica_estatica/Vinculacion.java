@@ -10,18 +10,13 @@ import tiny1.errors.GestionErrores;
 public class Vinculacion implements Procesamiento{
 
     private int currBloque;
-    private int innerBloque;
     private List<HashMap<String, Dec>> pilaAnidada;
     private VinculacionRef crefs;
-    private SimplificacionTipo simps;
     private boolean ok;
     private boolean verbose;
-    private boolean lockref;
     public Vinculacion(boolean verbose){
         currBloque = -1;
-        innerBloque = 0;
         ok = true;
-        lockref = true;
         inic();
         crefs = new VinculacionRef();
         this.verbose = verbose;
@@ -35,13 +30,6 @@ public class Vinculacion implements Procesamiento{
     }
 
     private void abreBloque(){
-        if (innerBloque == 0){
-            pilaAnidada.add(new HashMap<>());
-            currBloque++;
-        }
-    }
-    private void abreBloqueProc(){
-        innerBloque++;
         pilaAnidada.add(new HashMap<>());
         currBloque++;
     }
@@ -52,14 +40,6 @@ public class Vinculacion implements Procesamiento{
         }
     }
     private void cierraBloque(){
-        if (innerBloque == 0){
-            log(currBloque + "  " + pilaAnidada.get(currBloque).toString());
-            pilaAnidada.remove(currBloque);
-            currBloque--;
-        }
-    }
-    private void cierraBloqueProc(){
-        innerBloque--;
         log(currBloque + "  " + pilaAnidada.get(currBloque).toString());
         pilaAnidada.remove(currBloque);
         currBloque--;
@@ -103,7 +83,7 @@ public class Vinculacion implements Procesamiento{
     }
     
     @Override
-    public void procesa(ProgConDecs exp) {
+    public void procesa(Prog exp) {
         abreBloque();
         exp.decs().procesa(this);
         exp.decs().procesa(crefs);
@@ -112,13 +92,12 @@ public class Vinculacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(ProgSinDecs exp) {
-        abreBloque();
-        exp.insts().procesa(this);
-        cierraBloque();
+    public void procesa(NoDecs exp) {
+        // naa
     }
     @Override
-    public void procesa(NoDecs exp) {
+    public void procesa(AuxDecs exp) {
+        exp.decs().procesa(this);
     }
     @Override
     public void procesa(LDecSimp exp) {
@@ -144,21 +123,19 @@ public class Vinculacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(DProcConPars exp) {
+    public void procesa(DProc exp) {
         checkId(exp.id(), exp.id().toString(), exp);
-        abreBloqueProc();
+        abreBloque();
+        checkId(exp.id(), exp.id().toString(), exp);
         exp.pars().procesa(this);
-        //exp.pars().procesa(crefs);
-        exp.bloque().procesa(this);
-        cierraBloqueProc(); 
+        exp.bloque().prog().decs().procesa(this);
+        exp.bloque().prog().insts().procesa(this);
+        cierraBloque();
     }
 
     @Override
-    public void procesa(DProcSinPars exp) {
-        checkId(exp.id(), exp.id().toString(), exp);
-        abreBloqueProc();
-        exp.bloque().procesa(this);
-        cierraBloqueProc(); 
+    public void procesa(NoPars exp) {
+        // naa
     }
 
     @Override
@@ -218,7 +195,6 @@ public class Vinculacion implements Procesamiento{
     public void procesa(REGISTRO exp) {
         abreBloque();
         exp.campos().procesa(this);
-        //exp.campos().procesa(crefs);
         cierraBloque();
     }
 
@@ -245,6 +221,11 @@ public class Vinculacion implements Procesamiento{
     }
 
     @Override
+    public void procesa(NoInsts exp) {
+        // naa
+    }
+
+    @Override
     public void procesa(InstsComp exp) {
         exp.insts().procesa(this);
         exp.inst().procesa(this);
@@ -262,49 +243,22 @@ public class Vinculacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(IIfThen1 exp) {
+    public void procesa(IIfThen exp) {
         exp.exp().procesa(this);
         exp.insts().procesa(this);
     }
 
     @Override
-    public void procesa(IIfThen0 exp) {
-        exp.exp().procesa(this);
-    }
-
-    @Override
-    public void procesa(IIfThenElse11 exp) {
+    public void procesa(IIfThenElse exp) {
         exp.exp().procesa(this);
         exp.insts0().procesa(this);
         exp.insts1().procesa(this);
     }
 
     @Override
-    public void procesa(IIfThenElse10 exp) {
+    public void procesa(IWhile exp) {
         exp.exp().procesa(this);
         exp.insts().procesa(this);
-    }
-
-    @Override
-    public void procesa(IIfThenElse01 exp) {
-        exp.exp().procesa(this);
-        exp.insts().procesa(this); 
-    }
-
-    @Override
-    public void procesa(IIfThenElse00 exp) {
-        exp.exp().procesa(this);
-    }
-
-    @Override
-    public void procesa(IWhile1 exp) {
-        exp.exp().procesa(this);
-        exp.insts().procesa(this);
-    }
-
-    @Override
-    public void procesa(IWhile0 exp) {
-        exp.exp().procesa(this);;
     }
 
     @Override
@@ -333,7 +287,7 @@ public class Vinculacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(ICall1 exp) {
+    public void procesa(ICall exp) {
         Dec dec = buscaId(exp.id().toString());
         if (dec == null){
             ok &= false;
@@ -346,26 +300,16 @@ public class Vinculacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(ICall0 exp) {
-        Dec dec = buscaId(exp.id().toString());
-        if (dec == null){
-            ok &= false;
-            GestionErrores.errorVinculacionVariableInexistennte(exp.id());
-        }
-        else{
-            exp.setVinculo(dec);
-        }
-    }
-
-    @Override
-    public void procesa(Bloque1 exp) {
+    public void procesa(Bloque exp) {
+        abreBloque();
         exp.prog().decs().procesa(this);
         exp.prog().insts().procesa(this);
+        cierraBloque();
     }
 
     @Override
-    public void procesa(Bloque0 exp) {
-        // nothing to do
+    public void procesa(NoExps exp) {
+        // naa
     }
 
     @Override

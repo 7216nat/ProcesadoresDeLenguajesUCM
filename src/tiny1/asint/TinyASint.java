@@ -426,6 +426,14 @@ public class TinyASint {
         }
         public abstract void procesa(Procesamiento p);
     }
+    public static class NoExps extends Exps{
+        public NoExps(){
+            super();
+        }
+        public void procesa(Procesamiento p) {
+            p.procesa(this); 
+        }
+    }
     public static class Exps1 extends Exps {
         private Exp exp;
         private Exps exps;
@@ -457,6 +465,14 @@ public class TinyASint {
         public Insts(){
         }
         public abstract void procesa(Procesamiento p);
+    }
+    public static class NoInsts extends Insts{
+        public NoInsts(){
+            super();
+        }
+        public void procesa(Procesamiento p) {
+            p.procesa(this); 
+        }
     }
     public static class InstsComp extends Insts {
         private Inst inst;
@@ -505,10 +521,10 @@ public class TinyASint {
             p.procesa(this); 
         }      
     }
-    public static class IIfThen1 extends Inst {
+    public static class IIfThen extends Inst {
         private Exp exp;
         private Insts insts;
-        public IIfThen1(Exp exp, Insts insts) {
+        public IIfThen(Exp exp, Insts insts) {
             super();
             this.exp = exp;
             this.insts = insts;
@@ -519,22 +535,11 @@ public class TinyASint {
             p.procesa(this); 
         }      
     }
-    public static class IIfThen0 extends Inst {
-        private Exp exp;
-        public IIfThen0(Exp exp) {
-            super();
-            this.exp = exp;
-        }
-        public Exp exp() {return exp;}
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        }      
-    }
-    public static class IIfThenElse11 extends Inst {
+    public static class IIfThenElse extends Inst {
         private Exp exp;
         private Insts insts0;
         private Insts insts1;
-        public IIfThenElse11(Exp exp, Insts insts0, Insts insts1) {
+        public IIfThenElse(Exp exp, Insts insts0, Insts insts1) {
             super();
             this.exp = exp;
             this.insts0 = insts0;
@@ -547,66 +552,16 @@ public class TinyASint {
             p.procesa(this); 
         }      
     }
-    public static class IIfThenElse10 extends Inst {
+    public static class IWhile extends Inst {
         private Exp exp;
         private Insts insts;
-        public IIfThenElse10(Exp exp, Insts insts) {
+        public IWhile(Exp exp, Insts insts) {
             super();
             this.exp = exp;
             this.insts = insts;
         }
         public Exp exp() {return exp;}
         public Insts insts() {return insts;}
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        }      
-    }
-    public static class IIfThenElse01 extends Inst {
-        private Exp exp;
-        private Insts insts;
-        public IIfThenElse01(Exp exp, Insts insts) {
-            super();
-            this.exp = exp;
-            this.insts = insts;
-        }
-        public Exp exp() {return exp;}
-        public Insts insts() {return insts;}
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        }      
-    }
-    public static class IIfThenElse00 extends Inst {
-        private Exp exp;
-        public IIfThenElse00(Exp exp) {
-            super();
-            this.exp = exp;
-        }
-        public Exp exp() {return exp;}
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        }      
-    }
-    public static class IWhile1 extends Inst {
-        private Exp exp;
-        private Insts insts;
-        public IWhile1(Exp exp, Insts insts) {
-            super();
-            this.exp = exp;
-            this.insts = insts;
-        }
-        public Exp exp() {return exp;}
-        public Insts insts() {return insts;}
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        }      
-    }
-    public static class IWhile0 extends Inst {
-        private Exp exp;
-        public IWhile0(Exp exp) {
-            super();
-            this.exp = exp;
-        }
-        public Exp exp() {return exp;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
         }      
@@ -663,11 +618,11 @@ public class TinyASint {
             p.procesa(this); 
         }  
     }
-    public static class ICall1 extends Inst {
+    public static class ICall extends Inst {
         private StringLocalizado id;
         private Exps exps;
         private Dec vinculo;
-        public ICall1(StringLocalizado id, Exps exps) {
+        public ICall(StringLocalizado id, Exps exps) {
             super();
             this.id = id;
             this.exps = exps;
@@ -678,21 +633,9 @@ public class TinyASint {
         public Dec vinculo(){return this.vinculo;}
         public void setVinculo(Dec dec){this.vinculo = dec;}      
     }
-    public static class ICall0 extends Inst {
-        private StringLocalizado id;
-        private Dec vinculo;
-        public ICall0(StringLocalizado id) {
-            super();
-            this.id = id;
-        }
-        public StringLocalizado id() {return id;}
-        public void procesa(Procesamiento p) { p.procesa(this); }
-        public Dec vinculo(){return this.vinculo;}
-        public void setVinculo(Dec dec){this.vinculo = dec;}      
-    }
-    public static class Bloque1 extends Inst {
+    public static class Bloque extends Inst {
         private Prog prog;
-        public Bloque1(Prog prog) {
+        public Bloque(Prog prog) {
             super();
             this.prog = prog;
         }
@@ -702,15 +645,7 @@ public class TinyASint {
             p.procesa(this); 
         }      
     }
-    public static class Bloque0 extends Inst {
-        public Bloque0() {
-            super();
-        }
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        }      
-    }
-
+    
 
     public static abstract class Tipo{
         public Tipo(){}
@@ -905,6 +840,17 @@ public class TinyASint {
             p.procesa(this); 
         }
     }
+    public static class AuxDecs extends Decs{
+        private Decs decs;
+         public AuxDecs(Decs decs) {
+             super();
+             this.decs = decs;
+         }
+         public Decs decs() {return decs;}
+         public void procesa(Procesamiento p) {
+             p.procesa(this); 
+         } 
+    }
     public static class LDecSimp extends Decs {
         private Dec dec; 
         public LDecSimp(Dec dec) {
@@ -972,18 +918,12 @@ public class TinyASint {
            p.procesa(this); 
         }     
     }
-    private static abstract class DProc extends Dec{
-        public DProc(StringLocalizado id) {
-            super(TypeOk, id);
-            setType(Type.OK);
-        }
-        public abstract void procesa(Procesamiento p);
-    }
-    public static class DProcConPars extends DProc{
+    public static class DProc extends Dec{
         private Pars pars;
         private Inst bloque;
-        public DProcConPars(StringLocalizado id, Pars pars, Inst bloque){
-            super(id);
+        public DProc(StringLocalizado id, Pars pars, Inst bloque) {
+            super(TypeOk, id);
+            setType(Type.OK);
             this.pars = pars;
             this.bloque = bloque;
         }
@@ -993,23 +933,19 @@ public class TinyASint {
             p.procesa(this); 
         } 
     }
-    public static class DProcSinPars extends DProc{
-        private Inst bloque;
-        public DProcSinPars(StringLocalizado id, Inst bloque){
-            super(id);
-            this.bloque = bloque;
-        }
-        public Inst bloque(){return bloque;}
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        } 
-    }
-
 
     public static abstract class Pars {
         public Pars() {
         }
         public abstract void procesa(Procesamiento p);
+    }
+    public static class NoPars extends Pars{
+        public NoPars(){
+            super();
+        }
+        public void procesa(Procesamiento p) {
+            p.procesa(this); 
+        }
     }
     public static class ParsComp extends Pars{
         private Pars pars;
@@ -1061,53 +997,30 @@ public class TinyASint {
         }
     }
 
-
-    public static abstract class Prog  {
-       public Prog() {
-       }   
-       public Insts insts(){throw new UnsupportedOperationException("No insts exception.");}
-       public Decs decs(){throw new UnsupportedOperationException("No decs exception."); }
-       public abstract void procesa(Procesamiento p); 
-    }
-    public static class ProgSinDecs extends Prog {
-        private Insts insts;
-        public ProgSinDecs(Insts insts) {
-            super();
-            this.insts = insts;
-        }   
-        @Override
-        public Insts insts() {return insts;}
-        public void procesa(Procesamiento p) {
-            p.procesa(this); 
-        }     
-    }
-    public static class ProgConDecs extends Prog {
+    public static class Prog  {
         private Insts insts;
         private Decs decs;
-        public ProgConDecs(Decs decs, Insts insts) {
-            super();
+        public Prog(Decs decs, Insts insts) {
             this.insts = insts;
             this.decs = decs;
         }   
-        @Override
         public Insts insts() {return insts;}
-        @Override
         public Decs decs() {return decs;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
-        }     
+        }  
     }
 
     // Constructoras    
-    public Prog progConDecs(Decs decs, Insts insts) {return new ProgConDecs(decs, insts);}
-    public Prog progSinDecs(Insts insts) {return new ProgSinDecs(insts);}
+    public Prog prog(Decs decs, Insts insts) {return new Prog(decs, insts);}
     public static final Decs noDecs = new NoDecs();
+    public Decs auxDecs(Decs decs) {return new AuxDecs(decs);}
     public Decs decSimp(Dec dec) {return new LDecSimp(dec);}
     public Decs decComp(Decs decs, Dec dec) {return new LDecComp(decs, dec);}
     public Dec dVar(Tipo tipo, StringLocalizado id) {return new DVar(tipo,id);}
     public Dec dTipo(Tipo tipo, StringLocalizado id) {return new DTipo(tipo,id);}
-    public Dec dProcConPars(StringLocalizado id, Pars pars, Inst bloque) {return new DProcConPars(id, pars, bloque);}
-    public Dec dProcSinPars(StringLocalizado id, Inst bloque) {return new DProcSinPars(id, bloque);}
+    public Dec dProc(StringLocalizado id, Pars pars, Inst bloque) {return new DProc(id, pars, bloque);}
+    public static final Pars noPars = new NoPars();
     public Pars parsComp(Pars pars, Par par) {return new ParsComp(pars, par);}
     public Pars parsSimp(Par par) {return new ParsSimp(par);}
     public Par parRef(Tipo tipo, StringLocalizado id) {return new ParRef(tipo,id);}
@@ -1125,26 +1038,21 @@ public class TinyASint {
     public Campos camposSimp(Campo campo) {return new CamposSimp(campo);}
     public Campo campo(Tipo tipo, StringLocalizado id) {return new Campo(tipo, id);}
     public Tipo pointer(Tipo tipo) {return new POINTER(tipo);}
+    public static final Insts noInsts = new NoInsts();
     public Insts instsComp(Insts insts, Inst inst) {return new InstsComp(insts, inst);}
     public Insts instsSimp(Inst inst) {return new InstsSimp(inst);}
     public Inst iAsig(Exp exp0, Exp exp1) {return new IAsig(exp0, exp1);}
-    public Inst iIfThen1(Exp exp, Insts insts) {return new IIfThen1(exp, insts);}
-    public Inst iIfThen0(Exp exp) {return new IIfThen0(exp);}
-    public Inst iIfThenElse11(Exp exp, Insts insts0, Insts insts1) {return new IIfThenElse11(exp, insts0, insts1);}
-    public Inst iIfThenElse10(Exp exp, Insts insts) {return new IIfThenElse10(exp, insts);}
-    public Inst iIfThenElse01(Exp exp, Insts insts) {return new IIfThenElse01(exp, insts);}
-    public Inst iIfThenElse00(Exp exp) {return new IIfThenElse00(exp);}
-    public Inst iWhile1(Exp exp, Insts insts) {return new IWhile1(exp, insts);}
-    public Inst iWhile0(Exp exp) {return new IWhile0(exp);}
+    public Inst iIfThen(Exp exp, Insts insts) {return new IIfThen(exp, insts);}
+    public Inst iIfThenElse(Exp exp, Insts insts0, Insts insts1) {return new IIfThenElse(exp, insts0, insts1);}
+    public Inst iWhile(Exp exp, Insts insts) {return new IWhile(exp, insts);}
     public Inst iRead(Exp exp) {return new IRead(exp);}
     public Inst iWrite(Exp exp) {return new IWrite(exp);}
     public Inst iNew(Exp exp) {return new INew(exp);}
     public Inst iDelete(Exp exp) {return new IDelete(exp);}
     public Inst iNl(){ return new INl();}
-    public Inst iCall1(StringLocalizado id, Exps exps) {return new ICall1(id, exps);}
-    public Inst iCall0(StringLocalizado id) {return new ICall0(id);}
-    public Inst bloque1(Prog prog) {return new Bloque1(prog);}
-    public Inst bloque0() {return new Bloque0();}
+    public Inst iCall(StringLocalizado id, Exps exps) {return new ICall(id, exps);}
+    public Inst bloque(Prog prog) {return new Bloque(prog);}
+    public static final Exps noExps = new NoExps();
     public Exps exps1(Exps exps, Exp exp) {return new Exps1(exps, exp);}
     public Exps exps0(Exp exp) {return new Exps0(exp);}
 

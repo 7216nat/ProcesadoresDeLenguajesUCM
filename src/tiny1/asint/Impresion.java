@@ -5,18 +5,17 @@ public class Impresion implements Procesamiento {
     public Impresion() {
         tabs = "";
     }
-    public void procesa(ProgConDecs prog) {
+    public void procesa(Prog prog) {
         prog.decs().procesa(this);
-        System.out.print("\n" + tabs + "&&\n");
-        prog.insts().procesa(this);
-        System.out.println();
-    }
-    public void procesa(ProgSinDecs prog) {
         prog.insts().procesa(this);
         System.out.println();
     }
     public void procesa(NoDecs decs){
         //naa
+    }
+    public void procesa(AuxDecs decs){
+        decs.decs().procesa(this);
+        System.out.print("\n"+ tabs + "&&\n");
     }
     public void procesa(LDecSimp decs) {
         decs.dec().procesa(this);
@@ -36,16 +35,14 @@ public class Impresion implements Procesamiento {
         dec.tipo().procesa(this);
         System.out.print(dec.id());
     }
-    public void procesa(DProcConPars dec) {
+    public void procesa(DProc dec) {
         System.out.print(tabs + "proc " + dec.id()+ " (" );
         dec.pars().procesa(this);
         System.out.println(")");
         dec.bloque().procesa(this);
     }
-    public void procesa(DProcSinPars dec) {
-        System.out.println(tabs + "proc " + dec.id()+ " ()");
-        String tmp = tabs;
-        dec.bloque().procesa(this);
+    public void procesa(NoPars decs){
+        // naa
     }
     public void procesa(ParsComp pars) {
         pars.pars().procesa(this);
@@ -105,6 +102,9 @@ public class Impresion implements Procesamiento {
         System.out.print("pointer ");
         t.tipo().procesa(this);
     }
+    public void procesa(NoInsts decs){
+        // naa
+    }
     public void procesa(InstsComp is) {
         is.insts().procesa(this);
         System.out.println(";");
@@ -119,7 +119,7 @@ public class Impresion implements Procesamiento {
         System.out.print(" = ");
         i.exp1().procesa(this);
     }
-    public void procesa(IIfThen1 i) {
+    public void procesa(IIfThen i) {
         System.out.print(tabs + "if ");
         String tmp = tabs;
         tabs += "\t";
@@ -129,16 +129,7 @@ public class Impresion implements Procesamiento {
         tabs = tmp;
         System.out.print("\n" + tabs + "endif");
     }
-    public void procesa(IIfThen0 i) {
-        System.out.print(tabs + "if ");
-        String tmp = tabs;
-        tabs += "\t";
-        i.exp().procesa(this);
-        System.out.println(" then");
-        tabs = tmp;
-        System.out.print("\n" + tabs + "endif");
-    }
-    public void procesa(IIfThenElse11 i) {
+    public void procesa(IIfThenElse i) {
         System.out.print(tabs + "if ");
         String tmp = tabs;
         tabs += "\t";
@@ -152,38 +143,7 @@ public class Impresion implements Procesamiento {
         tabs = tmp;
         System.out.print("\n" + tabs + "endif");
     }
-    public void procesa(IIfThenElse10 i) {
-        System.out.print(tabs + "if ");
-        i.exp().procesa(this);
-        System.out.println(" then");
-        String tmp = tabs;
-        tabs += "\t";
-        i.insts().procesa(this);
-        tabs = tmp;
-        System.out.print("\n" + tabs + "else\n");
-        System.out.println();
-        System.out.print("\n" + tabs + "endif");
-    }
-    public void procesa(IIfThenElse01 i) {
-        System.out.print(tabs + "if ");
-        i.exp().procesa(this);
-        System.out.println(" then");
-        System.out.print("\n" + tabs + "else\n");
-        String tmp = tabs;
-        tabs += "\t";
-        i.insts().procesa(this);
-        tabs = tmp;
-        System.out.print("\n" + tabs +"endif");
-    }
-    public void procesa(IIfThenElse00 i) {
-        System.out.print(tabs + "if ");
-        i.exp().procesa(this);
-        System.out.println(" then");
-        System.out.print("\n" + tabs +"else\n");
-        System.out.println();
-        System.out.print("\n" + tabs +"endif");
-    }
-    public void procesa(IWhile1 i) {
+    public void procesa(IWhile i) {
         System.out.print(tabs + "while ");
         i.exp().procesa(this);
         System.out.println(" do");
@@ -191,12 +151,6 @@ public class Impresion implements Procesamiento {
         tabs += "\t";
         i.insts().procesa(this);
         tabs = tmp;
-        System.out.print("\n" + tabs +"endwhile");
-    }
-    public void procesa(IWhile0 i) {
-        System.out.print(tabs + "while ");
-        i.exp().procesa(this);
-        System.out.println(" do");
         System.out.print("\n" + tabs +"endwhile");
     }
     public void procesa(IRead i) {
@@ -218,15 +172,12 @@ public class Impresion implements Procesamiento {
     public void procesa(INl i) {
         System.out.print(tabs + "nl");
     }
-    public void procesa(ICall1 i) {
+    public void procesa(ICall i) {
         System.out.print(tabs + "call "+ i.id() + "(");
         i.exps().procesa(this);
         System.out.print(")");
     }
-    public void procesa(ICall0 i) {
-        System.out.print(tabs+ "call "+ i.id() + "()");
-    }
-    public void procesa(Bloque1 i) {
+    public void procesa(Bloque i) {
         System.out.println(tabs + "{");
         String tmp = tabs;
         tabs += "\t";
@@ -234,9 +185,8 @@ public class Impresion implements Procesamiento {
         tabs = tmp;
         System.out.print(tabs + "}");
     }
-    public void procesa(Bloque0 i) {
-        System.out.println(tabs + "{");
-        System.out.print(tabs + "}");
+    public void procesa(NoExps decs){
+        // naa
     }
     public void procesa(Exps1 exp) {
         exp.exps().procesa(this);

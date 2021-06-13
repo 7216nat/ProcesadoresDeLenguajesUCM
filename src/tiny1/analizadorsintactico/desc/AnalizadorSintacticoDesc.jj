@@ -19,10 +19,10 @@ Prog Init()  : {Prog prog;}
 				{prog=Prog() <EOF> {return prog;}
 				}
 Prog Prog()   : {Decs decs; Insts insts;} 
-				{decs=Decs() insts=Insts(){return asint.progConDecs(decs, insts);} 
+				{decs=Decs() insts=Insts(){return asint.prog(decs, insts);} 
 				 }
 Decs Decs()   : {Decs decs;} 
-				{decs=LDec() "&&" {return decs;} |
+				{decs=LDec() "&&" {return asint.auxDecs(decs);} |
 				{return asint.noDecs;}
 				}
 Decs LDec()   : {Dec dec; Decs decs;} 
@@ -43,16 +43,12 @@ Dec DVar()   : {Tipo tipo; Token id;}
 Dec DTipo()  : {Tipo tipo; Token id;} 
 				{ "type" tipo=Tipo() id=<IDEN> {return asint.dTipo(tipo, asint.str(id.image,id.beginLine,id.beginColumn));}
 				}
-Dec DProc()  : {Token id; Dec dec;} 
-				{ "proc" id=<IDEN> "(" dec=FDProc(id) {return dec;}
+Dec DProc()  : {Token id; Pars pars; Inst bloque;} 
+				{ "proc" id=<IDEN> "(" pars=Pars() ")" bloque=Bloque() {return asint.dProc(asint.str(id.image,id.beginLine,id.beginColumn), pars, bloque);}
 				}
-Dec FDProc(Token idh) : {Pars pars; Inst bloque;}
-				{pars=Pars() ")" bloque=Bloque() {return asint.dProcConPars(asint.str(idh.image,idh.beginLine,idh.beginColumn), pars, bloque);} |
-				")" bloque=Bloque() {return asint.dProcSinPars(asint.str(idh.image,idh.beginLine,idh.beginColumn), bloque);}	
-				}
-// Par�metros para el procedimiento
 Pars Pars()	  : {Par par; Pars pars;} 
-				{par=Par() pars=RPar(asint.parsSimp(par)) {return pars;}
+				{par=Par() pars=RPar(asint.parsSimp(par)) {return pars;} |
+				{return asint.noPars;}
 				}
 Pars RPar(Pars parsh): {Par par; Pars pars;} 
 				{ "," par=Par() pars=RPar(asint.parsComp(parsh, par)) {return pars;} | 
@@ -94,7 +90,8 @@ Tipo Pointer()  : {Tipo tipo;}
 				{ "pointer" tipo=Tipo() {return asint.pointer(tipo);}
 				}			 
 Insts Insts() : {Inst i; Insts is;} 
-				{ i=Inst() is=RInsts(asint.instsSimp(i)) {return is;} 
+				{ i=Inst() is=RInsts(asint.instsSimp(i)) {return is;} |
+				{return asint.noInsts;}
 				}
 Insts RInsts(Insts ih) : {Inst i; Insts is;} 
 				{ ";" i=Inst() is=RInsts(asint.instsComp(ih, i)) {return is;} |
@@ -113,36 +110,19 @@ Inst Inst()  : {Inst i;}
 				 i=Bloque() {return i;}
 				 }
 			
-Inst IIfThen(): {Exp e; Inst i;}
-				{"if" e=E0() "then" i=FIIfThen(e) {return i;}
+Inst IIfThen(): {Exp e; Inst i; Insts iss;}
+				{"if" e=E0() "then" iss=Insts() i=FIIfThen(e, iss) {return i;}
 				}
-Inst FIIfThen(Exp eh): {Inst is; Insts iss;}
-				{iss=Insts() is=F1IIfThenElse(eh, iss) {return is;}|
-				"endif" {return asint.iIfThen0(eh);} |
-				"else" is=F3IIfThenElse(eh) {return is;}
-				}
-Inst F1IIfThenElse(Exp eh, Insts iss): {Inst is;}
-				{"else" is=F2IIfThenElse(eh, iss) {return is;} |
-				"endif" {return asint.iIfThen1(eh, iss);;}
-				}
-Inst F2IIfThenElse(Exp eh, Insts ish): {Insts iss;}
-				{iss=Insts() "endif" {return asint.iIfThenElse11(eh,ish,iss);} |
-				"endif" {return asint.iIfThenElse10(eh,ish);}
-				}
-Inst F3IIfThenElse(Exp eh): {Insts iss;}
-				{iss=Insts() "endif" {return asint.iIfThenElse01(eh,iss);} |
-				"endif" {return asint.iIfThenElse00(eh);}
-				}					
+Inst FIIfThen(Exp eh, Insts issh): {Insts iss;}
+				{"else" iss=Insts() "endif" {return asint.iIfThenElse(eh,issh,iss);} |
+				"endif" {return asint.iIfThen(eh, issh);} 
+				}				
 Inst INl() : {} { "nl" {return asint.iNl();}}
 
 Inst IAsig() : 	{Exp e, ee;} 
 				{ e=E0() "=" ee=E0() {return asint.iAsig(e,ee);}}
-Inst IWhile():	 {Exp e; Inst is;} 
-				{"while" e=E0() "do" is=FIWhile(e) {return is;}
-				}
-Inst FIWhile(Exp eh): {Insts is;}
-				{is=Insts() "endwhile" {return asint.iWhile1(eh,is);} |
-				"endwhile" {return asint.iWhile0(eh);}
+Inst IWhile():	 {Exp e; Insts iss;} 
+				{"while" e=E0() "do" iss=Insts() "endwhile" {return asint.iWhile(e,iss);}
 				}
 Inst IRead() :	 {Exp e;} 
 				{ "read" e=E0() {return asint.iRead(e);}}
@@ -152,22 +132,16 @@ Inst INew() : 	 {Exp e;}
 				{ "new" e=E0() {return asint.iNew(e);}}
 Inst IDelete() : {Exp e;} 
 				{ "delete" e=E0() {return asint.iDelete(e);}}
-Inst ICall() : {Token id; Inst i;} 
-				{ "call" id=<IDEN> "(" i=FICall(id) {return i;}
+Inst ICall() : {Token id; Exps e;} 
+				{ "call" id=<IDEN> "(" e=EXPs() ")" {return asint.iCall(asint.str(id.image,id.beginLine,id.beginColumn), e);}
 				}
-Inst FICall(Token idh): {Exps e;}
-				{e=EXPs() ")" {return asint.iCall1(asint.str(idh.image,idh.beginLine,idh.beginColumn), e);} |
-				")" {return asint.iCall0(asint.str(idh.image,idh.beginLine,idh.beginColumn));}
-				}
-Inst Bloque() 	: {Inst inst;} 
-				{ "{" inst=FBloque() {return inst;}
-				}
-Inst FBloque() 	: {Prog prog;} 
-				{prog=Prog() "}" {return asint.bloque1(prog);} |
-				"}" {return asint.bloque0();}
+Inst Bloque() 	: {Prog prog;} 
+				{ "{" prog=Prog() "}" {return asint.bloque(prog);}
 				}	
 Exps EXPs(): {Exps es; Exp e;} 
-				{ e=E0() es=REXPs(asint.exps0(e)) {return es;}}
+				{ e=E0() es=REXPs(asint.exps0(e)) {return es;} |
+				{return asint.noExps;}
+				}
 Exps REXPs(Exps esh): {Exps es; Exp e;} 
 				{"," e=E0() es=REXPs(asint.exps1(esh, e)) {return es;}| 
 				{return esh;}

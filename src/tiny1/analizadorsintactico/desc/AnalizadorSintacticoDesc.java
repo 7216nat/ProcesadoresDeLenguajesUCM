@@ -19,7 +19,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                  Decs decs; Insts insts;
     decs = Decs();
     insts = Insts();
-                                                           {if (true) return asint.progConDecs(decs, insts);}
+                                                           {if (true) return asint.prog(decs, insts);}
     throw new Error("Missing return statement in function");
   }
 
@@ -31,7 +31,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     case 5:
       decs = LDec();
       jj_consume_token(1);
-                                                   {if (true) return decs;}
+                                                   {if (true) return asint.auxDecs(decs);}
       break;
     default:
       jj_la1[0] = jj_gen;
@@ -106,17 +106,19 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
   }
 
   final public Dec DProc() throws ParseException {
-                Token id; Dec dec;
+                Token id; Pars pars; Inst bloque;
     jj_consume_token(5);
     id = jj_consume_token(IDEN);
     jj_consume_token(6);
-    dec = FDProc(id);
-                                                                       {if (true) return dec;}
+    pars = Pars();
+    jj_consume_token(7);
+    bloque = Bloque();
+                                                                                        {if (true) return asint.dProc(asint.str(id.image,id.beginLine,id.beginColumn), pars, bloque);}
     throw new Error("Missing return statement in function");
   }
 
-  final public Dec FDProc(Token idh) throws ParseException {
-                         Pars pars; Inst bloque;
+  final public Pars Pars() throws ParseException {
+                     Par par; Pars pars;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 10:
     case 14:
@@ -126,30 +128,14 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     case BOOL:
     case REAL:
     case IDEN:
-      pars = Pars();
-      jj_consume_token(7);
-      bloque = Bloque();
-                                                                  {if (true) return asint.dProcConPars(asint.str(idh.image,idh.beginLine,idh.beginColumn), pars, bloque);}
-      break;
-    case 7:
-      jj_consume_token(7);
-      bloque = Bloque();
-                                                     {if (true) return asint.dProcSinPars(asint.str(idh.image,idh.beginLine,idh.beginColumn), bloque);}
+      par = Par();
+      pars = RPar(asint.parsSimp(par));
+                                                                           {if (true) return pars;}
       break;
     default:
       jj_la1[3] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+                                 {if (true) return asint.noPars;}
     }
-    throw new Error("Missing return statement in function");
-  }
-
-// Par�metros para el procedimiento
-  final public Pars Pars() throws ParseException {
-                     Par par; Pars pars;
-    par = Par();
-    pars = RPar(asint.parsSimp(par));
-                                                                           {if (true) return pars;}
     throw new Error("Missing return statement in function");
   }
 
@@ -304,9 +290,35 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
 
   final public Insts Insts() throws ParseException {
                  Inst i; Insts is;
-    i = Inst();
-    is = RInsts(asint.instsSimp(i));
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 6:
+    case 15:
+    case 18:
+    case 22:
+    case 24:
+    case 27:
+    case 28:
+    case 29:
+    case 30:
+    case 31:
+    case 38:
+    case 42:
+    case 45:
+    case ENT:
+    case LREAL:
+    case TRUE:
+    case FALSE:
+    case NULL:
+    case IDEN:
+    case CADENA:
+      i = Inst();
+      is = RInsts(asint.instsSimp(i));
                                                                           {if (true) return is;}
+      break;
+    default:
+      jj_la1[8] = jj_gen;
+                                 {if (true) return asint.noInsts;}
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -320,7 +332,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                                                                   {if (true) return is;}
       break;
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[9] = jj_gen;
                                  {if (true) return ih;}
     }
     throw new Error("Missing return statement in function");
@@ -380,60 +392,6 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                              {if (true) return i;}
       break;
     default:
-      jj_la1[9] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    throw new Error("Missing return statement in function");
-  }
-
-  final public Inst IIfThen() throws ParseException {
-                 Exp e; Inst i;
-    jj_consume_token(18);
-    e = E0();
-    jj_consume_token(19);
-    i = FIIfThen(e);
-                                                                   {if (true) return i;}
-    throw new Error("Missing return statement in function");
-  }
-
-  final public Inst FIIfThen(Exp eh) throws ParseException {
-                        Inst is; Insts iss;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 6:
-    case 15:
-    case 18:
-    case 22:
-    case 24:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-    case 38:
-    case 42:
-    case 45:
-    case ENT:
-    case LREAL:
-    case TRUE:
-    case FALSE:
-    case NULL:
-    case IDEN:
-    case CADENA:
-      iss = Insts();
-      is = F1IIfThenElse(eh, iss);
-                                                                        {if (true) return is;}
-      break;
-    case 20:
-      jj_consume_token(20);
-                                         {if (true) return asint.iIfThen0(eh);}
-      break;
-    case 21:
-      jj_consume_token(21);
-      is = F3IIfThenElse(eh);
-                                                             {if (true) return is;}
-      break;
-    default:
       jj_la1[10] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
@@ -441,98 +399,32 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     throw new Error("Missing return statement in function");
   }
 
-  final public Inst F1IIfThenElse(Exp eh, Insts iss) throws ParseException {
-                                        Inst is;
+  final public Inst IIfThen() throws ParseException {
+                 Exp e; Inst i; Insts iss;
+    jj_consume_token(18);
+    e = E0();
+    jj_consume_token(19);
+    iss = Insts();
+    i = FIIfThen(e, iss);
+                                                                                    {if (true) return i;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Inst FIIfThen(Exp eh, Insts issh) throws ParseException {
+                                    Insts iss;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 21:
-      jj_consume_token(21);
-      is = F2IIfThenElse(eh, iss);
-                                                                   {if (true) return is;}
-      break;
     case 20:
       jj_consume_token(20);
-                                         {if (true) return asint.iIfThen1(eh, iss);};
+      iss = Insts();
+      jj_consume_token(21);
+                                                             {if (true) return asint.iIfThenElse(eh,issh,iss);}
+      break;
+    case 21:
+      jj_consume_token(21);
+                                         {if (true) return asint.iIfThen(eh, issh);}
       break;
     default:
       jj_la1[11] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    throw new Error("Missing return statement in function");
-  }
-
-  final public Inst F2IIfThenElse(Exp eh, Insts ish) throws ParseException {
-                                        Insts iss;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 6:
-    case 15:
-    case 18:
-    case 22:
-    case 24:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-    case 38:
-    case 42:
-    case 45:
-    case ENT:
-    case LREAL:
-    case TRUE:
-    case FALSE:
-    case NULL:
-    case IDEN:
-    case CADENA:
-      iss = Insts();
-      jj_consume_token(20);
-                                                      {if (true) return asint.iIfThenElse11(eh,ish,iss);}
-      break;
-    case 20:
-      jj_consume_token(20);
-                                         {if (true) return asint.iIfThenElse10(eh,ish);}
-      break;
-    default:
-      jj_la1[12] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    throw new Error("Missing return statement in function");
-  }
-
-  final public Inst F3IIfThenElse(Exp eh) throws ParseException {
-                             Insts iss;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 6:
-    case 15:
-    case 18:
-    case 22:
-    case 24:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-    case 38:
-    case 42:
-    case 45:
-    case ENT:
-    case LREAL:
-    case TRUE:
-    case FALSE:
-    case NULL:
-    case IDEN:
-    case CADENA:
-      iss = Insts();
-      jj_consume_token(20);
-                                                      {if (true) return asint.iIfThenElse01(eh,iss);}
-      break;
-    case 20:
-      jj_consume_token(20);
-                                         {if (true) return asint.iIfThenElse00(eh);}
-      break;
-    default:
-      jj_la1[13] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -555,51 +447,13 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
   }
 
   final public Inst IWhile() throws ParseException {
-                  Exp e; Inst is;
+                  Exp e; Insts iss;
     jj_consume_token(24);
     e = E0();
     jj_consume_token(25);
-    is = FIWhile(e);
-                                                                    {if (true) return is;}
-    throw new Error("Missing return statement in function");
-  }
-
-  final public Inst FIWhile(Exp eh) throws ParseException {
-                       Insts is;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 6:
-    case 15:
-    case 18:
-    case 22:
-    case 24:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-    case 38:
-    case 42:
-    case 45:
-    case ENT:
-    case LREAL:
-    case TRUE:
-    case FALSE:
-    case NULL:
-    case IDEN:
-    case CADENA:
-      is = Insts();
-      jj_consume_token(26);
-                                                        {if (true) return asint.iWhile1(eh,is);}
-      break;
-    case 26:
-      jj_consume_token(26);
-                                            {if (true) return asint.iWhile0(eh);}
-      break;
-    default:
-      jj_la1[14] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
+    iss = Insts();
+    jj_consume_token(26);
+                                                                             {if (true) return asint.iWhile(e,iss);}
     throw new Error("Missing return statement in function");
   }
 
@@ -636,100 +490,47 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
   }
 
   final public Inst ICall() throws ParseException {
-                Token id; Inst i;
+                Token id; Exps e;
     jj_consume_token(31);
     id = jj_consume_token(IDEN);
     jj_consume_token(6);
-    i = FICall(id);
-                                                                     {if (true) return i;}
-    throw new Error("Missing return statement in function");
-  }
-
-  final public Inst FICall(Token idh) throws ParseException {
-                         Exps e;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 6:
-    case 38:
-    case 42:
-    case 45:
-    case ENT:
-    case LREAL:
-    case TRUE:
-    case FALSE:
-    case NULL:
-    case IDEN:
-    case CADENA:
-      e = EXPs();
-      jj_consume_token(7);
-                                               {if (true) return asint.iCall1(asint.str(idh.image,idh.beginLine,idh.beginColumn), e);}
-      break;
-    case 7:
-      jj_consume_token(7);
-                                     {if (true) return asint.iCall0(asint.str(idh.image,idh.beginLine,idh.beginColumn));}
-      break;
-    default:
-      jj_la1[15] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
+    e = EXPs();
+    jj_consume_token(7);
+                                                                     {if (true) return asint.iCall(asint.str(id.image,id.beginLine,id.beginColumn), e);}
     throw new Error("Missing return statement in function");
   }
 
   final public Inst Bloque() throws ParseException {
-                   Inst inst;
-    jj_consume_token(15);
-    inst = FBloque();
-                                                      {if (true) return inst;}
-    throw new Error("Missing return statement in function");
-  }
-
-  final public Inst FBloque() throws ParseException {
                    Prog prog;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 15:
-    case 18:
-    case 22:
-    case 24:
-    case 27:
-    case 28:
-    case 29:
-    case 30:
-    case 31:
-    case 38:
-    case 42:
-    case 45:
-    case ENT:
-    case LREAL:
-    case TRUE:
-    case FALSE:
-    case NULL:
-    case IDEN:
-    case CADENA:
-      prog = Prog();
-      jj_consume_token(16);
-                                                  {if (true) return asint.bloque1(prog);}
-      break;
-    case 16:
-      jj_consume_token(16);
-                                     {if (true) return asint.bloque0();}
-      break;
-    default:
-      jj_la1[16] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
+    jj_consume_token(15);
+    prog = Prog();
+    jj_consume_token(16);
+                                                       {if (true) return asint.bloque(prog);}
     throw new Error("Missing return statement in function");
   }
 
   final public Exps EXPs() throws ParseException {
               Exps es; Exp e;
-    e = E0();
-    es = REXPs(asint.exps0(e));
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 6:
+    case 38:
+    case 42:
+    case 45:
+    case ENT:
+    case LREAL:
+    case TRUE:
+    case FALSE:
+    case NULL:
+    case IDEN:
+    case CADENA:
+      e = E0();
+      es = REXPs(asint.exps0(e));
                                                                    {if (true) return es;}
+      break;
+    default:
+      jj_la1[12] = jj_gen;
+                                 {if (true) return asint.noExps;}
+    }
     throw new Error("Missing return statement in function");
   }
 
@@ -743,7 +544,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                                                            {if (true) return es;}
       break;
     default:
-      jj_la1[17] = jj_gen;
+      jj_la1[13] = jj_gen;
                                  {if (true) return esh;}
     }
     throw new Error("Missing return statement in function");
@@ -776,7 +577,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                        {if (true) return "!=";}
       break;
     default:
-      jj_la1[18] = jj_gen;
+      jj_la1[14] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -798,7 +599,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                       {if (true) return "%";}
       break;
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[15] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -827,7 +628,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                              {if (true) return asint.resta(eh,e);}
       break;
     default:
-      jj_la1[20] = jj_gen;
+      jj_la1[16] = jj_gen;
                                   {if (true) return eh;}
     }
     throw new Error("Missing return statement in function");
@@ -857,7 +658,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                                                     {if (true) return ee;}
       break;
     default:
-      jj_la1[21] = jj_gen;
+      jj_la1[17] = jj_gen;
                                  {if (true) return eh;}
     }
     throw new Error("Missing return statement in function");
@@ -886,7 +687,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                                                                   {if (true) return ee;}
       break;
     default:
-      jj_la1[22] = jj_gen;
+      jj_la1[18] = jj_gen;
                                   {if (true) return eh;}
     }
     throw new Error("Missing return statement in function");
@@ -911,7 +712,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                                      {if (true) return asint.op3na(op,eh,e);}
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[19] = jj_gen;
                                  {if (true) return eh;}
     }
     throw new Error("Missing return statement in function");
@@ -943,7 +744,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                         {if (true) return e;}
       break;
     default:
-      jj_la1[24] = jj_gen;
+      jj_la1[20] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -981,7 +782,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                                                                                                        {if (true) return ee;}
       break;
     default:
-      jj_la1[25] = jj_gen;
+      jj_la1[21] = jj_gen;
                                  {if (true) return eh;}
     }
     throw new Error("Missing return statement in function");
@@ -1007,7 +808,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                          {if (true) return e;}
       break;
     default:
-      jj_la1[26] = jj_gen;
+      jj_la1[22] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1052,7 +853,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
                                             {if (true) return asint.NULL;}
       break;
     default:
-      jj_la1[27] = jj_gen;
+      jj_la1[23] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1064,7 +865,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
   public Token token, jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[28];
+  final private int[] jj_la1 = new int[24];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -1074,13 +875,13 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
       jj_la1_2();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x38,0x4,0x38,0x24480,0x100,0x200,0x24400,0x4,0x4,0xf9448040,0xf9748040,0x300000,0xf9548040,0xf9548040,0xfd448040,0xc0,0xf9458078,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x800,0x40,0x40,};
+      jj_la1_0 = new int[] {0x38,0x4,0x38,0x24400,0x100,0x200,0x24400,0x4,0xf9448040,0x4,0xf9448040,0x300000,0x40,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x800,0x40,0x40,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x4e000000,0x0,0x0,0x4e000000,0x0,0x0,0xb1802440,0xb1802440,0x0,0xb1802440,0xb1802440,0xb1802440,0xb1802440,0xb1802440,0x0,0x3f,0x1c0,0x600,0x1800,0x3f,0x1c0,0xb1802440,0xc000,0xb1800040,0xb1800000,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x4e000000,0x0,0x0,0x4e000000,0x0,0xb1802440,0x0,0xb1802440,0x0,0xb1802440,0x0,0x3f,0x1c0,0x600,0x1800,0x3f,0x1c0,0xb1802440,0xc000,0xb1800040,0xb1800000,};
    }
    private static void jj_la1_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x0,0x1,0x0,0x1,0x1,0x0,0x0,0x3,0x3,0x0,0x3,0x3,0x3,0x3,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x0,0x3,0x3,};
+      jj_la1_2 = new int[] {0x0,0x0,0x0,0x1,0x0,0x1,0x1,0x0,0x3,0x0,0x3,0x0,0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3,0x0,0x3,0x3,};
    }
 
   public AnalizadorSintacticoDesc(java.io.InputStream stream) {
@@ -1089,7 +890,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
   }
 
   public void ReInit(java.io.InputStream stream) {
@@ -1098,7 +899,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
   }
 
   public AnalizadorSintacticoDesc(java.io.Reader stream) {
@@ -1107,7 +908,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
   }
 
   public void ReInit(java.io.Reader stream) {
@@ -1116,7 +917,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
   }
 
   public AnalizadorSintacticoDesc(AnalizadorSintacticoDescTokenManager tm) {
@@ -1124,7 +925,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
   }
 
   public void ReInit(AnalizadorSintacticoDescTokenManager tm) {
@@ -1132,7 +933,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 24; i++) jj_la1[i] = -1;
   }
 
   final private Token jj_consume_token(int kind) throws ParseException {
@@ -1187,7 +988,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 28; i++) {
+    for (int i = 0; i < 24; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

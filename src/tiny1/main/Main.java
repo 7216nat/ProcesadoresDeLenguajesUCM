@@ -24,14 +24,16 @@ public class Main {
     		
             Reader input = new InputStreamReader(new FileInputStream(args[0]));
             boolean verbose = true;
+            Vinculacion vinc = new Vinculacion(verbose);
+            SimplificacionTipo simp = new SimplificacionTipo(verbose);
             if(args[1].equals("asc")) {
             	System.out.println("Parseando el archivo " + args[0] + " con un analizador ascendente");
             	
             	AnalizadorLexico al = new AnalizadorLexico(input);
                 AnalizadorSintacticoAsc as = new AnalizadorSintacticoAsc(al);
                 Prog prog = (Prog)as.parse().value;
-                //prog.procesa(new Impresion());
-                prog.procesa(new Vinculacion(verbose));
+                prog.procesa(new Impresion());
+                //prog.procesa(new Vinculacion(verbose));
                 System.out.println("Parseo finalizado sin errores");
             }
             
@@ -40,10 +42,10 @@ public class Main {
             
                 AnalizadorSintacticoDesc as = new AnalizadorSintacticoDesc(input);
                 Prog prog = as.Init();
-                //prog.procesa(new Impresion());
-                prog.procesa(new Vinculacion(verbose));
-                
-                prog.procesa(new SimplificacionTipo(verbose));
+                prog.procesa(new Impresion());
+                prog.procesa(vinc);
+                System.out.println(vinc.isOk());
+                prog.procesa(simp);
                 System.out.println("Parseo finalizado sin errores");
             }
             
