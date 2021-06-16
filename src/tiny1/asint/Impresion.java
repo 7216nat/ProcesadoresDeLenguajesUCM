@@ -80,6 +80,12 @@ public class Impresion implements Procesamiento {
         t.tipo().procesa(this);
         
     }
+    public void procesa(OK exp){
+        System.out.print("ok");
+    }
+    public void procesa(ERROR exp){
+        System.out.print("error");
+    }
     public void procesa(REGISTRO t) {
         System.out.println("record {");
         t.campos().procesa(this);

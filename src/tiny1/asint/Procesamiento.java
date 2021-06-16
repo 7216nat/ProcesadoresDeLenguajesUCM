@@ -21,6 +21,8 @@ public interface Procesamiento {
     void procesa(IdenTipo exp);
     void procesa(ARRAY exp);
     void procesa(REGISTRO exp);
+    void procesa(OK exp);
+    void procesa(ERROR exp);
     void procesa(CamposSimp exp);
     void procesa(CamposComp exp);
     void procesa(Campo exp);

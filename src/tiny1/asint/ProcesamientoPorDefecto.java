@@ -61,6 +61,12 @@ public class ProcesamientoPorDefecto implements Procesamiento {
     public void procesa(IdenTipo t) {
         // naa
     }
+    public void procesa(OK exp){
+        // naa
+    }
+    public void procesa(ERROR exp){
+        // naa
+    }
     public void procesa(ARRAY t) {
         t.tipo().procesa(this);
     }

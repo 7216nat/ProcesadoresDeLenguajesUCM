@@ -1,5 +1,7 @@
 package tiny1.asint;
 
+import java.util.Map;
+
 public class TinyASint {
     
     public static class StringLocalizado {
@@ -504,7 +506,6 @@ public class TinyASint {
     public static abstract class Inst {
         public Inst(){
         }
-        public Prog prog() {throw new UnsupportedOperationException("No insts exception.");}
         public abstract void procesa(Procesamiento p);
     }
     public static class IAsig extends Inst {
@@ -639,7 +640,6 @@ public class TinyASint {
             super();
             this.prog = prog;
         }
-        @Override
         public Prog prog() {return prog;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
@@ -651,6 +651,7 @@ public class TinyASint {
         public Tipo(){}
         public abstract Type type();
         public abstract void procesa(Procesamiento p);
+        public abstract String toString();
     }
     public static class INT extends Tipo {
         public INT(){
@@ -662,6 +663,8 @@ public class TinyASint {
         public Type type() {
             return Type.INT;
         }
+        @Override
+        public String toString(){return "INT";}
     }
     public static class REAL extends Tipo {
         public REAL(){
@@ -673,6 +676,8 @@ public class TinyASint {
         public Type type() {
             return Type.REAL;
         }
+        @Override
+        public String toString(){return "REAL";}
     }
     public static class BOOL extends Tipo {
         public BOOL(){
@@ -684,6 +689,8 @@ public class TinyASint {
         public Type type() {
             return Type.BOOL;
         }
+        @Override
+        public String toString(){return "BOOL";}
     }
     public static class STRING extends Tipo {
         public STRING(){
@@ -695,6 +702,8 @@ public class TinyASint {
         public Type type() {
             return Type.STRING;
         }
+        @Override
+        public String toString(){return "STRING";}
     }
     public static class IdenTipo extends Tipo {
         private StringLocalizado str;
@@ -713,10 +722,13 @@ public class TinyASint {
         public void procesa(Procesamiento p){
             p.procesa(this);
         }
+        @Override
+        public String toString(){return str.toString();}
     }
     public static class ARRAY extends Tipo {
         private StringLocalizado num;
         private Tipo tipo;
+        private int dim;
         public ARRAY(StringLocalizado num, Tipo tipo){
             super();
             this.tipo = tipo;
@@ -724,20 +736,23 @@ public class TinyASint {
         }
         public StringLocalizado num(){return num;}
         public Tipo tipo(){return tipo;}
-        public void procesa(Procesamiento p){
-            p.procesa(this);
-        }
+        public void procesa(Procesamiento p){p.procesa(this);}
         @Override
-        public Type type() {
-            return tipo.type();
-        }
+        public Type type() {return Type.ARRAY;}
+        public void setDim(int dim) {this.dim = dim;}
+        public int getDim() {return dim;}
+        @Override
+        public String toString(){return "ARRAY";}
     }
     public static class REGISTRO extends Tipo {
         private Campos campos;
+        private Map<String, Dec> listCampos;
         public REGISTRO(Campos campos){
             super();
             this.campos = campos;
         }
+        public void setList(Map<String, Dec> listCampos){this.listCampos = listCampos;}
+        public Map<String, Dec> getList(){return this.listCampos;}
         public Campos campos(){return campos;}
         public void procesa(Procesamiento p){
             p.procesa(this);
@@ -746,6 +761,8 @@ public class TinyASint {
         public Type type() {
             return Type.RECORD;
         }
+        @Override
+        public String toString(){return "REGISTRO";}
     }
     public static class POINTER extends Tipo {
         private Tipo tipo;
@@ -759,8 +776,10 @@ public class TinyASint {
         }
         @Override
         public Type type() {
-            return tipo.type();
+            return Type.POINTER;
         }
+        @Override
+        public String toString(){return "POINTER";}
     }
     public static class ERROR extends Tipo {
         public ERROR(){
@@ -771,8 +790,10 @@ public class TinyASint {
 
         @Override
         public void procesa(Procesamiento p) {
-            // naa
+            p.procesa(this);
         }
+        @Override
+        public String toString(){return "ERROR";}
     }
     public static class OK extends Tipo {
         public OK(){
@@ -783,13 +804,17 @@ public class TinyASint {
 
         @Override
         public void procesa(Procesamiento p) {
-            // naa
+            p.procesa(this);
         }
+        @Override
+        public String toString(){return "OK";}
     }
 
     public static abstract class Campos{
         public Campos(){
         }
+        public Campos campos(){return null;}
+        public Campo campo(){return null;}
         public abstract void procesa(Procesamiento p);
     }
     public static class CamposComp extends Campos{
@@ -800,7 +825,9 @@ public class TinyASint {
             this.campos = campos;
             this.campo = campo;
         }
+        @Override
         public Campos campos(){return campos;}
+        @Override
         public Campo campo(){return campo;}
         public void procesa(Procesamiento p){
             p.procesa(this);
@@ -812,6 +839,7 @@ public class TinyASint {
             super();
             this.campo = campo;
         }
+        @Override
         public Campo campo(){return campo;}
         public void procesa(Procesamiento p){
             p.procesa(this);
@@ -824,6 +852,10 @@ public class TinyASint {
         public void procesa(Procesamiento p){
             p.procesa(this);
         }
+        @Override
+        public String toString(){
+            return "Campo " + this.id().toString();
+        }  
     }
 
 
@@ -888,6 +920,7 @@ public class TinyASint {
             this.tipo = tipo;
             this.id = id;
         }
+        public boolean esDType(){return false;}
         public Tipo tipo() {return tipo;}
         public void setTipo(Tipo tipo){this.tipo = tipo;}
         public Type type(){return type;}
@@ -899,6 +932,7 @@ public class TinyASint {
         }
         public int ambito(){ return ambito;}
         public int dir(){ return dir;}
+        public abstract String toString();
         public abstract void procesa(Procesamiento p);
     }
     public static class DVar extends Dec  {
@@ -907,6 +941,10 @@ public class TinyASint {
         }
         public void procesa(Procesamiento p) {
            p.procesa(this); 
+        }
+        @Override
+        public String toString(){
+            return "Var " + this.id().toString();
         }     
     }
     public static class DTipo extends Dec  {
@@ -914,9 +952,15 @@ public class TinyASint {
             super(tipo, id);
         }
         @Override
+        public boolean esDType(){return true;}
+        @Override
         public void procesa(Procesamiento p) {
            p.procesa(this); 
-        }     
+        }
+        @Override
+        public String toString(){
+            return "Tipo " + this.id().toString();
+        }       
     }
     public static class DProc extends Dec{
         private Pars pars;
@@ -931,7 +975,11 @@ public class TinyASint {
         public Inst bloque(){return bloque;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
-        } 
+        }
+        @Override
+        public String toString(){
+            return "Proc " + this.id().toString();
+        }   
     }
 
     public static abstract class Pars {
@@ -987,6 +1035,10 @@ public class TinyASint {
         public void procesa(Procesamiento p){
             p.procesa(this); 
         }
+        @Override
+        public String toString(){
+            return "ParRef " + this.id().toString();
+        }  
     }
     public static class ParSinRef extends Par{
         public ParSinRef(Tipo tipo, StringLocalizado id) {
@@ -995,6 +1047,10 @@ public class TinyASint {
         public void procesa(Procesamiento p){
             p.procesa(this); 
         }
+        @Override
+        public String toString(){
+            return "ParSinRef " + this.id().toString();
+        }  
     }
 
     public static class Prog  {

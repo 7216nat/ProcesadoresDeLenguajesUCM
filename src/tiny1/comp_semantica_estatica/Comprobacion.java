@@ -1,378 +1,359 @@
 package tiny1.comp_semantica_estatica;
 
 import tiny1.asint.Procesamiento;
-import tiny1.asint.ProcesamientoPorDefecto;
 import tiny1.asint.TinyASint.*;
+import tiny1.errors.GestionErrores;
 
 public class Comprobacion implements Procesamiento{
 
-    private Simplificacion simp;
+    boolean ok;
     public Comprobacion(){
-        simp = new Simplificacion();
+        ok = true;
     }
 
-    private class Simplificacion extends ProcesamientoPorDefecto{
-        
-    }
     @Override
     public void procesa(Prog exp) {
-        // TODO Auto-generated method stub
-        
+        exp.decs().procesa(this);
+        exp.insts().procesa(this);
     }
 
     @Override
     public void procesa(NoDecs exp) {
-        // TODO
+        // skip
     }
 
     @Override
     public void procesa(AuxDecs exp) {
-        // TODO
+        exp.decs().procesa(this);
     }
 
     @Override
     public void procesa(LDecSimp exp) {
-        // TODO Auto-generated method stub
-        
+        exp.dec().procesa(this);
     }
 
     @Override
     public void procesa(LDecComp exp) {
-        // TODO Auto-generated method stub
-        
+        exp.decs().procesa(this);
+        exp.dec().procesa(this);
     }
 
     @Override
     public void procesa(DVar exp) {
-        // TODO Auto-generated method stub
-        
+        exp.tipo().procesa(this);
     }
 
     @Override
     public void procesa(DTipo exp) {
-        // TODO Auto-generated method stub
-        
+        exp.tipo().procesa(this);
     }
 
     @Override
     public void procesa(DProc exp) {
-        // TODO Auto-generated method stub
-        
+        exp.pars().procesa(this);
+        exp.bloque().procesa(this);
     }
 
     @Override
     public void procesa(NoPars exp) {
-        // TODO
+        // skip
     }
 
     @Override
     public void procesa(ParsComp exp) {
-        // TODO Auto-generated method stub
-        
+        exp.pars().procesa(this);
+        exp.par().procesa(this);
     }
 
     @Override
     public void procesa(ParsSimp exp) {
-        // TODO Auto-generated method stub
-        
+        exp.par().procesa(this);
     }
 
     @Override
     public void procesa(ParRef exp) {
-        // TODO Auto-generated method stub
-        
+        exp.tipo().procesa(this);
     }
 
     @Override
     public void procesa(ParSinRef exp) {
-        // TODO Auto-generated method stub
-        
+        exp.tipo().procesa(this);
     }
 
     @Override
     public void procesa(INT exp) {
-        // TODO Auto-generated method stub
-        
+        // naa
     }
 
     @Override
     public void procesa(REAL exp) {
-        // TODO Auto-generated method stub
-        
+        // naa
     }
 
     @Override
     public void procesa(BOOL exp) {
-        // TODO Auto-generated method stub
-        
+        // naa
     }
 
     @Override
     public void procesa(STRING exp) {
-        // TODO Auto-generated method stub
-        
+        // naa
     }
 
     @Override
     public void procesa(IdenTipo exp) {
-        // TODO Auto-generated method stub
-        
+        // naa
     }
 
     @Override
     public void procesa(ARRAY exp) {
-        // TODO Auto-generated method stub
-        
+        int dim = Integer.parseInt(exp.num().toString()); 
+        if (dim <= 0){
+            ok &= false;
+            GestionErrores.errorDimensionInadecuada(exp.num());
+        }
+        exp.setDim(dim);
+        exp.tipo().procesa(this);
     }
 
     @Override
     public void procesa(REGISTRO exp) {
-        // TODO Auto-generated method stub
-        
+        exp.campos().procesa(this);
+    }
+
+    public void procesa(OK exp){
+        // nothing to do  
+    }
+    
+    public void procesa(ERROR exp){
+        // nothing to do  
     }
 
     @Override
     public void procesa(CamposSimp exp) {
-        // TODO Auto-generated method stub
-        
+        exp.campo().procesa(this);
     }
 
     @Override
     public void procesa(CamposComp exp) {
-        // TODO Auto-generated method stub
-        
+        exp.campos().procesa(this);
+        exp.campo().procesa(this);
     }
 
     @Override
     public void procesa(Campo exp) {
-        // TODO Auto-generated method stub
-        
+        exp.tipo().procesa(this);
     }
 
     @Override
     public void procesa(POINTER exp) {
-        // TODO Auto-generated method stub
-        
+        exp.tipo().procesa(this);
     }
 
     @Override
     public void procesa(NoInsts exp) {
-        // TODO
+        // naa
     }
 
     @Override
     public void procesa(InstsComp exp) {
-        // TODO Auto-generated method stub
-        
+        exp.insts().procesa(this);
+        exp.inst().procesa(this);
     }
 
     @Override
     public void procesa(InstsSimp exp) {
-        // TODO Auto-generated method stub
-        
+        exp.inst().procesa(this);
     }
 
     @Override
     public void procesa(IAsig exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp0().procesa(this);
+        exp.exp1().procesa(this);
     }
 
     @Override
     public void procesa(IIfThen exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp().procesa(this);
+        exp.insts().procesa(this);
     }
 
     @Override
     public void procesa(IIfThenElse exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp().procesa(this);
+        exp.insts0().procesa(this);
+        exp.insts1().procesa(this);
     }
 
     @Override
     public void procesa(IWhile exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp().procesa(this);
+        exp.insts().procesa(this);
     }
 
     @Override
     public void procesa(IRead exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp().procesa(this);
     }
 
     @Override
     public void procesa(IWrite exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp().procesa(this);
     }
 
     @Override
     public void procesa(INew exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp().procesa(this);
     }
 
     @Override
     public void procesa(IDelete exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp().procesa(this);
     }
 
     @Override
     public void procesa(INl exp) {
-        // TODO Auto-generated method stub
-        
+        //
     }
 
     @Override
     public void procesa(ICall exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exps().procesa(this);
     }
 
     @Override
     public void procesa(Bloque exp) {
-        // TODO Auto-generated method stub
-        
+        exp.prog().procesa(this);
     }
 
     @Override
     public void procesa(NoExps exp) {
-        // TODO
+        // naa
     }
 
     @Override
     public void procesa(Exps1 exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exps().procesa(this);
+        exp.exp().procesa(this);
     }
 
     @Override
     public void procesa(Exps0 exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp().procesa(this);
     }
 
     @Override
     public void procesa(Suma exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(Resta exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(And exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(Or exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(LT exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(GT exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(LE exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(GE exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(NE exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(EQ exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(Mul exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(Mod exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(Div exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(Not exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg().procesa(this);
     }
 
     @Override
     public void procesa(Neg exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg().procesa(this);
     }
 
     @Override
     public void procesa(Index exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg0().procesa(this);
+        exp.arg1().procesa(this);
     }
 
     @Override
     public void procesa(Ptr exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp().procesa(this);
     }
 
     @Override
     public void procesa(Atr exp) {
-        // TODO Auto-generated method stub
-        
+        exp.exp().procesa(this);
     }
 
     @Override
     public void procesa(Indir exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg().procesa(this);
     }
 
     @Override
     public void procesa(Parentesis exp) {
-        // TODO Auto-generated method stub
-        
+        exp.arg().procesa(this);
     }
 
     @Override

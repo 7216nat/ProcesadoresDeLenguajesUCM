@@ -22,6 +22,9 @@ public class GestionErrores {
     }
     public static void errorVinculacionDuplicado(StringLocalizado str){
         System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Declaracion duplicada: "+str.toString()); 
-    }  
+    }
+    public static void errorDimensionInadecuada(StringLocalizado str){
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Dimension array inadecuada: "+str.toString()); 
+    }    
 }   
 
