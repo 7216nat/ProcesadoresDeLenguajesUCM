@@ -15,30 +15,33 @@ public class SimplificacionTipo extends ProcesamientoPorDefecto{
     }
     @Override
     public void procesa(DVar exp) {
-        exp.tipo().procesa(this);
         exp.setType(exp.tipo().type());
         log(exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + ": " + exp.tipo().toString() + " --> " + exp.tipo().tipoSimpl().toString() + ": " + exp.type().toString());
+        exp.setTipo(exp.tipo().tipoSimpl());
     }
 
     @Override
     public void procesa(DTipo exp) {
-        exp.tipo().procesa(this);
         exp.setType(exp.tipo().type());
         log(exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + ": " + exp.tipo().toString() + " --> " + exp.tipo().tipoSimpl().toString() + ": " + exp.type().toString());
+        exp.setTipo(exp.tipo().tipoSimpl());
     }
     @Override
     public void procesa(ParRef par) {
         par.setType(par.tipo().type());
         log(par.id().fila() + " " + par.id().col()+ " " +par.id().toString() + ": " + par.tipo().toString() + " --> " + par.tipo().tipoSimpl().toString() + ": " + par.type().toString());
+        par.setTipo(par.tipo().tipoSimpl());
     }
     @Override
     public void procesa(ParSinRef par) {
         par.setType(par.tipo().type());
         log(par.id().fila() + " " + par.id().col()+ " " +par.id().toString() + ": " + par.tipo().toString() + " --> " + par.tipo().tipoSimpl().toString() + ": " + par.type().toString());
+        par.setTipo(par.tipo().tipoSimpl());
     }
     @Override
     public void procesa(Campo c) {
         c.setType(c.tipo().type());
         log(c.id().fila() + " " + c.id().col()+ " " +c.id().toString() + ": " + c.tipo().toString() + " --> " + c.tipo().tipoSimpl().toString() + ": " + c.type().toString());
+        c.setTipo(c.tipo().tipoSimpl());
     }
 }

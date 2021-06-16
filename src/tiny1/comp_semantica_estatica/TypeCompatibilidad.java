@@ -29,7 +29,7 @@ public class TypeCompatibilidad {
                 ARRAY a1 = (ARRAY)t1;
                 ARRAY a2 = (ARRAY)t2;
                 if(a1.getDim() != a2.getDim()) return false;
-                return comprobar(a1.tipo().tipoSimpl(), a2.tipo().tipoSimpl());
+                return comprobar(a1.tipo(), a2.tipo());
             }
 
             // registro
@@ -45,7 +45,7 @@ public class TypeCompatibilidad {
                 do {
                     if (!cs1.campo().id().equals(cs2.campo().id()))
                         return false;
-                    if (!comprobar(cs1.campo().tipo().tipoSimpl(), cs2.campo().tipo().tipoSimpl()))
+                    if (!comprobar(cs1.campo().tipo(), cs2.campo().tipo()))
                         return false;
                     cs1 = cs1.campos();
                     cs2 = cs2.campos();
@@ -63,7 +63,7 @@ public class TypeCompatibilidad {
                 POINTER p1 = (POINTER)t1;
                 POINTER p2 = (POINTER)t2;
                 
-                return comprobar(p1.tipo().tipoSimpl(), p2.tipo().tipoSimpl(), set);
+                return comprobar(p1.tipo(), p2.tipo(), set);
             }
 
             return false;
