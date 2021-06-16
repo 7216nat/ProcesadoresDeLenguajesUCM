@@ -650,6 +650,7 @@ public class TinyASint {
     public static abstract class Tipo{
         public Tipo(){}
         public abstract Type type();
+        public Tipo tipoSimpl(){return this;}
         public abstract void procesa(Procesamiento p);
         public abstract String toString();
     }
@@ -715,6 +716,8 @@ public class TinyASint {
         }
         public Dec vinculo(){return this.vinculo;}
         public void setVinculo(Dec dec){this.vinculo = dec;}
+        @Override
+        public Tipo tipoSimpl(){return vinculo.tipo();}
         public Type type(){
             return vinculo.tipo().type();
         }
