@@ -1,4 +1,4 @@
-package maquinaP;
+package tiny1.pmaquinaP;
 
 public class GestorPilaActivaciones {
     private int fin;

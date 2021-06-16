@@ -1,4 +1,4 @@
-package maquinaP;
+package tiny1.pmaquinaP;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -428,10 +428,20 @@ public class MaquinaP {
    }
 
    public Instruccion suma() {return ISUMA;}
+   public Instruccion sumar() {return ISUMAr;}
+   public Instruccion resta() {return IRESTA;}
+   public Instruccion restar() {return IRESTAr;}
    public Instruccion mul() {return IMUL;}
+   public Instruccion mulr() {return IMULr;}
+   public Instruccion div() {return IDIV;}
+   public Instruccion divr() {return IDIVr;}
+   public Instruccion mod() {return IMOD;}
    public Instruccion and() {return IAND;}
+   public Instruccion or() {return IOR;}
    public Instruccion apilaInt(int val) {return new IApilaInt(val);}
    public Instruccion apilaBool(boolean val) {return new IApilaBool(val);}
+   public Instruccion apilaReal(double val) {return new IApilaReal(val);}
+   public Instruccion apilaCadena(String val) {return new IApilaCadena(val);}
    public Instruccion apilad(int nivel) {return new IApilad(nivel);}
    public Instruccion apilaInd() {return IAPILAIND;}
    public Instruccion desapilaInd() {return IDESAPILAIND;}

@@ -1,4 +1,4 @@
-package maquinaP;
+package tiny1.pmaquinaP;
 
 public class GestorMemoriaDinamica {
     private final static boolean DEBUG=false;
