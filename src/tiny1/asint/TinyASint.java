@@ -37,6 +37,9 @@ public class TinyASint {
     public enum Type{
         INT, BOOL, REAL, STRING, NULL, ERROR, OK, ARRAY, RECORD, POINTER
     }
+    public enum DecType{
+        VAR, TYPE, PROC 
+    }
     public static abstract class Exp extends ASTNode{
         public Exp() {}
         public boolean esDesignador(){
@@ -762,13 +765,13 @@ public class TinyASint {
     }
     public static class REGISTRO extends Tipo {
         private Campos campos;
-        private Map<String, Dec> listCampos;
+        private Map<String, Campo> listCampos;
         public REGISTRO(Campos campos){
             super();
             this.campos = campos;
         }
-        public void setList(Map<String, Dec> listCampos){this.listCampos = listCampos;}
-        public Map<String, Dec> getList(){return this.listCampos;}
+        public void setList(Map<String, Campo> listCampos){this.listCampos = listCampos;}
+        public Map<String, Campo> getList(){return this.listCampos;}
         public Campos campos(){return campos;}
         public void procesa(Procesamiento p){
             p.procesa(this);
@@ -861,17 +864,31 @@ public class TinyASint {
             p.procesa(this);
         }
     }
-    public static class Campo extends Dec{
+    public static class Campo{
+        int dir;
+        private StringLocalizado id;
+        private Tipo tipo;
+        private Type type;
         public Campo(Tipo tipo, StringLocalizado id){
-            super(tipo, id);
+            this.tipo = tipo;
+            this.id = id;
         }
+        public Tipo tipo() {return tipo;}
+        public void setTipo(Tipo tipo){this.tipo = tipo;}
+        public Type type(){return type;}
+        public void setType(Type type){this.type = type;}
+        public StringLocalizado id() {return id;}
+        public void setDir(int dir){
+            this.dir = dir;
+        }
+        public int getDir(){ return dir;}
         public void procesa(Procesamiento p){
             p.procesa(this);
         }
         @Override
         public String toString(){
-            return "Campo " + this.id().toString();
-        }  
+            return "Campo " + this.id().toString() + "; Dir: " + this.dir;
+        } 
     }
 
 
@@ -936,19 +953,23 @@ public class TinyASint {
             this.tipo = tipo;
             this.id = id;
         }
-        public boolean esDType(){return false;}
         public Tipo tipo() {return tipo;}
         public void setTipo(Tipo tipo){this.tipo = tipo;}
         public Type type(){return type;}
         public void setType(Type type){this.type = type;}
         public StringLocalizado id() {return id;}
-        public void setEspacio(int ambito, int dir){
+        public void setAmbito(int ambito){
             this.ambito = ambito;
+        }
+        public void setDir(int dir){
             this.dir = dir;
         }
-        public int ambito(){ return ambito;}
-        public int dir(){ return dir;}
-        public abstract String toString();
+        public int getAmbito(){ return ambito;}
+        public int getDir(){ return dir;}
+        public String toString(){
+            return "; Ambito: " + this.ambito;
+        }
+        public abstract DecType decType();
         public abstract void procesa(Procesamiento p);
     }
     public static class DVar extends Dec  {
@@ -960,7 +981,11 @@ public class TinyASint {
         }
         @Override
         public String toString(){
-            return "Var " + this.id().toString();
+            return "Var " + this.id().toString() + super.toString();
+        }
+        @Override
+        public DecType decType() {
+            return DecType.VAR;
         }     
     }
     public static class DTipo extends Dec  {
@@ -968,14 +993,16 @@ public class TinyASint {
             super(tipo, id);
         }
         @Override
-        public boolean esDType(){return true;}
-        @Override
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }
         @Override
         public String toString(){
-            return "Tipo " + this.id().toString();
+            return "Tipo " + this.id().toString() + super.toString();
+        }
+        @Override
+        public DecType decType() {
+            return DecType.TYPE;
         }       
     }
     public static class DProc extends Dec{
@@ -994,7 +1021,11 @@ public class TinyASint {
         }
         @Override
         public String toString(){
-            return "Proc " + this.id().toString();
+            return "Proc " + this.id().toString() + super.toString();
+        }
+        @Override
+        public DecType decType() {
+            return DecType.PROC;
         }   
     }
 
@@ -1053,7 +1084,11 @@ public class TinyASint {
         }
         @Override
         public String toString(){
-            return "ParRef " + this.id().toString();
+            return "ParRef " + this.id().toString() + super.toString();
+        }
+        @Override
+        public DecType decType() {
+            return DecType.VAR;
         }  
     }
     public static class ParSinRef extends Par{
@@ -1065,8 +1100,12 @@ public class TinyASint {
         }
         @Override
         public String toString(){
-            return "ParSinRef " + this.id().toString();
-        }  
+            return "ParSinRef " + this.id().toString() + super.toString();
+        }
+        @Override
+        public DecType decType() {
+            return DecType.VAR;
+        }    
     }
 
     public static class Prog  {

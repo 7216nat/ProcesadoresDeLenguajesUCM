@@ -1,5 +1,6 @@
 package tiny1.comp_semantica_estatica;
 import java.util.List;
+import java.util.Stack;
 import java.util.HashMap;
 import java.util.ArrayList;
 import tiny1.asint.TinyASint.*;
@@ -11,10 +12,12 @@ public class Vinculacion implements Procesamiento{
 
     private int currBloque;
     private List<HashMap<String, Dec>> pilaAnidada;
+    private Stack<HashMap<String, Campo>> camposList;
     private VinculacionRef crefs;
     private boolean ok;
     private boolean verbose;
     public Vinculacion(boolean verbose){
+
         currBloque = -1;
         ok = true;
         inic();
@@ -27,6 +30,7 @@ public class Vinculacion implements Procesamiento{
 
     private void inic(){
         pilaAnidada = new ArrayList<>();
+        camposList = new Stack<>();
     }
 
     private void abreBloque(){
@@ -58,6 +62,7 @@ public class Vinculacion implements Procesamiento{
             ok &= false;
             GestionErrores.errorVinculacionDuplicado(str);
         }
+        dec.setAmbito(currBloque);
     }
     private Dec buscaId(String id){
         for(int i = pilaAnidada.size()-1; i>=0; i--){
@@ -73,8 +78,14 @@ public class Vinculacion implements Procesamiento{
         public void procesa(IdenTipo exp) {
             Dec dec = buscaId(exp.str().toString());
             if (dec != null){
-                exp.setVinculo(dec);
-                log("->VinculacionRef: "+exp.str().fila() + " " + exp.str().col()+ " " +exp.str().toString() + " --> "+dec.toString());
+                if (dec.decType() != DecType.TYPE){
+                    ok &= false;
+                    GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.str());
+                }
+                else {
+                    exp.setVinculo(dec);
+                    log("->VinculacionRef: "+exp.str().fila() + " " + exp.str().col()+ " " +exp.str().toString() + " --> "+dec.toString());
+                }
             } else {
                 ok &= false;
                 GestionErrores.errorVinculacionTipoInexistennte(exp.str());
@@ -126,7 +137,6 @@ public class Vinculacion implements Procesamiento{
     public void procesa(DProc exp) {
         checkId(exp.id(), exp.id().toString(), exp);
         abreBloque();
-        checkId(exp.id(), exp.id().toString(), exp);
         exp.pars().procesa(this);
         Bloque b = (Bloque)exp.bloque();
         b.prog().decs().procesa(this);
@@ -194,10 +204,9 @@ public class Vinculacion implements Procesamiento{
 
     @Override
     public void procesa(REGISTRO exp) {
-        abreBloque();
+        camposList.add(new HashMap<>());
         exp.campos().procesa(this);
-        exp.setList(pilaAnidada.get(currBloque));
-        cierraBloque();
+        exp.setList(camposList.pop());
     }
     public void procesa(OK exp){
         // nothing to do  
@@ -219,7 +228,11 @@ public class Vinculacion implements Procesamiento{
     @Override
     public void procesa(Campo exp) {
         exp.tipo().procesa(this);
-        checkId(exp.id(), exp.id().toString(), exp);
+        if (camposList.peek().containsKey(exp.id().toString())){
+            ok &= false;
+            GestionErrores.errorCampoRegistroDuplicado(exp.id());
+        }
+        else camposList.peek().put(exp.id().toString(), exp);
     }
 
     @Override
@@ -301,8 +314,14 @@ public class Vinculacion implements Procesamiento{
             GestionErrores.errorVinculacionVariableInexistennte(exp.id());
         }
         else{
-            log("->VinculacionNormal: "+exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + " --> "+dec.toString());
-            exp.setVinculo(dec);
+            if (dec.decType() !=DecType.PROC){
+                ok &= false;
+                GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.id());
+            }
+            else{
+                log("->VinculacionNormal: "+exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + " --> "+dec.toString());
+                exp.setVinculo(dec);
+            }
         }
         exp.exps().procesa(this);
     }
@@ -454,8 +473,14 @@ public class Vinculacion implements Procesamiento{
     public void procesa(IdenExp exp) {
         Dec dec = buscaId(exp.id().toString());
         if (dec != null){
-            log("->VinculacionNormal: "+exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + " --> "+dec.toString());
-            exp.setVinculo(dec);
+            if (dec.decType() != DecType.VAR){
+                ok &= false;
+                GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.id());
+            }
+            else{
+                log("->VinculacionNormal: "+exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + " --> "+dec.toString());
+                exp.setVinculo(dec);
+            }
         }
         else {
             ok &= false;

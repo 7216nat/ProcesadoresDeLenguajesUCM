@@ -25,6 +25,12 @@ public class GestionErrores {
     }
     public static void errorDimensionInadecuada(StringLocalizado str){
         System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Dimension array inadecuada: "+str.toString()); 
-    }    
+    }
+    public static void errorVinculacionDeclaracionTipoInadecuado(StringLocalizado str){
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Vinculacion a una declaracion inadecuada: "+str.toString()); 
+    }
+    public static void errorCampoRegistroDuplicado(StringLocalizado str){
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Campo de registro duplicado: "+str.toString()); 
+    }         
 }   
 

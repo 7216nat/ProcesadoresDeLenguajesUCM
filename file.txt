@@ -1,5 +1,3 @@
-real peso;
-bool pesado
+var int a
 &&
-peso = 45 * (12 / -2);
-pesado = (peso > 10) or (peso / 2 <= 5.0)
+a = (9 * 5 + 4 - 5 )

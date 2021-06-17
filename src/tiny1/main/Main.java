@@ -52,29 +52,29 @@ public class Main {
                 prog.procesa(vinc);
                 System.out.println(vinc.isOk());
                 prog.procesa(simp);
-                System.out.println("Parseo finalizado sin errores");
+                // System.out.println("Parseo finalizado sin errores");
                 
-                System.out.println("Procesando asignación de espacio...");
-                prog.procesa(asig);
-                System.out.println("Asignación de espacio procesada");
+                // System.out.println("Procesando asignaciï¿½n de espacio...");
+                // prog.procesa(asig);
+                // System.out.println("Asignaciï¿½n de espacio procesada");
                 
-                System.out.println("Direcciones asignadas:");
+                // System.out.println("Direcciones asignadas:");
                 
-                for(String key : asig.getDirecciones().keySet()) {
-                	System.out.println(key + ": " + asig.getDirecciones().get(key));
-                }
+                // for(String key : asig.getDirecciones().keySet()) {
+                // 	System.out.println(key + ": " + asig.getDirecciones().get(key));
+                // }
                 
-                System.out.println("Procesando traducción de código...");
-                prog.procesa(trad);
-                System.out.println("Traducción de código finalizada");
+                // System.out.println("Procesando traducciï¿½n de cï¿½digo...");
+                // prog.procesa(trad);
+                // System.out.println("Traducciï¿½n de cï¿½digo finalizada");
                 
-                trad.getMaquinaP().muestraCodigo();
-                trad.getMaquinaP().muestraEstado();
+                // trad.getMaquinaP().muestraCodigo();
+                // trad.getMaquinaP().muestraEstado();
                 
-                System.out.println("Ejecutando...");
+                // System.out.println("Ejecutando...");
                 
-                trad.getMaquinaP().ejecuta();
-                trad.getMaquinaP().muestraEstado();
+                // trad.getMaquinaP().ejecuta();
+                // trad.getMaquinaP().muestraEstado();
             }
             
             else {
