@@ -70,6 +70,22 @@ public class MaquinaP {
    private Valor[] datos; 
    private int pc;
 
+   
+   /*TODO: Instrucciones a añadir:
+ 
+ 	read
+ 	write
+ 	new
+ 	delete
+ 	call
+ 	if E then endif
+ 	if E then else endif
+ 	while E do endwhile
+ 	bloque
+ 
+   
+   */
+   
    public interface Instruccion {
       void ejecuta();  
    }
@@ -182,6 +198,92 @@ public class MaquinaP {
          pc++;
       } 
       public String toString() {return "or";};
+   }
+   
+   private INot INOT;
+   private class INot implements Instruccion {
+      public void ejecuta() {
+         Valor opnd1 = pilaEvaluacion.pop();
+         pilaEvaluacion.push(new ValorBool(!opnd1.valorBool()));
+         pc++;
+      } 
+      public String toString() {return "not";};
+   }
+   
+   private INeg INEG;
+   private class INeg implements Instruccion {
+      public void ejecuta() {
+         Valor opnd1 = pilaEvaluacion.pop();
+         pilaEvaluacion.push(new ValorInt(-opnd1.valorInt()));
+         pc++;
+      } 
+      public String toString() {return "neg";};
+   }
+   
+   private ILe ILE;
+   private class ILe implements Instruccion {
+      public void ejecuta() {
+         Valor opnd2 = pilaEvaluacion.pop(); 
+         Valor opnd1 = pilaEvaluacion.pop();
+         pilaEvaluacion.push(new ValorBool(opnd1.valorInt()<=opnd2.valorInt()));
+         pc++;
+      } 
+      public String toString() {return "le";};
+   }
+   
+   private IGe IGE;
+   private class IGe implements Instruccion {
+      public void ejecuta() {
+         Valor opnd2 = pilaEvaluacion.pop(); 
+         Valor opnd1 = pilaEvaluacion.pop();
+         pilaEvaluacion.push(new ValorBool(opnd1.valorInt()>=opnd2.valorInt()));
+         pc++;
+      } 
+      public String toString() {return "ge";};
+   }
+   
+   private ILt ILT;
+   private class ILt implements Instruccion {
+      public void ejecuta() {
+         Valor opnd2 = pilaEvaluacion.pop(); 
+         Valor opnd1 = pilaEvaluacion.pop();
+         pilaEvaluacion.push(new ValorBool(opnd1.valorInt()<opnd2.valorInt()));
+         pc++;
+      } 
+      public String toString() {return "lt";};
+   }
+   
+   private IGt IGT;
+   private class IGt implements Instruccion {
+      public void ejecuta() {
+         Valor opnd2 = pilaEvaluacion.pop(); 
+         Valor opnd1 = pilaEvaluacion.pop();
+         pilaEvaluacion.push(new ValorBool(opnd1.valorInt()>opnd2.valorInt()));
+         pc++;
+      } 
+      public String toString() {return "gt";};
+   }
+   
+   private IEq IEQ;
+   private class IEq implements Instruccion {
+      public void ejecuta() {
+         Valor opnd2 = pilaEvaluacion.pop(); 
+         Valor opnd1 = pilaEvaluacion.pop();
+         pilaEvaluacion.push(new ValorBool(opnd1.valorInt()==opnd2.valorInt()));
+         pc++;
+      } 
+      public String toString() {return "eq";};
+   }
+   
+   private INeq INEQ;
+   private class INeq implements Instruccion {
+      public void ejecuta() {
+         Valor opnd2 = pilaEvaluacion.pop(); 
+         Valor opnd1 = pilaEvaluacion.pop();
+         pilaEvaluacion.push(new ValorBool(opnd1.valorInt()!=opnd2.valorInt()));
+         pc++;
+      } 
+      public String toString() {return "neq";};
    }
    
    private class IApilaInt implements Instruccion {
@@ -438,6 +540,14 @@ public class MaquinaP {
    public Instruccion mod() {return IMOD;}
    public Instruccion and() {return IAND;}
    public Instruccion or() {return IOR;}
+   public Instruccion not() {return INOT;}
+   public Instruccion neg() {return INEG;}
+   public Instruccion lt() {return ILT;}
+   public Instruccion gt() {return IGT;}
+   public Instruccion le() {return ILE;}
+   public Instruccion ge() {return IGE;}
+   public Instruccion eq() {return IEQ;}
+   public Instruccion neq() {return INEQ;}
    public Instruccion apilaInt(int val) {return new IApilaInt(val);}
    public Instruccion apilaBool(boolean val) {return new IApilaBool(val);}
    public Instruccion apilaReal(double val) {return new IApilaReal(val);}
@@ -472,8 +582,20 @@ public class MaquinaP {
       datos = new Valor[tamdatos+tampila+tamheap];
       this.pc = 0;
       ISUMA = new ISuma();
+      IRESTA = new IResta();
       IAND = new IAnd();
+      IOR = new IOr();
+      INOT = new INot();
       IMUL = new IMul();
+      IDIV = new IDiv();
+      IMOD = new IMod();
+      INEG = new INeg();
+      ILT = new ILt();
+      IGT = new IGt();
+      ILE = new ILe();
+      IGE = new IGe();
+      IEQ = new IEq();
+      INEQ = new INeq();
       IAPILAIND = new IApilaind();
       IDESAPILAIND = new IDesapilaind();
       IIRIND = new IIrind();

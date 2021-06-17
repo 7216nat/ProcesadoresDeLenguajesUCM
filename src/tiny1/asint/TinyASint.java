@@ -4,6 +4,12 @@ import java.util.Map;
 
 public class TinyASint {
     
+	public static abstract class ASTNode {
+		int tam;
+		public int tam() {return tam;}
+		public void setTam(int tam) {this.tam = tam;}
+	}
+	
     public static class StringLocalizado {
         private String s;
         private int fila;
@@ -31,7 +37,7 @@ public class TinyASint {
     public enum Type{
         INT, BOOL, REAL, STRING, NULL, ERROR, OK, ARRAY, RECORD, POINTER
     }
-    public static abstract class Exp  {
+    public static abstract class Exp extends ASTNode{
         public Exp() {}
         public boolean esDesignador(){
             return false;
@@ -46,7 +52,7 @@ public class TinyASint {
         public abstract void procesa(Procesamiento procesamiento);
     }
     
-    private static abstract class ExpBin extends Exp {
+    public static abstract class ExpBin extends Exp {
         private Exp arg0;
         private Exp arg1;
         public Exp arg0() {return arg0;}
@@ -58,7 +64,7 @@ public class TinyASint {
         }
     }
 
-    private static abstract class ExpUni extends Exp {
+    public static abstract class ExpUni extends Exp {
         private Exp arg;
         public Exp arg() {return arg;}
         public ExpUni(Exp arg) {
@@ -503,10 +509,17 @@ public class TinyASint {
     } 
 
 
-    public static abstract class Inst {
+    public static abstract class Inst extends ASTNode{
+    	private int etqi;
+    	private int etqs;
+    	
         public Inst(){
         }
         public abstract void procesa(Procesamiento p);
+        public int etqi() {return etqi;}
+        public int etqs() {return etqs;}
+        public void setEtqi(int etqi) {this.etqi = etqi;}
+        public void setEtqs(int etqs) {this.etqs = etqs;}
     }
     public static class IAsig extends Inst {
         private Exp exp0;
@@ -647,7 +660,7 @@ public class TinyASint {
     }
     
 
-    public static abstract class Tipo{
+    public static abstract class Tipo extends ASTNode{
         public Tipo(){}
         public abstract Type type();
         public Tipo tipoSimpl(){return this;}
@@ -862,7 +875,7 @@ public class TinyASint {
     }
 
 
-    public static abstract class Decs {
+    public static abstract class Decs extends ASTNode{
         public Decs() {
         }
         public abstract void procesa(Procesamiento p);
@@ -913,7 +926,7 @@ public class TinyASint {
      }
  
     
-    public static abstract class Dec {
+    public static abstract class Dec extends ASTNode{
         int ambito;
         int dir;
         private StringLocalizado id;

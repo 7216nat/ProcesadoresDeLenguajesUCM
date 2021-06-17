@@ -10,8 +10,11 @@ import tiny1.analizadorsintactico.asc.AnalizadorSintacticoAsc;
 import tiny1.analizadorsintactico.desc.AnalizadorSintacticoDesc;
 import tiny1.asint.Impresion;
 import tiny1.asint.TinyASint.Prog;
+import tiny1.comp_semantica_estatica.AsignacionEspacio;
 import tiny1.comp_semantica_estatica.SimplificacionTipo;
 import tiny1.comp_semantica_estatica.Vinculacion;
+import tiny1.pmaquinaP.MaquinaP;
+import tiny1.pmaquinaP.Traduccion;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -26,6 +29,9 @@ public class Main {
             boolean verbose = true;
             Vinculacion vinc = new Vinculacion(verbose);
             SimplificacionTipo simp = new SimplificacionTipo(verbose);
+            AsignacionEspacio asig = new AsignacionEspacio();
+            Traduccion trad = new Traduccion(new MaquinaP(5,10,10,2), asig.getDirecciones());
+            
             if(args[1].equals("asc")) {
             	System.out.println("Parseando el archivo " + args[0] + " con un analizador ascendente");
             	
@@ -47,6 +53,28 @@ public class Main {
                 System.out.println(vinc.isOk());
                 prog.procesa(simp);
                 System.out.println("Parseo finalizado sin errores");
+                
+                System.out.println("Procesando asignación de espacio...");
+                prog.procesa(asig);
+                System.out.println("Asignación de espacio procesada");
+                
+                System.out.println("Direcciones asignadas:");
+                
+                for(String key : asig.getDirecciones().keySet()) {
+                	System.out.println(key + ": " + asig.getDirecciones().get(key));
+                }
+                
+                System.out.println("Procesando traducción de código...");
+                prog.procesa(trad);
+                System.out.println("Traducción de código finalizada");
+                
+                trad.getMaquinaP().muestraCodigo();
+                trad.getMaquinaP().muestraEstado();
+                
+                System.out.println("Ejecutando...");
+                
+                trad.getMaquinaP().ejecuta();
+                trad.getMaquinaP().muestraEstado();
             }
             
             else {
