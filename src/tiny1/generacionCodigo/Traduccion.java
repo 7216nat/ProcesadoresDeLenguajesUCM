@@ -1,9 +1,10 @@
-package tiny1.pmaquinaP;
+package tiny1.generacionCodigo;
 
 import java.util.HashMap;
 
 import tiny1.asint.Procesamiento;
 import tiny1.asint.TinyASint.*;
+import tiny1.pmaquinaP.MaquinaP;
 
 public class Traduccion implements Procesamiento{
 

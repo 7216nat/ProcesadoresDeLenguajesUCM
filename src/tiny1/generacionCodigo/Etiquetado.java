@@ -1,4 +1,4 @@
-package tiny1.comp_semantica_estatica;
+package tiny1.generacionCodigo;
 import tiny1.asint.Procesamiento;
 import tiny1.asint.TinyASint.*;
 public class Etiquetado implements Procesamiento {

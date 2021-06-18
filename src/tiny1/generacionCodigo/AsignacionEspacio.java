@@ -1,4 +1,4 @@
-package tiny1.comp_semantica_estatica;
+package tiny1.generacionCodigo;
 import java.util.HashMap;
 
 import tiny1.asint.Procesamiento;

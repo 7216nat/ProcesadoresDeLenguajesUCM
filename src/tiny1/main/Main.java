@@ -10,12 +10,12 @@ import tiny1.analizadorsintactico.asc.AnalizadorSintacticoAsc;
 import tiny1.analizadorsintactico.desc.AnalizadorSintacticoDesc;
 import tiny1.asint.Impresion;
 import tiny1.asint.TinyASint.Prog;
-import tiny1.comp_semantica_estatica.AsignacionEspacio;
-import tiny1.comp_semantica_estatica.Etiquetado;
 import tiny1.comp_semantica_estatica.SimplificacionTipo;
 import tiny1.comp_semantica_estatica.Vinculacion;
+import tiny1.generacionCodigo.AsignacionEspacio;
+import tiny1.generacionCodigo.Etiquetado;
+import tiny1.generacionCodigo.Traduccion;
 import tiny1.pmaquinaP.MaquinaP;
-import tiny1.pmaquinaP.Traduccion;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -56,7 +56,7 @@ public class Main {
                 prog.procesa(simp);
                 
                 System.out.println("Parseo finalizado sin errores");
-                /*
+                
                 System.out.println("Procesando asignaci�n de espacio...");
                 prog.procesa(asig);
                 System.out.println("Asignaci�n de espacio procesada");
@@ -81,7 +81,7 @@ public class Main {
                 System.out.println("Ejecutando...");
                 
                 trad.getMaquinaP().ejecuta();
-                trad.getMaquinaP().muestraEstado();*/
+                trad.getMaquinaP().muestraEstado();
             }
             
             else {
