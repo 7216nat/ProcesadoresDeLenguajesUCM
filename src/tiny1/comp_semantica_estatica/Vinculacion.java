@@ -78,14 +78,8 @@ public class Vinculacion implements Procesamiento{
         public void procesa(IdenTipo exp) {
             Dec dec = buscaId(exp.str().toString());
             if (dec != null){
-                if (dec.decType() != DecType.TYPE){
-                    ok &= false;
-                    GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.str());
-                }
-                else {
-                    exp.setVinculo(dec);
-                    log("->VinculacionRef: "+exp.str().fila() + " " + exp.str().col()+ " " +exp.str().toString() + " --> "+dec.toString());
-                }
+                exp.setVinculo(dec);
+                log("->VinculacionRef: "+exp.str().fila() + " " + exp.str().col()+ " " +exp.str().toString() + " --> "+dec.toString());
             } else {
                 ok &= false;
                 GestionErrores.errorVinculacionTipoInexistennte(exp.str());
@@ -314,14 +308,8 @@ public class Vinculacion implements Procesamiento{
             GestionErrores.errorVinculacionVariableInexistennte(exp.id());
         }
         else{
-            if (dec.decType() !=DecType.PROC){
-                ok &= false;
-                GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.id());
-            }
-            else{
-                log("->VinculacionNormal: "+exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + " --> "+dec.toString());
-                exp.setVinculo(dec);
-            }
+            log("->VinculacionNormal: "+exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + " --> "+dec.toString());
+            exp.setVinculo(dec);
         }
         exp.exps().procesa(this);
     }
@@ -473,14 +461,8 @@ public class Vinculacion implements Procesamiento{
     public void procesa(IdenExp exp) {
         Dec dec = buscaId(exp.id().toString());
         if (dec != null){
-            if (dec.decType() != DecType.VAR){
-                ok &= false;
-                GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.id());
-            }
-            else{
-                log("->VinculacionNormal: "+exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + " --> "+dec.toString());
-                exp.setVinculo(dec);
-            }
+            log("->VinculacionNormal: "+exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + " --> "+dec.toString());
+            exp.setVinculo(dec);
         }
         else {
             ok &= false;

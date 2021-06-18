@@ -41,6 +41,7 @@ public class TinyASint {
         VAR, TYPE, PROC 
     }
     public static abstract class Exp extends ASTNode{
+        private Tipo tipo;
         public Exp() {}
         public boolean esDesignador(){
             return false;
@@ -51,6 +52,9 @@ public class TinyASint {
         public void setVinculo(Dec dec){
             throw new UnsupportedOperationException("Set vinculo unsupported.");
         }  
+        public void setTipo(Tipo tipo){this.tipo = tipo;}
+        public Tipo getTipo(){return tipo;}
+        public Type getType(){return tipo.type();}
         public abstract int prioridad();
         public abstract void procesa(Procesamiento procesamiento);
     }

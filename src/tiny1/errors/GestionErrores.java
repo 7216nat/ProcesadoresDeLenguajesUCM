@@ -31,6 +31,8 @@ public class GestionErrores {
     }
     public static void errorCampoRegistroDuplicado(StringLocalizado str){
         System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Campo de registro duplicado: "+str.toString()); 
+    }
+    public static void errorParametrosNoCoinciden(StringLocalizado str){
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Parametros error: "+str.toString()); 
     }         
 }   
-
