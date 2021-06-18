@@ -483,10 +483,16 @@ public class TinyASint {
 
     public static abstract class Insts {
     	private boolean ok;
+    	private int etqi;
+    	private int etqs;
         public Insts(){
             ok = true;
         }
         public abstract void procesa(Procesamiento p);
+        public int etqi() {return etqi;}
+        public int etqs() {return etqs;}
+        public void setEtqi(int etqi) {this.etqi = etqi;}
+        public void setEtqs(int etqs) {this.etqs = etqs;}
         public boolean getOk(){return ok;}
         public void setOk(boolean ok){this.ok = ok;}
     }
