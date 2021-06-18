@@ -53,7 +53,7 @@ public class TinyASint {
             throw new UnsupportedOperationException("Set vinculo unsupported.");
         }  
         public void setTipo(Tipo tipo){this.tipo = tipo;}
-        public Tipo getTipo(){return tipo;}
+        public Tipo getTipos(){return tipo;}
         public Type getType(){return tipo.type();}
         public abstract int prioridad();
         public abstract void procesa(Procesamiento procesamiento);
