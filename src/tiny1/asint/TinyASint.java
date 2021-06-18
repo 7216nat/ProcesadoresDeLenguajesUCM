@@ -473,9 +473,15 @@ public class TinyASint {
 
 
     public static abstract class Insts {
+    	private int etqi;
+    	private int etqs;
         public Insts(){
         }
         public abstract void procesa(Procesamiento p);
+        public int etqi() {return etqi;}
+        public int etqs() {return etqs;}
+        public void setEtqi(int etqi) {this.etqi = etqi;}
+        public void setEtqs(int etqs) {this.etqs = etqs;}
     }
     public static class NoInsts extends Insts{
         public NoInsts(){
@@ -512,7 +518,7 @@ public class TinyASint {
     } 
 
 
-    public static abstract class Inst extends ASTNode{
+    public static abstract class Inst extends ASTNode {
     	private int etqi;
     	private int etqs;
     	

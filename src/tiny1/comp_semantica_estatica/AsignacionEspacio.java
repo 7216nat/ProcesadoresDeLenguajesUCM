@@ -6,6 +6,8 @@ import tiny1.asint.TinyASint.*;
 public class AsignacionEspacio implements Procesamiento {
 	
 	HashMap<String, Integer> direcciones;
+	
+	
 	private int counter = 0;
 	
 	

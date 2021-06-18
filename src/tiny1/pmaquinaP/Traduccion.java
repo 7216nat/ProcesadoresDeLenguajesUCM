@@ -23,6 +23,7 @@ public class Traduccion implements Procesamiento{
 	public void procesa(Prog prog) {
         prog.decs().procesa(this);
         prog.insts().procesa(this);
+        m.ponInstruccion(m.stop());
 	}
 
 	@Override
@@ -206,25 +207,30 @@ public class Traduccion implements Procesamiento{
 			m.ponInstruccion(m.desapilaInd());
 		}
 
-
 	}
 
 	@Override
 	public void procesa(IIfThen exp) {
-		// TODO Auto-generated method stub
-		
+		exp.exp().procesa(this);
+		m.ponInstruccion(m.irF(exp.etqs()));
+		exp.insts().procesa(this);
 	}
 
 	@Override
 	public void procesa(IIfThenElse exp) {
-		// TODO Auto-generated method stub
-		
+		exp.exp().procesa(this);
+		m.ponInstruccion(m.irF(exp.insts1().etqi()));
+		exp.insts0().procesa(this);
+		m.ponInstruccion(m.irA(exp.insts1().etqs()));
+		exp.insts1().procesa(this);
 	}
 
 	@Override
 	public void procesa(IWhile exp) {
-		// TODO Auto-generated method stub
-		
+		exp.exp().procesa(this);
+		m.ponInstruccion(m.irF(exp.etqs()));
+		exp.insts().procesa(this);
+		m.ponInstruccion(m.irA(exp.etqi()));	
 	}
 
 	@Override
@@ -258,15 +264,19 @@ public class Traduccion implements Procesamiento{
 	}
 
 	@Override
-	public void procesa(ICall exp) {
-		// TODO Auto-generated method stub
+	public void procesa(ICall proc) {
+		//m.ponInstruccion(m.activa(proc.nivel(), proc.tam(), proc.etqi()));
+		//m.ponInstruccion(m.dup());
+		//m.ponInstruccion(m.apilaInt(proc.par));
+		
+		
+		
 		
 	}
 
 	@Override
-	public void procesa(Bloque exp) {
-		// TODO Auto-generated method stub
-		
+	public void procesa(Bloque i) {
+		i.prog().procesa(this);		
 	}
 
 	@Override
@@ -466,7 +476,7 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(Null exp) {
-		// TODO Auto-generated method stub
+
 		
 	}
 
