@@ -41,6 +41,7 @@ public class TinyASint {
         VAR, TYPE, PROC 
     }
     public static abstract class Exp extends ASTNode{
+        private Tipo tipo;
         public Exp() {}
         public boolean esDesignador(){
             return false;
@@ -51,6 +52,9 @@ public class TinyASint {
         public void setVinculo(Dec dec){
             throw new UnsupportedOperationException("Set vinculo unsupported.");
         }  
+        public void setTipo(Tipo tipo){this.tipo = tipo;}
+        public Tipo getTipo(){return tipo;}
+        public Type getType(){return tipo.type();}
         public abstract int prioridad();
         public abstract void procesa(Procesamiento procesamiento);
     }
@@ -435,6 +439,8 @@ public class TinyASint {
     public static abstract class Exps {
         public Exps(){
         }
+        public Exps exps(){return null;}
+        public Exp exp(){return null;}
         public abstract void procesa(Procesamiento p);
     }
     public static class NoExps extends Exps{
@@ -453,7 +459,9 @@ public class TinyASint {
             this.exp = exp;
             this.exps = exps;
         }
+        @Override
         public Exp exp() {return exp;}
+        @Override
         public Exps exps() {return exps;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
@@ -465,6 +473,7 @@ public class TinyASint {
             super();
             this.exp = exp;
         }
+        @Override
         public Exp exp() {return exp;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
@@ -473,9 +482,13 @@ public class TinyASint {
 
 
     public static abstract class Insts {
+    	private boolean ok;
         public Insts(){
+            ok = true;
         }
         public abstract void procesa(Procesamiento p);
+        public boolean getOk(){return ok;}
+        public void setOk(boolean ok){this.ok = ok;}
     }
     public static class NoInsts extends Insts{
         public NoInsts(){
@@ -515,14 +528,17 @@ public class TinyASint {
     public static abstract class Inst extends ASTNode{
     	private int etqi;
     	private int etqs;
-    	
+    	private boolean ok;
         public Inst(){
+            ok = true;
         }
         public abstract void procesa(Procesamiento p);
         public int etqi() {return etqi;}
         public int etqs() {return etqs;}
         public void setEtqi(int etqi) {this.etqi = etqi;}
         public void setEtqs(int etqs) {this.etqs = etqs;}
+        public boolean getOk(){return ok;}
+        public void setOk(boolean ok){this.ok = ok;}
     }
     public static class IAsig extends Inst {
         private Exp exp0;
@@ -1032,6 +1048,8 @@ public class TinyASint {
     public static abstract class Pars {
         public Pars() {
         }
+        public Pars pars(){return null;}
+        public Par par(){return null;}
         public abstract void procesa(Procesamiento p);
     }
     public static class NoPars extends Pars{
@@ -1050,7 +1068,9 @@ public class TinyASint {
             this.par = par;
             this.pars= pars;
         }
+        @Override
         public Pars pars(){return pars;}
+        @Override
         public Par par(){return par;}
         public void procesa(Procesamiento p){
             p.procesa(this); 
@@ -1062,6 +1082,7 @@ public class TinyASint {
             super();
             this.par = par;
         }
+        @Override
         public Par par(){return par;}
         public void procesa(Procesamiento p){
             p.procesa(this); 

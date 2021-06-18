@@ -1,16 +1,26 @@
 package tiny1.comp_semantica_estatica;
 
 import tiny1.asint.Procesamiento;
+import tiny1.asint.TinyASint;
 import tiny1.asint.TinyASint.*;
 import tiny1.errors.GestionErrores;
 
 public class Comprobacion implements Procesamiento{
 
     boolean ok;
-    public Comprobacion(){
+    boolean verbose;
+    public Comprobacion(boolean verbose){
         ok = true;
+        this.verbose = verbose;
     }
 
+    public boolean isOk(){return ok;}
+
+    private void log(String msg) {
+        if(verbose) {
+            System.out.println("Comprobacion: " + msg);
+        }
+    }
     @Override
     public void procesa(Prog exp) {
         exp.decs().procesa(this);
@@ -102,7 +112,10 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(IdenTipo exp) {
-        // naa
+        if (exp.vinculo().decType() != DecType.TYPE){
+            ok &= false;
+            GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.str());
+        }
     }
 
     @Override
@@ -170,6 +183,7 @@ public class Comprobacion implements Procesamiento{
     public void procesa(IAsig exp) {
         exp.exp0().procesa(this);
         exp.exp1().procesa(this);
+        if (TypeCompatibilidad(exp.exp0().))
     }
 
     @Override
@@ -218,12 +232,42 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(ICall exp) {
-        exp.exps().procesa(this);
+        if (exp.vinculo().decType() !=DecType.PROC){
+            ok &= false;
+            exp.setOk(false);
+            GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.id());
+            return;
+        }
+        Exps exps = exp.exps();
+        DProc proc = (DProc)exp.vinculo();
+        Pars pars = proc.pars();
+        while (exps.exps() != null && pars.pars() != null) {
+            if (!TypeCompatibilidad.comprobar(exps.exp().vinculo().tipo(), pars.par().tipo())){
+                ok &= false;
+                exp.setOk(false);
+                GestionErrores.errorParametrosNoCoinciden(exp.id());
+            }
+            exps = exp.exps();
+            pars = pars.pars();
+        }
+        if ((exp.exps() != null && pars.pars() == null) || (exp.exps() == null && pars.pars() != null)){
+            exp.setOk(false);
+            ok &= false;
+            GestionErrores.errorParametrosNoCoinciden(exp.id());
+        }
+        if(exp.exps() == null && pars.pars() == null && !TypeCompatibilidad.comprobar(exps.exp().vinculo().tipo(), pars.par().tipo())){
+            exp.setOk(false);
+            ok &= false;
+            GestionErrores.errorParametrosNoCoinciden(exp.id());
+        }
     }
 
     @Override
     public void procesa(Bloque exp) {
         exp.prog().procesa(this);
+        if(!exp.prog().insts().getOk()){
+            exp.setOk(false);
+        }
     }
 
     @Override
@@ -242,160 +286,261 @@ public class Comprobacion implements Procesamiento{
         exp.exp().procesa(this);
     }
 
+    private void operadorAritmetico(Exp exp, Exp arg0, Exp arg1){
+        if (arg0.getType() == Type.INT && arg1.getType() == Type.INT)
+            exp.setTipo(TinyASint.TypeInt);
+        else if ((arg0.getType() == Type.REAL || arg0.getType() == Type.INT) && (arg1.getType() == Type.REAL || arg1.getType() == Type.INT))
+            exp.setTipo(TinyASint.TypeReal);
+        else
+            exp.setTipo(TinyASint.TypeError);
+    }
+
+    private void operadorLogico(Exp exp, Exp arg0, Exp arg1){
+        if (arg0.getType() == Type.BOOL && arg1.getType() == Type.BOOL)
+            exp.setTipo(TinyASint.TypeBool);
+        else
+            exp.setTipo(TinyASint.TypeError);
+    }
+    private void operadorRelacional(Exp exp, Exp arg0, Exp arg1){
+        if (arg0.getType() == Type.BOOL && arg1.getType() == Type.BOOL)
+            exp.setTipo(TinyASint.TypeBool);
+        else if (arg0.getType() == Type.STRING && arg1.getType() == Type.STRING)
+            exp.setTipo(TinyASint.TypeBool);
+        else if ((arg0.getType() == Type.REAL || arg0.getType() == Type.INT) && (arg1.getType() == Type.REAL || arg1.getType() == Type.INT))
+            exp.setTipo(TinyASint.TypeBool);
+        else
+            exp.setTipo(TinyASint.TypeError);
+    }
+    private void operadorRelacionalPlus(Exp exp, Exp arg0, Exp arg1){
+        if (arg0.getType() == Type.BOOL && arg1.getType() == Type.BOOL)
+            exp.setTipo(TinyASint.TypeBool);
+        else if (arg0.getType() == Type.STRING && arg1.getType() == Type.STRING)
+            exp.setTipo(TinyASint.TypeBool);
+        else if ((arg0.getType() == Type.REAL || arg0.getType() == Type.INT) && (arg1.getType() == Type.REAL || arg1.getType() == Type.INT))
+            exp.setTipo(TinyASint.TypeBool);
+        else if ((arg0.getType() == Type.POINTER || arg0.getType() == Type.NULL) && (arg1.getType() == Type.POINTER || arg1.getType() == Type.NULL))
+            exp.setTipo(TinyASint.TypeBool);
+        else
+            exp.setTipo(TinyASint.TypeError);
+    }
+
     @Override
     public void procesa(Suma exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorAritmetico(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(Resta exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorAritmetico(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(And exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorLogico(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(Or exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorLogico(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(LT exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorRelacional(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(GT exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorRelacional(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(LE exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorRelacional(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(GE exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorRelacional(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(NE exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorRelacionalPlus(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(EQ exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorRelacionalPlus(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(Mul exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorAritmetico(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(Mod exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        if (exp.arg0().getType() == Type.INT && exp.arg1().getType() == Type.INT)
+            exp.setTipo(TinyASint.TypeInt);
+        else
+            exp.setTipo(TinyASint.TypeError);
     }
 
     @Override
     public void procesa(Div exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        operadorAritmetico(exp, exp.arg0(), exp.arg1());
     }
 
     @Override
     public void procesa(Not exp) {
         exp.arg().procesa(this);
+        if (exp.arg().getType() == Type.INT)
+            exp.setTipo(TinyASint.TypeInt);
+        else if (exp.arg().getType() == Type.REAL)
+            exp.setTipo(TinyASint.TypeReal);
+        else
+            exp.setTipo(TinyASint.TypeError);
     }
 
     @Override
     public void procesa(Neg exp) {
         exp.arg().procesa(this);
+        if (exp.arg().getType() == Type.BOOL)
+            exp.setTipo(TinyASint.TypeBool);
+        else
+            exp.setTipo(TinyASint.TypeError);
     }
 
     @Override
     public void procesa(Index exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
+        if (exp.arg0().getType() == Type.ARRAY && exp.arg1().getType() == Type.INT){
+            ARRAY a = (ARRAY)exp.arg0().vinculo().tipo();
+            exp.setTipo(a.tipo());
+        }
+        else
+            exp.setTipo(TinyASint.TypeError);
     }
 
     @Override
     public void procesa(Ptr exp) {
         exp.exp().procesa(this);
+        if(exp.exp().getType() == Type.POINTER){
+            POINTER p = (POINTER)exp.vinculo().tipo();
+            if (p.tipo().type() == Type.RECORD){
+                REGISTRO r = (REGISTRO)exp.exp().vinculo().tipo();
+                if (r.getList().containsKey(exp.id().toString())){
+                    exp.setTipo(r.getList().get(exp.id().toString()).tipo());
+                }
+                else 
+                    exp.setTipo(TinyASint.TypeError); 
+            }
+            else 
+                exp.setTipo(TinyASint.TypeError); 
+        }
+        else 
+            exp.setTipo(TinyASint.TypeError);
     }
 
     @Override
     public void procesa(Atr exp) {
         exp.exp().procesa(this);
+        if (exp.exp().getType() == Type.RECORD){
+            REGISTRO r = (REGISTRO)exp.exp().vinculo().tipo();
+            if (r.getList().containsKey(exp.id().toString())){
+                exp.setTipo(r.getList().get(exp.id().toString()).tipo());
+            }
+            else 
+                exp.setTipo(TinyASint.TypeError); 
+        }
+        else 
+            exp.setTipo(TinyASint.TypeError); 
     }
 
     @Override
     public void procesa(Indir exp) {
         exp.arg().procesa(this);
+        if (exp.arg().getType() == Type.POINTER){
+            POINTER p = (POINTER)exp.vinculo().tipo();
+            exp.setTipo(p.tipo().type());
+        }
+        else
+            exp.setTipo(TinyASint.TypeError);
     }
 
     @Override
     public void procesa(Parentesis exp) {
         exp.arg().procesa(this);
+        exp.setTipo(exp.arg().getTipo());
     }
 
     @Override
     public void procesa(Ent exp) {
         // TODO Auto-generated method stub
-        
+        exp.setTipo(TinyASint.TypeInt);
     }
 
     @Override
     public void procesa(IdenExp exp) {
-        // TODO Auto-generated method stub
-        
+        if (exp.vinculo().decType() != DecType.VAR){
+            ok &= false;
+            exp.setTipo(TinyASint.TypeError);
+            GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.id());
+        }
+        else exp.setTipo(exp.vinculo().tipo());
     }
 
     @Override
     public void procesa(Lreal exp) {
-        // TODO Auto-generated method stub
-        
+        exp.setTipo(TinyASint.TypeReal);
     }
 
     @Override
     public void procesa(True exp) {
-        // TODO Auto-generated method stub
-        
+        exp.setTipo(TinyASint.TypeBool);
     }
 
     @Override
     public void procesa(False exp) {
-        // TODO Auto-generated method stub
-        
+        exp.setTipo(TinyASint.TypeBool);
     }
 
     @Override
     public void procesa(Cadena exp) {
-        // TODO Auto-generated method stub
-        
+        exp.setTipo(TinyASint.TypeString);
     }
 
     @Override
     public void procesa(Null exp) {
-        // TODO Auto-generated method stub
-        
+        exp.setTipo(TinyASint.TypeNull);
     }
     
 }
