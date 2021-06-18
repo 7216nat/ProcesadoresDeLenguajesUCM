@@ -202,8 +202,7 @@ public class Traduccion implements Procesamiento{
 		exp.exp1().procesa(this);
 		
 		if(exp.exp1().esDesignador()) {
-			// TODO Econtrar tamaño
-			m.ponInstruccion(m.mueve(exp.exp0().tam()));
+			m.ponInstruccion(m.mueve(exp.exp0().getTipo().tam()));
 		} else {
 			m.ponInstruccion(m.desapilaInd());
 		}
@@ -242,7 +241,12 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(IWrite exp) {
-		// TODO Auto-generated method stub
+		exp.exp().procesa(this);
+		
+		if(exp.exp().esDesignador())
+			m.ponInstruccion(m.apilaInd());
+		
+		m.ponInstruccion(m.write());
 		
 	}
 
@@ -266,9 +270,10 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(ICall proc) {
-		//m.ponInstruccion(m.activa(proc.nivel(), proc.tam(), proc.etqi()));
+		//m.ponInstruccion(m.activa(proc.vinculo().getAmbito(), proc.vinculo().tam(), proc.etqi()));
 		//m.ponInstruccion(m.dup());
-		//m.ponInstruccion(m.apilaInt(proc.par));
+		//m.ponInstruccion(m.apilaInt(((DProc)proc.vinculo()).pars().));
+		
 		
 		
 		
@@ -410,8 +415,7 @@ public class Traduccion implements Procesamiento{
 		if(exp.arg1().esDesignador())
 			m.ponInstruccion(m.apilaInd());
 		
-		// TODO ATENCIÓN ESTO SE TIENE QUE HACER CON EL TAMAÑO DEL TIPO BASE DEL ARRAY
-		m.ponInstruccion(m.apilaInt(1));
+		m.ponInstruccion(m.apilaInt(exp.getTipo().tam()));
 		m.ponInstruccion(m.mul());
 		m.ponInstruccion(m.suma());
 	}
@@ -449,6 +453,7 @@ public class Traduccion implements Procesamiento{
 	public void procesa(IdenExp exp) {
 		
 		// TODO ATENCIÓN AQUÍ HAY QUE DIFERENCIAR ENTRE VARIABLES LOCALES Y GLOBALES Y TAL
+	
 		
 		m.ponInstruccion(m.apilaInt(direcciones.get(exp.id().toString())));	
 		

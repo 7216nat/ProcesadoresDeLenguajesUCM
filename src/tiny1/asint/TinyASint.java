@@ -5,9 +5,9 @@ import java.util.Map;
 public class TinyASint {
     
 	public static abstract class ASTNode {
-		int tam;
-		public int tam() {return tam;}
-		public void setTam(int tam) {this.tam = tam;}
+		//int tam;
+		//public int tam() {return tam;}
+		//public void setTam(int tam) {this.tam = tam;}
 	}
 	
     public static class StringLocalizado {
@@ -673,7 +673,8 @@ public class TinyASint {
         public void setVinculo(Dec dec){this.vinculo = dec;}      
     }
     public static class Bloque extends Inst {
-        private Prog prog;
+        private Prog prog;  
+        private int tam;
         public Bloque(Prog prog) {
             super();
             this.prog = prog;
@@ -681,16 +682,21 @@ public class TinyASint {
         public Prog prog() {return prog;}
         public void procesa(Procesamiento p) {
             p.procesa(this); 
-        }      
+        }     
+      	public int tam() {return tam;}
+      	public void setTam(int tam) {this.tam = tam;}
     }
     
 
     public static abstract class Tipo extends ASTNode{
+    	int tam;
         public Tipo(){}
         public abstract Type type();
         public Tipo tipoSimpl(){return this;}
         public abstract void procesa(Procesamiento p);
         public abstract String toString();
+		public int tam() {return tam;}
+		public void setTam(int tam) {this.tam = tam;}
     }
     public static class INT extends Tipo {
         public INT(){
@@ -915,9 +921,12 @@ public class TinyASint {
 
 
     public static abstract class Decs extends ASTNode{
+        private int tam;
         public Decs() {
         }
         public abstract void procesa(Procesamiento p);
+        public int tam() {return tam;}
+      	public void setTam(int tam) {this.tam = tam;}
     }
     public static class NoDecs extends Decs{
         public NoDecs(){
@@ -966,6 +975,7 @@ public class TinyASint {
  
     
     public static abstract class Dec extends ASTNode{
+    	private int tam;
         int ambito;
         int dir;
         private StringLocalizado id;
@@ -986,6 +996,8 @@ public class TinyASint {
         public void setDir(int dir){
             this.dir = dir;
         }
+        public int tam() {return tam;}
+      	public void setTam(int tam) {this.tam = tam;}
         public int getAmbito(){ return ambito;}
         public int getDir(){ return dir;}
         public String toString(){

@@ -1,9 +1,11 @@
-var int a
+var string a;
+proc test_proc() {
+	var int i
+	&&
+	i = 1
+}
 &&
-a = 3;
 
-if a < 1 then
-	a = 5
-else
-	a = 6
-endif
+a = "test";
+
+write a

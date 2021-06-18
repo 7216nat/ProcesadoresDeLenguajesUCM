@@ -99,6 +99,15 @@ public class MaquinaP {
       } 
       public String toString() {return "suma";};
    }
+   private IWrite IWRITE;
+   private class IWrite implements Instruccion {
+      public void ejecuta() {
+         Valor opnd1 = pilaEvaluacion.pop();
+         System.out.println(opnd1.valorCadena());
+         pc++;
+      } 
+      public String toString() {return "write";};
+   }
    private ISumar ISUMAr;
    private class ISumar implements Instruccion {
       public void ejecuta() {
@@ -542,6 +551,7 @@ public class MaquinaP {
    public Instruccion or() {return IOR;}
    public Instruccion not() {return INOT;}
    public Instruccion neg() {return INEG;}
+   public Instruccion write() {return IWRITE;}
    public Instruccion lt() {return ILT;}
    public Instruccion gt() {return IGT;}
    public Instruccion le() {return ILE;}
@@ -590,6 +600,7 @@ public class MaquinaP {
       IDIV = new IDiv();
       IMOD = new IMod();
       INEG = new INeg();
+      IWRITE = new IWrite();
       ILT = new ILt();
       IGT = new IGt();
       ILE = new ILe();

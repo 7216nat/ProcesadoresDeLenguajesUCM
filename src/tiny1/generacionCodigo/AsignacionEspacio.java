@@ -27,19 +27,22 @@ public class AsignacionEspacio implements Procesamiento {
     }
     public void procesa(AuxDecs decs){
         decs.decs().procesa(this);
+        decs.setTam(decs.decs().tam());
     }
     public void procesa(LDecSimp decs) {
         decs.dec().procesa(this);
+        decs.setTam(decs.dec().tam());
     }
     public void procesa(LDecComp decs) {
         decs.decs().procesa(this);
         decs.dec().procesa(this);
+        decs.setTam(decs.decs().tam() + decs.dec().tam());
     }
     public void procesa(DVar dec) { 
         dec.tipo().procesa(this);
-        dec.setTam(dec.tipo().tam());
         direcciones.put(dec.id().toString(), counter);
-        counter += dec.tam();
+        counter += dec.tipo().tam();
+        dec.setTam(dec.tipo().tam());
     }
     public void procesa(DTipo dec) {
         dec.tipo().procesa(this);
@@ -47,6 +50,7 @@ public class AsignacionEspacio implements Procesamiento {
     public void procesa(DProc dec) {
         dec.pars().procesa(this);
         dec.bloque().procesa(this);
+        dec.setTam(((Bloque)dec.bloque()).prog().decs().tam());
     }
     public void procesa(NoPars decs){
         // naa
@@ -144,7 +148,8 @@ public class AsignacionEspacio implements Procesamiento {
 
     }
     public void procesa(Bloque i) {
-
+    	i.prog().procesa(this);
+    	i.setTam(i.prog().decs().tam());
     }
     public void procesa(NoExps decs){
         // naa

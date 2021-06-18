@@ -136,7 +136,12 @@ public class Etiquetado implements Procesamiento {
        
     }
     public void procesa(IWrite i) {
-
+    	i.setEtqi(etq);
+		i.exp().procesa(this);
+		etq++;
+		if(i.exp().esDesignador())
+			etq++;
+		i.setEtqs(etq);	
     }
     public void procesa(INew i) {
 
