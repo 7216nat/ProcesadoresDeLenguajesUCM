@@ -49,5 +49,8 @@ public class GestionErrores {
     }
     public static void errorExpresionTipoInadecuado(StringLocalizado str){
         System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Tipo expresion no esperada: "+str.toString()); 
-    }          
+    }
+    public static void errorDeclaracionesInadecuadas(){
+        System.err.println("Declaraciones erroneas !!!"); 
+    }           
 }   

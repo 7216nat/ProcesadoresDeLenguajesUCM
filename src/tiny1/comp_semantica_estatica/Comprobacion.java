@@ -24,7 +24,10 @@ public class Comprobacion implements Procesamiento{
     @Override
     public void procesa(Prog exp) {
         exp.decs().procesa(this);
-        exp.insts().procesa(this);
+        if (isOk()){
+            exp.insts().procesa(this);
+        }else
+            GestionErrores.errorDeclaracionesInadecuadas();
     }
 
     @Override
@@ -45,12 +48,13 @@ public class Comprobacion implements Procesamiento{
     @Override
     public void procesa(LDecComp exp) {
         exp.decs().procesa(this);
-        exp.dec().procesa(this);
+        if (isOk())
+            exp.dec().procesa(this);
     }
 
     @Override
     public void procesa(DVar exp) {
-        exp.tipo().procesa(this);
+        //exp.tipo().procesa(this);
     }
 
     @Override
@@ -82,12 +86,12 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(ParRef exp) {
-        exp.tipo().procesa(this);
+        //exp.tipo().procesa(this);
     }
 
     @Override
     public void procesa(ParSinRef exp) {
-        exp.tipo().procesa(this);
+        //exp.tipo().procesa(this);
     }
 
     @Override
@@ -117,13 +121,13 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(ARRAY exp) {
+        exp.tipo().procesa(this);
         int dim = Integer.parseInt(exp.num().toString()); 
         if (dim <= 0){
             ok &= false;
             GestionErrores.errorDimensionInadecuada(exp.num());
         }
         exp.setDim(dim);
-        exp.tipo().procesa(this);
     }
 
     @Override

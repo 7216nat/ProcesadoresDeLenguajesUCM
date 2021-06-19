@@ -78,26 +78,7 @@ public class Main {
                 
                 
                 
-                System.out.println("Procesando asignaci�n de espacio...");
-                prog.procesa(asig);
-                System.out.println("Asignaci�n de espacio procesada");
-             
-                
-                System.out.println("Procesando etiquetado...");
-                prog.procesa(etiq);
-                System.out.println("Etiquetado procesado");
-                
-                System.out.println("Procesando traducci�n de c�digo...");
-                prog.procesa(trad);
-                System.out.println("Traducci�n de c�digo finalizada");
-                
-                trad.getMaquinaP().muestraCodigo();
-                trad.getMaquinaP().muestraEstado();
-                
-                System.out.println("Ejecutando...");
-                
-                trad.getMaquinaP().ejecuta();
-                trad.getMaquinaP().muestraEstado();
+                // 
             }
             
             else {
