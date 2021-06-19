@@ -93,6 +93,9 @@ public class AsignacionEspacio implements Procesamiento {
     public void procesa(ERROR exp){
 
     }
+    public void procesa(NULL exp){
+
+    }
     public void procesa(REGISTRO t) {
 
     }

@@ -86,6 +86,9 @@ public class Impresion implements Procesamiento {
     public void procesa(ERROR exp){
         System.out.print("error");
     }
+    public void procesa(NULL exp){
+        System.out.print("null");
+    }
     public void procesa(REGISTRO t) {
         System.out.println("record {");
         t.campos().procesa(this);

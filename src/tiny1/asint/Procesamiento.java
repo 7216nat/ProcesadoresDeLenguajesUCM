@@ -23,6 +23,7 @@ public interface Procesamiento {
     void procesa(REGISTRO exp);
     void procesa(OK exp);
     void procesa(ERROR exp);
+    void procesa(NULL exp);
     void procesa(CamposSimp exp);
     void procesa(CamposComp exp);
     void procesa(Campo exp);

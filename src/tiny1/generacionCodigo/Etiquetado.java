@@ -73,6 +73,9 @@ public class Etiquetado implements Procesamiento {
     public void procesa(ERROR exp){
 
     }
+    public void procesa(NULL exp){
+
+    }
     public void procesa(REGISTRO t) {
 
     }
@@ -230,7 +233,7 @@ public class Etiquetado implements Procesamiento {
 		if(exp.arg1().esDesignador())
 			etq++;
 		
-		// TODO ATENCIÓN ESTO SE TIENE QUE HACER CON EL TAMAÑO DEL TIPO BASE DEL ARRAY
+		// TODO ATENCIï¿½N ESTO SE TIENE QUE HACER CON EL TAMAï¿½O DEL TIPO BASE DEL ARRAY
 		etq += 3;
     }
     public void procesa(Ptr exp) {
@@ -250,7 +253,7 @@ public class Etiquetado implements Procesamiento {
     }
     public void procesa(IdenExp exp) {
 
-		// TODO ATENCIÓN AQUÍ HAY QUE DIFERENCIAR ENTRE VARIABLES LOCALES Y GLOBALES Y TAL
+		// TODO ATENCIï¿½N AQUï¿½ HAY QUE DIFERENCIAR ENTRE VARIABLES LOCALES Y GLOBALES Y TAL
 		
     	etq++;
     }

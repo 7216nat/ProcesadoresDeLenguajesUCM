@@ -208,6 +208,9 @@ public class Vinculacion implements Procesamiento{
     public void procesa(ERROR exp){
         // nothing to do  
     }
+    public void procesa(NULL exp){
+        // nothing to do  
+    }
     @Override
     public void procesa(CamposSimp exp) {
         exp.campo().procesa(this);

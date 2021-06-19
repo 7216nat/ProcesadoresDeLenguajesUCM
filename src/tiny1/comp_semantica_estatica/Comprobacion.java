@@ -142,6 +142,10 @@ public class Comprobacion implements Procesamiento{
         // nothing to do  
     }
 
+    public void procesa(NULL exp){
+        // nothing to do  
+    }
+
     @Override
     public void procesa(CamposSimp exp) {
         exp.campo().procesa(this);
@@ -183,7 +187,9 @@ public class Comprobacion implements Procesamiento{
     public void procesa(IAsig exp) {
         exp.exp0().procesa(this);
         exp.exp1().procesa(this);
-        if (TypeCompatibilidad(exp.exp0().))
+        if (TypeCompatibilidad.comprobar(exp.exp0().getTipo(), exp.exp1().getTipo())){
+
+        }
     }
 
     @Override
@@ -490,7 +496,7 @@ public class Comprobacion implements Procesamiento{
         exp.arg().procesa(this);
         if (exp.arg().getType() == Type.POINTER){
             POINTER p = (POINTER)exp.vinculo().tipo();
-            exp.setTipo(p.tipo().type());
+            exp.setTipo(p.tipo());
         }
         else
             exp.setTipo(TinyASint.TypeError);

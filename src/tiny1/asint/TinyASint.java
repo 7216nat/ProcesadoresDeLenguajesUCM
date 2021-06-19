@@ -856,6 +856,20 @@ public class TinyASint {
         @Override
         public String toString(){return "OK";}
     }
+    public static class NULL extends Tipo {
+        public NULL(){
+            super();
+        }
+        @Override
+        public Type type() {return Type.NULL;}
+
+        @Override
+        public void procesa(Procesamiento p) {
+            p.procesa(this);
+        }
+        @Override
+        public String toString(){return "NULL";}
+    }
 
     public static abstract class Campos{
         public Campos(){
@@ -1184,6 +1198,7 @@ public class TinyASint {
     public Tipo registro(Campos campos) {return new REGISTRO(campos);}
     public static final Tipo TypeError = new ERROR();
     public static final Tipo TypeOk = new OK();
+    public static final Tipo TypeNull = new NULL();
     public Campos camposComp(Campos campos, Campo campo) {return new CamposComp(campos, campo);}
     public Campos camposSimp(Campo campo) {return new CamposSimp(campo);}
     public Campo campo(Tipo tipo, StringLocalizado id) {return new Campo(tipo, id);}

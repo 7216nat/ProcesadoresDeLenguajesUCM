@@ -155,6 +155,12 @@ public class Traduccion implements Procesamiento{
 	}
 
 	@Override
+	public void procesa(NULL exp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public void procesa(CamposSimp exp) {
 		// TODO Auto-generated method stub
 		
@@ -452,7 +458,7 @@ public class Traduccion implements Procesamiento{
 	@Override
 	public void procesa(IdenExp exp) {
 		
-		// TODO ATENCIÓN AQUÍ HAY QUE DIFERENCIAR ENTRE VARIABLES LOCALES Y GLOBALES Y TAL
+		// TODO ATENCIï¿½N AQUï¿½ HAY QUE DIFERENCIAR ENTRE VARIABLES LOCALES Y GLOBALES Y TAL
 	
 		
 		m.ponInstruccion(m.apilaInt(direcciones.get(exp.id().toString())));	
