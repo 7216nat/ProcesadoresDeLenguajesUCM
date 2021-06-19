@@ -32,7 +32,7 @@ public class Main {
             SimplificacionTipo simp = new SimplificacionTipo(verbose);
             AsignacionEspacio asig = new AsignacionEspacio();
             Etiquetado etiq = new Etiquetado();
-            Traduccion trad = new Traduccion(new MaquinaP(5,10,10,2), asig.getDirecciones());
+            Traduccion trad = new Traduccion(new MaquinaP(5,10,10,2));
             
             if(args[1].equals("asc")) {
             	System.out.println("Parseando el archivo " + args[0] + " con un analizador ascendente");
@@ -59,31 +59,28 @@ public class Main {
                 
                 System.out.println("Parseo finalizado sin errores");
                 
-                // System.out.println("Procesando asignaci�n de espacio...");
-                // prog.procesa(asig);
-                // System.out.println("Asignaci�n de espacio procesada");
+                /*
                 
-                // System.out.println("Direcciones asignadas:");
+                System.out.println("Procesando asignaci�n de espacio...");
+                prog.procesa(asig);
+                System.out.println("Asignaci�n de espacio procesada");
+             
                 
-                // for(String key : asig.getDirecciones().keySet()) {
-                // 	System.out.println(key + ": " + asig.getDirecciones().get(key));
-                // }
+                System.out.println("Procesando etiquetado...");
+                prog.procesa(etiq);
+                System.out.println("Etiquetado procesado");
                 
-                // System.out.println("Procesando etiquetado...");
-                // prog.procesa(etiq);
-                // System.out.println("Etiquetado procesado");
+                System.out.println("Procesando traducci�n de c�digo...");
+                prog.procesa(trad);
+                System.out.println("Traducci�n de c�digo finalizada");
                 
-                // System.out.println("Procesando traducci�n de c�digo...");
-                // prog.procesa(trad);
-                // System.out.println("Traducci�n de c�digo finalizada");
+                trad.getMaquinaP().muestraCodigo();
+                trad.getMaquinaP().muestraEstado();
                 
-                // trad.getMaquinaP().muestraCodigo();
-                // trad.getMaquinaP().muestraEstado();
+                System.out.println("Ejecutando...");
                 
-                // System.out.println("Ejecutando...");
-                
-                // trad.getMaquinaP().ejecuta();
-                // trad.getMaquinaP().muestraEstado();
+                trad.getMaquinaP().ejecuta();
+                trad.getMaquinaP().muestraEstado();*/
             }
             
             else {

@@ -1,5 +1,9 @@
 package tiny1.pmaquinaP;
 
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -107,6 +111,24 @@ public class MaquinaP {
          pc++;
       } 
       public String toString() {return "write";};
+   }
+   private IRead IREAD;
+   private class IRead implements Instruccion {
+      public void ejecuta() {
+    	  
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    	String str = "";
+		try {
+			str = reader.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	  
+        pilaEvaluacion.push(new ValorCadena(str));
+        pc++;
+      } 
+      public String toString() {return "read";};
    }
    private ISumar ISUMAr;
    private class ISumar implements Instruccion {
@@ -294,6 +316,16 @@ public class MaquinaP {
       } 
       public String toString() {return "neq";};
    }
+   
+   private INl INL;
+   private class INl implements Instruccion {
+      public void ejecuta() {
+    	  System.out.println("");
+    	  pc++;
+      } 
+      public String toString() {return "nl";};
+   }
+   
    
    private class IApilaInt implements Instruccion {
       private int valor;
@@ -552,12 +584,14 @@ public class MaquinaP {
    public Instruccion not() {return INOT;}
    public Instruccion neg() {return INEG;}
    public Instruccion write() {return IWRITE;}
+   public Instruccion read() {return IREAD;}
    public Instruccion lt() {return ILT;}
    public Instruccion gt() {return IGT;}
    public Instruccion le() {return ILE;}
    public Instruccion ge() {return IGE;}
    public Instruccion eq() {return IEQ;}
    public Instruccion neq() {return INEQ;}
+   public Instruccion nl() {return INL;}
    public Instruccion apilaInt(int val) {return new IApilaInt(val);}
    public Instruccion apilaBool(boolean val) {return new IApilaBool(val);}
    public Instruccion apilaReal(double val) {return new IApilaReal(val);}
@@ -601,6 +635,8 @@ public class MaquinaP {
       IMOD = new IMod();
       INEG = new INeg();
       IWRITE = new IWrite();
+      IREAD = new IRead();
+      INL = new INl();
       ILT = new ILt();
       IGT = new IGt();
       ILE = new ILe();

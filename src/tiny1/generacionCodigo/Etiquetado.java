@@ -136,7 +136,11 @@ public class Etiquetado implements Procesamiento {
 		i.setEtqs(etq);	
     }
     public void procesa(IRead i) {
-       
+    	i.setEtqi(etq);
+		i.exp().procesa(this);	
+		etq++;		
+		etq++;
+    	i.setEtqs(etq);	
     }
     public void procesa(IWrite i) {
     	i.setEtqi(etq);
@@ -147,13 +151,22 @@ public class Etiquetado implements Procesamiento {
 		i.setEtqs(etq);	
     }
     public void procesa(INew i) {
-
+    	i.setEtqi(etq);
+		i.exp().procesa(this);
+		etq++;
+		etq++;
+		i.setEtqs(etq);	
     }
     public void procesa(IDelete i) {
-
+    	i.setEtqi(etq);
+		i.exp().procesa(this);
+		etq++;
+		i.setEtqs(etq);	
     }
     public void procesa(INl i) {
-      
+    	i.setEtqi(etq);
+		etq++;
+		i.setEtqs(etq);	
     }
     public void procesa(ICall i) {
       
@@ -239,11 +252,17 @@ public class Etiquetado implements Procesamiento {
     public void procesa(Ptr exp) {
       
     }
-    public void procesa(Atr exp) {
-      
+    public void procesa(Atr i) {
+    	/*
+    	i.setEtqi(etq);
+    	i.exp().procesa(this);
+    	etq++;
+    	etq++;
+    	i.setEtqi(etq);*/
     }
     public void procesa(Indir exp) {
-      
+		exp.arg().procesa(this);
+		etq++;
     }
     public void procesa(Parentesis exp) {
         

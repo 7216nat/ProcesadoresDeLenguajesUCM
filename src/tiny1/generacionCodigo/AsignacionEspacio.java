@@ -1,23 +1,14 @@
 package tiny1.generacionCodigo;
-import java.util.HashMap;
+
 
 import tiny1.asint.Procesamiento;
 import tiny1.asint.TinyASint.*;
 public class AsignacionEspacio implements Procesamiento {
 	
-	HashMap<String, Integer> direcciones;
-	
-	
-	private int counter = 0;
-	
-	
-	public HashMap<String, Integer> getDirecciones(){
-		return direcciones;
-	}
 
-    public AsignacionEspacio() {
-		direcciones = new HashMap<String, Integer>();
-    }
+	private int despCounter = 0;
+	private int globalCounter = 0;
+
     public void procesa(Prog prog) {
         prog.decs().procesa(this);
         prog.insts().procesa(this);
@@ -40,12 +31,15 @@ public class AsignacionEspacio implements Procesamiento {
     }
     public void procesa(DVar dec) { 
         dec.tipo().procesa(this);
-        direcciones.put(dec.id().toString(), counter);
-        counter += dec.tipo().tam();
+        dec.setDir(globalCounter);
+        globalCounter += dec.tipo().tam();
         dec.setTam(dec.tipo().tam());
     }
     public void procesa(DTipo dec) {
-        dec.tipo().procesa(this);
+    	dec.tipo().procesa(this);
+        dec.setDir(globalCounter);
+        globalCounter += dec.tipo().tam();
+        dec.setTam(dec.tipo().tam());
     }
     public void procesa(DProc dec) {
         dec.pars().procesa(this);
@@ -97,16 +91,21 @@ public class AsignacionEspacio implements Procesamiento {
 
     }
     public void procesa(REGISTRO t) {
-
+    	despCounter = 0;
+        t.campos().procesa(this);
+        t.setTam(despCounter);
     }
     public void procesa(CamposSimp cs) {
-
+        cs.campo().procesa(this);
     }
     public void procesa(CamposComp cs) {
-
+        cs.campos().procesa(this);
+        cs.campo().procesa(this);
     }
     public void procesa(Campo c) {
-
+        c.tipo().procesa(this);
+        c.setDesp(despCounter);
+        despCounter += c.tipo().tam();
     }
     public void procesa(POINTER t) {
 

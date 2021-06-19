@@ -40,5 +40,8 @@ public class GestionErrores {
     }
     public static void errorExpresionNoDesignador(StringLocalizado str){
         System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Instruccion error, expresion no designador: "+str.toString()); 
-    }          
+    }
+    public static void errorBorradoMemoriaDinamicaEjecucion(StringLocalizado str){
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Instruccion error, no es posible borrar memoria dinámica: "+str.toString()); 
+    }        
 }   

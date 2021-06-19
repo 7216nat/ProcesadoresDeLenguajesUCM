@@ -1,11 +1,24 @@
-var string a;
-proc test_proc() {
-	var int i
-	&&
-	i = 1
-}
+var int test;
+
+type record {
+	int a;
+	int b;
+	int c
+} rec;
+
+type record {
+	int a;
+	int b;
+	int c
+} rec2
 &&
 
-a = "test";
+rec.a = 2;
+rec.b = 3;
+rec.c = 5;
 
-write a
+test = 4;
+
+rec2.a = 1;
+rec2.b = 2;
+rec2.c = 3

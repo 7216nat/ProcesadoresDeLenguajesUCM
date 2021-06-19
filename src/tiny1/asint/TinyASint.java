@@ -927,6 +927,7 @@ public class TinyASint {
     }
     public static class Campo{
         int dir;
+        int desp;
         private StringLocalizado id;
         private Tipo tipo;
         private Type type;
@@ -946,9 +947,11 @@ public class TinyASint {
         public void procesa(Procesamiento p){
             p.procesa(this);
         }
+        public int desp() {return desp;}
+        public void setDesp(int desp) {this.desp = desp;}
         @Override
         public String toString(){
-            return "Campo " + this.id().toString() + "; Dir: " + this.dir;
+            return "Campo " + this.id().toString() + "; Dir: " + this.dir + "; Desp: " + this.desp;
         } 
     }
 

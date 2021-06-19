@@ -4,20 +4,19 @@ import java.util.HashMap;
 
 import tiny1.asint.Procesamiento;
 import tiny1.asint.TinyASint.*;
+import tiny1.errors.GestionErrores;
 import tiny1.pmaquinaP.MaquinaP;
 
 public class Traduccion implements Procesamiento{
 
 	private MaquinaP m;
-	private HashMap<String, Integer> direcciones;
 	
 	public MaquinaP getMaquinaP() {
 		return m;
 	}
 	
-	public Traduccion(MaquinaP m, HashMap<String, Integer> direcciones) {
+	public Traduccion(MaquinaP m) {
 		this.m = m;
-		this.direcciones = direcciones;
 	}
 	
 	@Override
@@ -241,8 +240,9 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(IRead exp) {
-		// TODO Auto-generated method stub
-		
+		exp.exp().procesa(this);	
+		m.ponInstruccion(m.read());			
+		m.ponInstruccion(m.desapilaInd());	
 	}
 
 	@Override
@@ -257,21 +257,23 @@ public class Traduccion implements Procesamiento{
 	}
 
 	@Override
-	public void procesa(INew exp) {
-		// TODO Auto-generated method stub
-		
+	public void procesa(INew exp) {	
+		exp.exp().procesa(this);
+		m.ponInstruccion(m.alloc(exp.exp().getTipo().tam()));		
+		m.ponInstruccion(m.desapilaInd());	
+
 	}
 
 	@Override
 	public void procesa(IDelete exp) {
-		// TODO Auto-generated method stub
-		
+		exp.exp().procesa(this);
+		m.ponInstruccion(m.dealloc(exp.exp().getTipo().tam()));		
+		//GestionErrores.errorBorradoMemoriaDinamicaEjecucion(exp.exp().str());
 	}
 
 	@Override
 	public void procesa(INl exp) {
-		// TODO Auto-generated method stub
-		
+		m.ponInstruccion(m.nl());
 	}
 
 	@Override
@@ -434,14 +436,18 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(Atr exp) {
-		// TODO Auto-generated method stub
+		exp.exp().procesa(this);
 		
+		Campo campo = ((REGISTRO)exp.exp().vinculo().tipo()).getList().get(exp.id().toString());
+		
+		m.ponInstruccion(m.apilaInt(campo.desp()));
+		m.ponInstruccion(m.suma());
 	}
 
 	@Override
 	public void procesa(Indir exp) {
-		// TODO Auto-generated method stub
-		
+		exp.arg().procesa(this);
+		m.ponInstruccion(m.apilaInd());	
 	}
 
 	@Override
@@ -459,9 +465,8 @@ public class Traduccion implements Procesamiento{
 	public void procesa(IdenExp exp) {
 		
 		// TODO ATENCI�N AQU� HAY QUE DIFERENCIAR ENTRE VARIABLES LOCALES Y GLOBALES Y TAL
-	
-		
-		m.ponInstruccion(m.apilaInt(direcciones.get(exp.str().toString())));	
+
+		m.ponInstruccion(m.apilaInt(exp.vinculo().getDir()));	
 		
 	}
 

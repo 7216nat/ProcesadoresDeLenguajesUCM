@@ -33,7 +33,7 @@ public class Impresion implements Procesamiento {
     public void procesa(DTipo dec) {
         System.out.print(tabs + "type ");
         dec.tipo().procesa(this);
-        System.out.print(dec.id());
+        System.out.print(" " + dec.id());
     }
     public void procesa(DProc dec) {
         System.out.print(tabs + "proc " + dec.id()+ " (" );
