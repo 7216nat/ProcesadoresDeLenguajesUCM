@@ -112,10 +112,7 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(IdenTipo exp) {
-        if (exp.vinculo().decType() != DecType.TYPE){
-            ok &= false;
-            GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.str());
-        }
+        // naa
     }
 
     @Override
@@ -164,7 +161,8 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(POINTER exp) {
-        exp.tipo().procesa(this);
+        // TODO porque se entra en bucle infinito?
+        //exp.tipo().procesa(this);
     }
 
     @Override
@@ -176,19 +174,37 @@ public class Comprobacion implements Procesamiento{
     public void procesa(InstsComp exp) {
         exp.insts().procesa(this);
         exp.inst().procesa(this);
+        if (!(exp.insts().getOk() && exp.inst().getOk())){
+            ok &= false;
+            exp.setOk(false);
+        }
     }
 
     @Override
     public void procesa(InstsSimp exp) {
         exp.inst().procesa(this);
+        if (!exp.inst().getOk()){
+            ok &= false;
+            exp.setOk(false);
+        }
     }
 
     @Override
     public void procesa(IAsig exp) {
         exp.exp0().procesa(this);
         exp.exp1().procesa(this);
-        if (TypeCompatibilidad.comprobar(exp.exp0().getTipo(), exp.exp1().getTipo())){
-
+        if (!exp.exp0().esDesignador()){
+            ok &= false;
+            exp.setOk(false);
+            GestionErrores.errorExpresionNoDesignador(exp.exp0().str());
+        }
+        else {
+            log("Asignacion:" + exp.exp0().getTipo() + " =? " + exp.exp1().getTipo());
+            if (!TypeCompatibilidad.comprobar(exp.exp0().getTipo(), exp.exp1().getTipo())){
+                ok &= false;
+                exp.setOk(false);
+                GestionErrores.errorAsignacionIncompatible(exp.exp0().str());
+            }
         }
     }
 
@@ -196,6 +212,16 @@ public class Comprobacion implements Procesamiento{
     public void procesa(IIfThen exp) {
         exp.exp().procesa(this);
         exp.insts().procesa(this);
+        if(exp.exp().getType() != Type.BOOL){
+            ok &= false;
+            exp.setOk(false);
+            GestionErrores.errorExpresionTipoInadecuado(exp.exp().str());            
+        }else{
+            if (!exp.insts().getOk()){
+                ok &= false;
+                exp.setOk(false);
+            }
+        }
     }
 
     @Override
@@ -203,12 +229,31 @@ public class Comprobacion implements Procesamiento{
         exp.exp().procesa(this);
         exp.insts0().procesa(this);
         exp.insts1().procesa(this);
+        if(exp.exp().getType() != Type.BOOL){
+            ok &= false;
+            exp.setOk(false);
+            GestionErrores.errorExpresionTipoInadecuado(exp.exp().str());            
+        }else{
+            if (!exp.insts0().getOk() || !exp.insts1().getOk()){
+                ok &= false;
+                exp.setOk(false);
+            }
+        }
     }
 
     @Override
     public void procesa(IWhile exp) {
         exp.exp().procesa(this);
         exp.insts().procesa(this);
+        if (exp.exp().getType() != Type.BOOL){
+            ok &= false;
+            exp.setOk(false);
+            GestionErrores.errorIntruccionConElementosInadecuados(exp.exp().str());
+        }
+        if (!exp.insts().getOk()){
+            ok &= false;
+            exp.setOk(false);
+        }
     }
 
     @Override
@@ -217,7 +262,7 @@ public class Comprobacion implements Procesamiento{
         if (!exp.exp().esDesignador()){      
             ok &= false;
             exp.setOk(false);
-            GestionErrores.errorIntruccionConElementosInadecuados(exp.exp().str());
+            GestionErrores.errorExpresionNoDesignador(exp.exp().str());
         }
         else{ 
             switch (exp.exp().getType()){
@@ -278,30 +323,35 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(ICall exp) {
-        if (exp.vinculo().decType() !=DecType.PROC){
-            ok &= false;
-            exp.setOk(false);
-            GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.id());
-            return;
-        }
+        exp.exps().procesa(this);
         Exps exps = exp.exps();
         DProc proc = (DProc)exp.vinculo();
         Pars pars = proc.pars();
-        while (exps.exps() != null && pars.pars() != null) {
-            if (!TypeCompatibilidad.comprobar(exps.exp().vinculo().tipo(), pars.par().tipo())){
+
+        if (exps.exp() == null && pars.par() == null){
+            return;
+        }
+        if ((exps.exp() != null && pars.par() == null) || (exps.exp() == null && pars.par() != null)){
+            exp.setOk(false);
+            ok &= false;
+            GestionErrores.errorParametrosNoCoinciden(exp.id());
+            return;
+        }
+        do {
+            if (!TypeCompatibilidad.comprobar(exps.exp().getTipo(), pars.par().tipo())){
                 ok &= false;
                 exp.setOk(false);
                 GestionErrores.errorParametrosNoCoinciden(exp.id());
             }
-            exps = exp.exps();
+            if (pars.par().esReferencia() && !exps.exp().esDesignador()){
+                ok &= false;
+                exp.setOk(false);
+                GestionErrores.errorExpresionNoDesignador(exp.id());
+            }
+            exps = exps.exps();
             pars = pars.pars();
-        }
-        if ((exp.exps() != null && pars.pars() == null) || (exp.exps() == null && pars.pars() != null)){
-            exp.setOk(false);
-            ok &= false;
-            GestionErrores.errorParametrosNoCoinciden(exp.id());
-        }
-        if(exp.exps() == null && pars.pars() == null && !TypeCompatibilidad.comprobar(exps.exp().vinculo().tipo(), pars.par().tipo())){
+        } while (exps != null && pars != null);
+        if (!(exps == null && pars == null)){
             exp.setOk(false);
             ok &= false;
             GestionErrores.errorParametrosNoCoinciden(exp.id());
@@ -312,6 +362,7 @@ public class Comprobacion implements Procesamiento{
     public void procesa(Bloque exp) {
         exp.prog().procesa(this);
         if(!exp.prog().insts().getOk()){
+            ok &= false;
             exp.setOk(false);
         }
     }
@@ -323,15 +374,13 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(Exps1 exp) {
-        // naa
-        //exp.exps().procesa(this);
-        //exp.exp().procesa(this);
+        exp.exps().procesa(this);
+        exp.exp().procesa(this);
     }
 
     @Override
     public void procesa(Exps0 exp) {
-        // naa
-        //exp.exp().procesa(this);
+        exp.exp().procesa(this);
     }
 
     private void operadorAritmetico(Exp exp, Exp arg0, Exp arg1){
@@ -469,6 +518,15 @@ public class Comprobacion implements Procesamiento{
     @Override
     public void procesa(Not exp) {
         exp.arg().procesa(this);
+        if (exp.arg().getType() == Type.BOOL)
+            exp.setTipo(TinyASint.TypeBool);
+        else
+            exp.setTipo(TinyASint.TypeError);
+    }
+
+    @Override
+    public void procesa(Neg exp) {
+        exp.arg().procesa(this);
         if (exp.arg().getType() == Type.INT)
             exp.setTipo(TinyASint.TypeInt);
         else if (exp.arg().getType() == Type.REAL)
@@ -478,33 +536,25 @@ public class Comprobacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(Neg exp) {
-        exp.arg().procesa(this);
-        if (exp.arg().getType() == Type.BOOL)
-            exp.setTipo(TinyASint.TypeBool);
-        else
-            exp.setTipo(TinyASint.TypeError);
-    }
-
-    @Override
     public void procesa(Index exp) {
         exp.arg0().procesa(this);
         exp.arg1().procesa(this);
         if (exp.arg0().getType() == Type.ARRAY && exp.arg1().getType() == Type.INT){
-            ARRAY a = (ARRAY)exp.arg0().vinculo().tipo();
+            ARRAY a = (ARRAY)exp.arg0().getTipo();
             exp.setTipo(a.tipo());
         }
         else
             exp.setTipo(TinyASint.TypeError);
+        log(exp.str().col() + " " + exp.str().fila() + " " + exp.arg0().str() + "["+ exp.arg1().str() + "]: " + exp.getTipo());
     }
 
     @Override
     public void procesa(Ptr exp) {
         exp.exp().procesa(this);
         if(exp.exp().getType() == Type.POINTER){
-            POINTER p = (POINTER)exp.vinculo().tipo();
+            POINTER p = (POINTER)exp.exp().getTipo();
             if (p.tipo().type() == Type.RECORD){
-                REGISTRO r = (REGISTRO)exp.exp().vinculo().tipo();
+                REGISTRO r = (REGISTRO)p.tipo();
                 if (r.getList().containsKey(exp.id().toString())){
                     exp.setTipo(r.getList().get(exp.id().toString()).tipo());
                 }
@@ -516,13 +566,14 @@ public class Comprobacion implements Procesamiento{
         }
         else 
             exp.setTipo(TinyASint.TypeError);
+        log(exp.str().col() + " " + exp.str().fila() + " " + exp.exp().str() + "->"+ exp.id() + ": " + exp.getTipo());
     }
 
     @Override
     public void procesa(Atr exp) {
         exp.exp().procesa(this);
         if (exp.exp().getType() == Type.RECORD){
-            REGISTRO r = (REGISTRO)exp.exp().vinculo().tipo();
+            REGISTRO r = (REGISTRO)exp.exp().getTipo();
             if (r.getList().containsKey(exp.id().toString())){
                 exp.setTipo(r.getList().get(exp.id().toString()).tipo());
             }
@@ -531,17 +582,19 @@ public class Comprobacion implements Procesamiento{
         }
         else 
             exp.setTipo(TinyASint.TypeError); 
+        log(exp.str().col() + " " + exp.str().fila() + " " + exp.exp().str() + "->"+ exp.id() + ": " + exp.getTipo());
     }
 
     @Override
     public void procesa(Indir exp) {
         exp.arg().procesa(this);
         if (exp.arg().getType() == Type.POINTER){
-            POINTER p = (POINTER)exp.vinculo().tipo();
+            POINTER p = (POINTER)exp.arg().getTipo();
             exp.setTipo(p.tipo());
         }
         else
             exp.setTipo(TinyASint.TypeError);
+        log(exp.str().col() + " " + exp.str().fila() + " *" + exp.arg().str() + ": " + exp.getTipo());
     }
 
     @Override
@@ -557,12 +610,8 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(IdenExp exp) {
-        if (exp.vinculo().decType() != DecType.VAR){
-            ok &= false;
-            exp.setTipo(TinyASint.TypeError);
-            GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.str());
-        }
-        else exp.setTipo(exp.vinculo().tipo());
+        exp.setTipo(exp.vinculo().tipo());
+        log(exp.str().fila() + " " + exp.str().col() + " "  + " " + exp.str().toString() + ": " + exp.getTipo());
     }
 
     @Override

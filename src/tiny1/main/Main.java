@@ -10,6 +10,7 @@ import tiny1.analizadorsintactico.asc.AnalizadorSintacticoAsc;
 import tiny1.analizadorsintactico.desc.AnalizadorSintacticoDesc;
 import tiny1.asint.Impresion;
 import tiny1.asint.TinyASint.Prog;
+import tiny1.comp_semantica_estatica.Comprobacion;
 import tiny1.comp_semantica_estatica.SimplificacionTipo;
 import tiny1.comp_semantica_estatica.Vinculacion;
 import tiny1.generacionCodigo.AsignacionEspacio;
@@ -30,6 +31,7 @@ public class Main {
             boolean verbose = true;
             Vinculacion vinc = new Vinculacion(verbose);
             SimplificacionTipo simp = new SimplificacionTipo(verbose);
+            Comprobacion comp = new Comprobacion(verbose);
             AsignacionEspacio asig = new AsignacionEspacio();
             Etiquetado etiq = new Etiquetado();
             Traduccion trad = new Traduccion(new MaquinaP(5,10,10,2));
@@ -42,8 +44,16 @@ public class Main {
                 Prog prog = (Prog)as.parse().value;
                 prog.procesa(new Impresion());
                 prog.procesa(vinc);
-                System.out.println(vinc.isOk());
+                if (!vinc.isOk()){
+                    System.out.println("Error Vinculacion.");
+                    System.exit(-1);
+                }
                 prog.procesa(simp);
+                prog.procesa(comp);
+                if (!comp.isOk()){
+                    System.out.println("Error Comprobacion.");
+                    System.exit(-1);
+                }
                 System.out.println("Parseo finalizado sin errores");
             }
             
@@ -54,9 +64,16 @@ public class Main {
                 Prog prog = as.Init();
                 prog.procesa(new Impresion());
                 prog.procesa(vinc);
-                System.out.println(vinc.isOk());
+                if (!vinc.isOk()){
+                    System.out.println("Error Vinculacion.");
+                    System.exit(-1);
+                }
                 prog.procesa(simp);
-                
+                prog.procesa(comp);
+                if (!comp.isOk()){
+                    System.out.println("Error Comprobacion.");
+                    System.exit(-1);
+                }
                 System.out.println("Parseo finalizado sin errores");
                 
                 /*

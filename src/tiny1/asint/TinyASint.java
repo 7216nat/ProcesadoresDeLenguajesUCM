@@ -802,11 +802,17 @@ public class TinyASint {
         }
         public StringLocalizado num(){return num;}
         public Tipo tipo(){return tipo;}
+        public void setTipo(Tipo tipo) {this.tipo = tipo;}
         public void procesa(Procesamiento p){p.procesa(this);}
         @Override
         public Type type() {return Type.ARRAY;}
         public void setDim(int dim) {this.dim = dim;}
         public int getDim() {return dim;}
+        @Override
+        public Tipo tipoSimpl(){
+            //this.tipo = tipo.tipoSimpl();
+            return this;
+        }
         @Override
         public String toString(){return "ARRAY";}
     }
@@ -837,6 +843,12 @@ public class TinyASint {
             this.tipo = tipo;
         }
         public Tipo tipo(){return tipo;}
+        public void setTipo(Tipo tipo) {this.tipo = tipo;}
+        @Override
+        public Tipo tipoSimpl(){
+            //this.tipo = tipo.tipoSimpl();
+            return this;
+        }
         public void procesa(Procesamiento p){
             p.procesa(this);
         }
@@ -925,7 +937,7 @@ public class TinyASint {
             p.procesa(this);
         }
     }
-    public static class Campo{
+    public static class Campo {
         int dir;
         int desp;
         private StringLocalizado id;
@@ -1145,6 +1157,9 @@ public class TinyASint {
 
 
     public static abstract class Par extends Dec{
+        public boolean esReferencia(){
+            return false;
+        }
         public Par(Tipo tipo, StringLocalizado id) {
             super(tipo, id);
         }
@@ -1156,6 +1171,10 @@ public class TinyASint {
         }
         public void procesa(Procesamiento p){
             p.procesa(this); 
+        }
+        @Override
+        public boolean esReferencia(){
+            return true;
         }
         @Override
         public String toString(){

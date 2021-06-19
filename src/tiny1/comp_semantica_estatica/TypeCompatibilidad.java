@@ -21,7 +21,6 @@ public class TypeCompatibilidad {
             if(t1.equals(t2)) return true;
 
             // int y real
-            if(t1.type() == Type.INT && t2.type() == Type.REAL) return true;
             if(t1.type() == Type.REAL && t2.type() == Type.INT) return true;
 
             // array

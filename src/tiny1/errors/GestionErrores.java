@@ -42,6 +42,12 @@ public class GestionErrores {
         System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Instruccion error, expresion no designador: "+str.toString()); 
     }
     public static void errorBorradoMemoriaDinamicaEjecucion(StringLocalizado str){
-        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Instruccion error, no es posible borrar memoria dinámica: "+str.toString()); 
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Instruccion error, no es posible borrar memoria dinï¿½mica: "+str.toString()); 
     }        
+    public static void errorAsignacionIncompatible(StringLocalizado str){
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": asignacion incompatible: "+str.toString()); 
+    }
+    public static void errorExpresionTipoInadecuado(StringLocalizado str){
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Tipo expresion no esperada: "+str.toString()); 
+    }          
 }   
