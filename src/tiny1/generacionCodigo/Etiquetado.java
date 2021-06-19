@@ -12,18 +12,20 @@ public class Etiquetado implements Procesamiento {
     public void procesa(Prog prog) {
     	etq = 0;
         prog.insts().procesa(this);
+        prog.decs().procesa(this);
     }
     public void procesa(NoDecs decs){
         //naa
     }
     public void procesa(AuxDecs decs){
-       
+       decs.decs().procesa(this);
     }
     public void procesa(LDecSimp decs) {
-        
+    	decs.dec().procesa(this);
     }
     public void procesa(LDecComp decs) {
-
+    	decs.decs().procesa(this);
+        decs.dec().procesa(this);
     }
     public void procesa(DVar dec) { 
       
@@ -32,7 +34,10 @@ public class Etiquetado implements Procesamiento {
       
     }
     public void procesa(DProc dec) {
-       
+        dec.bloque().procesa(this);
+                
+        dec.setEtqi(dec.bloque().etqi());
+        dec.setEtqs(dec.bloque().etqs());
     }
     public void procesa(NoPars decs){
         // naa
@@ -168,8 +173,42 @@ public class Etiquetado implements Procesamiento {
 		etq++;
 		i.setEtqs(etq);	
     }
-    public void procesa(ICall i) {
-      
+    public void procesa(ICall proc) {
+
+    	proc.setEtqi(etq);
+		
+		Pars pars = ((DProc)proc.vinculo()).pars();
+		Exps exps = proc.exps();	
+		
+		etq++;
+		
+		do {
+			
+			Par par = pars.par();
+			Exp exp = exps.exp();
+	
+			etq += 3;
+			
+			exp.procesa(this);
+			
+			if(proc.exps().exp().esDesignador()) {
+				etq++;		
+			} else {
+				if(par instanceof ParRef) {
+
+				} else {
+					etq++;
+				}	
+			}
+			
+			pars = pars.pars();
+			exps = exps.exps();
+			
+		} while(pars != null && exps != null);
+		
+		etq += 2;	
+		
+		proc.setEtqs(etq);	
     }
     public void procesa(Bloque i) {
     	i.setEtqi(etq);

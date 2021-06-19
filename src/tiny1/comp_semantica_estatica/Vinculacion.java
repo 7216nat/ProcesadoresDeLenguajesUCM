@@ -130,6 +130,7 @@ public class Vinculacion implements Procesamiento{
     @Override
     public void procesa(DProc exp) {
         checkId(exp.id(), exp.id().toString(), exp);
+        exp.setAmbito(currBloque);
         abreBloque();
         exp.pars().procesa(this);
         Bloque b = (Bloque)exp.bloque();

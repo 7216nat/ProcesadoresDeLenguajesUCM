@@ -5,9 +5,12 @@ import java.util.Map;
 public class TinyASint {
     
 	public static abstract class ASTNode {
-		//int tam;
-		//public int tam() {return tam;}
-		//public void setTam(int tam) {this.tam = tam;}
+		private int etqi;
+    	private int etqs;
+        public int etqi() {return etqi;}
+        public int etqs() {return etqs;}
+        public void setEtqi(int etqi) {this.etqi = etqi;}
+        public void setEtqs(int etqs) {this.etqs = etqs;}
 	}
 	
     public static class StringLocalizado {
@@ -500,18 +503,12 @@ public class TinyASint {
     }    
 
 
-    public static abstract class Insts {
+    public static abstract class Insts extends ASTNode{
     	private boolean ok;
-    	private int etqi;
-    	private int etqs;
         public Insts(){
             ok = true;
         }
-        public abstract void procesa(Procesamiento p);
-        public int etqi() {return etqi;}
-        public int etqs() {return etqs;}
-        public void setEtqi(int etqi) {this.etqi = etqi;}
-        public void setEtqs(int etqs) {this.etqs = etqs;}
+        public abstract void procesa(Procesamiento p);	
         public boolean getOk(){return ok;}
         public void setOk(boolean ok){this.ok = ok;}
     }
@@ -1100,11 +1097,14 @@ public class TinyASint {
     }
 
     public static abstract class Pars {
+    	int tam;
         public Pars() {
         }
         public Pars pars(){return null;}
         public Par par(){return null;}
         public abstract void procesa(Procesamiento p);
+        public void setTam(int tam) {this.tam = tam;}
+        public int tam() {return tam;}
     }
     public static class NoPars extends Pars{
         public NoPars(){

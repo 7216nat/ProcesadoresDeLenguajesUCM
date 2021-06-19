@@ -21,8 +21,8 @@ public class Traduccion implements Procesamiento{
 	
 	@Override
 	public void procesa(Prog prog) {
-        prog.decs().procesa(this);
         prog.insts().procesa(this);
+        prog.decs().procesa(this);
         m.ponInstruccion(m.stop());
 	}
 
@@ -64,8 +64,8 @@ public class Traduccion implements Procesamiento{
 	}
 
 	@Override
-	public void procesa(DProc exp) {
-		// TODO Auto-generated method stub
+	public void procesa(DProc dec) {
+		dec.bloque().procesa(this);
 		
 	}
 
@@ -75,28 +75,22 @@ public class Traduccion implements Procesamiento{
 		
 	}
 
-	@Override
-	public void procesa(ParsComp exp) {
-		// TODO Auto-generated method stub
-		
+	public void procesa(ParsComp pars) {
+		pars.pars().procesa(this);
+		pars.par().procesa(this);
 	}
 
-	@Override
-	public void procesa(ParsSimp exp) {
-		// TODO Auto-generated method stub
-		
+	public void procesa(ParsSimp pars) {
+		pars.par().procesa(this);
 	}
 
-	@Override
-	public void procesa(ParRef exp) {
-		// TODO Auto-generated method stub
-		
+	public void procesa(ParRef par) {
+
 	}
 
-	@Override
-	public void procesa(ParSinRef exp) {
-		// TODO Auto-generated method stub
+	public void procesa(ParSinRef par) {
 		
+
 	}
 
 	@Override
@@ -278,13 +272,49 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(ICall proc) {
-		//m.ponInstruccion(m.activa(proc.vinculo().getAmbito(), proc.vinculo().tam(), proc.etqi()));
-		//m.ponInstruccion(m.dup());
-		//m.ponInstruccion(m.apilaInt(((DProc)proc.vinculo()).pars().));
+	
+		int nivel = proc.vinculo().getAmbito() + 1;
+		int tam = proc.vinculo().tam();
+		int sigdir = proc.etqs();
+		int pdir = proc.vinculo().etqi();
 		
+		Pars pars = ((DProc)proc.vinculo()).pars();
+		Exps exps = proc.exps();	
 		
+		m.ponInstruccion(m.activa(nivel, tam, sigdir));
 		
+		do {
+			
+			Par par = pars.par();
+			Exp exp = exps.exp();
+	
+			m.ponInstruccion(m.dup());
+			m.ponInstruccion(m.apilaInt(par.getDir()));
+			m.ponInstruccion(m.suma());
+			
+			exp.procesa(this);
+			
+			if(proc.exps().exp().esDesignador()) {
+				if(par instanceof ParRef) {
+					m.ponInstruccion(m.mueve(par.tam()));
+				} else {
+					m.ponInstruccion(m.desapilaInd());
+				}			
+			} else {
+				if(par instanceof ParRef) {
+
+				} else {
+					m.ponInstruccion(m.desapilaInd());
+				}	
+			}
+			
+			pars = pars.pars();
+			exps = exps.exps();
+			
+		} while(pars != null && exps != null);
 		
+		m.ponInstruccion(m.desapilad(nivel));
+		m.ponInstruccion(m.irA(pdir));		
 		
 	}
 
@@ -464,9 +494,18 @@ public class Traduccion implements Procesamiento{
 	@Override
 	public void procesa(IdenExp exp) {
 		
+		if(exp.vinculo().getAmbito() == 0) {
+			// Variable global
+			m.ponInstruccion(m.apilaInt(exp.vinculo().getDir()));	
+		} else {
+			m.ponInstruccion(m.apilad(exp.vinculo().getAmbito()));	
+			m.ponInstruccion(m.apilaInt(exp.vinculo().getDir()));	
+			m.ponInstruccion(m.suma());	
+		}
+		
 		// TODO ATENCI�N AQU� HAY QUE DIFERENCIAR ENTRE VARIABLES LOCALES Y GLOBALES Y TAL
 
-		m.ponInstruccion(m.apilaInt(exp.vinculo().getDir()));	
+		
 		
 	}
 

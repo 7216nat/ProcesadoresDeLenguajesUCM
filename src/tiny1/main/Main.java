@@ -59,7 +59,7 @@ public class Main {
                 
                 System.out.println("Parseo finalizado sin errores");
                 
-                /*
+                
                 
                 System.out.println("Procesando asignaci�n de espacio...");
                 prog.procesa(asig);
@@ -80,7 +80,7 @@ public class Main {
                 System.out.println("Ejecutando...");
                 
                 trad.getMaquinaP().ejecuta();
-                trad.getMaquinaP().muestraEstado();*/
+                trad.getMaquinaP().muestraEstado();
             }
             
             else {
