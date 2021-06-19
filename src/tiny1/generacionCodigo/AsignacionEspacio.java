@@ -229,7 +229,7 @@ public class AsignacionEspacio implements Procesamiento {
     public void procesa(Cadena exp) {
 
     }
-    public void procesa(Null exp) {
+    public void procesa(Nnull exp) {
 
     }
     public void procesa(Suma exp) {

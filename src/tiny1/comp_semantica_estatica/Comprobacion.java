@@ -214,26 +214,66 @@ public class Comprobacion implements Procesamiento{
     @Override
     public void procesa(IRead exp) {
         exp.exp().procesa(this);
+        if (!exp.exp().esDesignador()){      
+            ok &= false;
+            exp.setOk(false);
+            GestionErrores.errorIntruccionConElementosInadecuados(exp.exp().str());
+        }
+        else{ 
+            switch (exp.exp().getType()){
+                case INT:
+                case REAL:
+                case STRING:
+                    break;
+                default:
+                    ok &= false;
+                    exp.setOk(false);
+                    GestionErrores.errorIntruccionConElementosInadecuados(exp.exp().str());
+                    break;
+            }
+        }
     }
 
     @Override
     public void procesa(IWrite exp) {
         exp.exp().procesa(this);
+        switch (exp.exp().getType()){
+            case INT:
+            case REAL:
+            case STRING:
+            case BOOL:
+                break;
+            default:
+                ok &= false;
+                exp.setOk(false);
+                GestionErrores.errorIntruccionConElementosInadecuados(exp.exp().str());
+                break;
+        }
     }
 
     @Override
     public void procesa(INew exp) {
         exp.exp().procesa(this);
+        if (exp.exp().getType() != Type.POINTER){
+            ok &= false;
+            exp.setOk(false);
+            GestionErrores.errorIntruccionConElementosInadecuados(exp.exp().str());
+        }
     }
 
     @Override
     public void procesa(IDelete exp) {
         exp.exp().procesa(this);
+        if (exp.exp().getType() != Type.POINTER){
+            ok &= false;
+            exp.setOk(false);
+            GestionErrores.errorIntruccionConElementosInadecuados(exp.exp().str());
+        }
     }
 
     @Override
     public void procesa(INl exp) {
-        //
+        // naa
     }
 
     @Override
@@ -283,13 +323,15 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(Exps1 exp) {
-        exp.exps().procesa(this);
-        exp.exp().procesa(this);
+        // naa
+        //exp.exps().procesa(this);
+        //exp.exp().procesa(this);
     }
 
     @Override
     public void procesa(Exps0 exp) {
-        exp.exp().procesa(this);
+        // naa
+        //exp.exp().procesa(this);
     }
 
     private void operadorAritmetico(Exp exp, Exp arg0, Exp arg1){
@@ -510,7 +552,6 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(Ent exp) {
-        // TODO Auto-generated method stub
         exp.setTipo(TinyASint.TypeInt);
     }
 
@@ -519,7 +560,7 @@ public class Comprobacion implements Procesamiento{
         if (exp.vinculo().decType() != DecType.VAR){
             ok &= false;
             exp.setTipo(TinyASint.TypeError);
-            GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.id());
+            GestionErrores.errorVinculacionDeclaracionTipoInadecuado(exp.str());
         }
         else exp.setTipo(exp.vinculo().tipo());
     }
@@ -545,7 +586,7 @@ public class Comprobacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(Null exp) {
+    public void procesa(Nnull exp) {
         exp.setTipo(TinyASint.TypeNull);
     }
     

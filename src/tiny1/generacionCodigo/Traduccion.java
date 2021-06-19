@@ -452,7 +452,7 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(Ent exp) {
-		m.ponInstruccion(m.apilaInt(Integer.parseInt(exp.ent().toString())));	
+		m.ponInstruccion(m.apilaInt(Integer.parseInt(exp.str().toString())));	
 	}
 
 	@Override
@@ -461,7 +461,7 @@ public class Traduccion implements Procesamiento{
 		// TODO ATENCI�N AQU� HAY QUE DIFERENCIAR ENTRE VARIABLES LOCALES Y GLOBALES Y TAL
 	
 		
-		m.ponInstruccion(m.apilaInt(direcciones.get(exp.id().toString())));	
+		m.ponInstruccion(m.apilaInt(direcciones.get(exp.str().toString())));	
 		
 	}
 
@@ -483,11 +483,11 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(Cadena exp) {
-		m.ponInstruccion(m.apilaCadena(exp.cadena().toString()));	
+		m.ponInstruccion(m.apilaCadena(exp.str().toString()));	
 	}
 
 	@Override
-	public void procesa(Null exp) {
+	public void procesa(Nnull exp) {
 
 		
 	}

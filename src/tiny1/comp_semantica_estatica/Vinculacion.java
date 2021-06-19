@@ -462,14 +462,14 @@ public class Vinculacion implements Procesamiento{
 
     @Override
     public void procesa(IdenExp exp) {
-        Dec dec = buscaId(exp.id().toString());
+        Dec dec = buscaId(exp.str().toString());
         if (dec != null){
-            log("->VinculacionNormal: "+exp.id().fila() + " " + exp.id().col()+ " " +exp.id().toString() + " --> "+dec.toString());
+            log("->VinculacionNormal: "+exp.str().fila() + " " + exp.str().col()+ " " +exp.str().toString() + " --> "+dec.toString());
             exp.setVinculo(dec);
         }
         else {
             ok &= false;
-            GestionErrores.errorVinculacionVariableInexistennte(exp.id());
+            GestionErrores.errorVinculacionVariableInexistennte(exp.str());
         }
     }
 
@@ -494,7 +494,7 @@ public class Vinculacion implements Procesamiento{
     }
 
     @Override
-    public void procesa(Null exp) {
+    public void procesa(Nnull exp) {
         // nothing to do
     }
 }

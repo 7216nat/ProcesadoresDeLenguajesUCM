@@ -211,11 +211,11 @@ Exp E7(): {Exp e; Token id;}
 				{ "(" e=E0() ")" {return asint.parentesis(e);} |
 				 id=<ENT> {return asint.ent(asint.str(id.image,id.beginLine,id.beginColumn));} |
 				 id=<LREAL> {return asint.lreal(asint.str(id.image,id.beginLine,id.beginColumn));} |
-				 id=<TRUE> {return asint.TRUE;} |
-				 id=<FALSE> {return asint.FALSE;} |
+				 id=<TRUE> {return asint.ttrue(asint.str(id.image,id.beginLine,id.beginColumn));} |
+				 id=<FALSE> {return asint.ffalse(asint.str(id.image,id.beginLine,id.beginColumn));} |
 				 id=<CADENA> {return asint.cadena(asint.str(id.image,id.beginLine,id.beginColumn));} |
 				 id=<IDEN> {return asint.idenExp(asint.str(id.image,id.beginLine,id.beginColumn));} |
-				 id=<NULL> {return asint.NULL;}
+				 id=<NULL> {return asint.nnull(asint.str(id.image,id.beginLine,id.beginColumn));}
 				 }
 SKIP :
 {

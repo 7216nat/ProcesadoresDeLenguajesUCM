@@ -57,6 +57,7 @@ public class TinyASint {
         public Type getType(){return tipo.type();}
         public abstract int prioridad();
         public abstract void procesa(Procesamiento procesamiento);
+        public abstract StringLocalizado str();
     }
     
     public static abstract class ExpBin extends Exp {
@@ -69,6 +70,9 @@ public class TinyASint {
             this.arg0 = arg0;
             this.arg1 = arg1;
         }
+        public StringLocalizado str(){
+            return arg0().str();
+        }
     }
 
     public static abstract class ExpUni extends Exp {
@@ -77,6 +81,9 @@ public class TinyASint {
         public ExpUni(Exp arg) {
             super();
             this.arg = arg;
+        }
+        public StringLocalizado str(){
+            return arg().str();
         }
     }
 
@@ -264,6 +271,9 @@ public class TinyASint {
             return 5;
         }
         public abstract void procesa(Procesamiento procesamiento);
+        public StringLocalizado str(){
+            return exp.str();
+        }
     }
 
     public static class Index extends ExpBin {
@@ -334,12 +344,12 @@ public class TinyASint {
         }
     }
     public static class Ent extends Exp {
-        private StringLocalizado ent;
+        private StringLocalizado entero;
         public Ent(StringLocalizado ent) {
             super();
-            this.ent = ent;
+            this.entero = ent;
         }
-        public StringLocalizado ent() {return ent;}
+        public StringLocalizado str() {return entero;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
@@ -358,7 +368,7 @@ public class TinyASint {
         public boolean esDesignador(){
             return true;
         }
-        public StringLocalizado id() {return id;}
+        public StringLocalizado str() {return id;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
@@ -375,12 +385,12 @@ public class TinyASint {
         }  
     }
     public static class Lreal extends Exp {
-        private StringLocalizado lreal;
+        private StringLocalizado lr;
         public Lreal(StringLocalizado lreal) {
             super();
-            this.lreal = lreal;
+            this.lr = lreal;
         }
-        public StringLocalizado lreal() {return lreal;}
+        public StringLocalizado str() {return lr;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
@@ -389,9 +399,12 @@ public class TinyASint {
         }
     }
     public static class True extends Exp {
-        public True() {
+        private StringLocalizado t;
+        public True(StringLocalizado t) {
             super();
+            this.t = t;
         }
+        public StringLocalizado str() {return t;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
@@ -400,9 +413,12 @@ public class TinyASint {
         }
     }
     public static class False extends Exp {
-        public False() {
+        private StringLocalizado t;
+        public False(StringLocalizado t) {
             super();
+            this.t = t;
         }
+        public StringLocalizado str() {return t;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
@@ -411,12 +427,12 @@ public class TinyASint {
         }
     }
     public static class Cadena extends Exp {
-        private StringLocalizado cadena;
+        private StringLocalizado cad;
         public Cadena(StringLocalizado cadena) {
             super();
-            this.cadena = cadena;
+            this.cad = cadena;
         }
-        public StringLocalizado cadena() {return cadena;}
+        public StringLocalizado str() {return cad;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
@@ -424,10 +440,13 @@ public class TinyASint {
             return 7;
         }
     }
-    public static class Null extends Exp {
-        public Null() {
+    public static class Nnull extends Exp {
+        private StringLocalizado n;
+        public Nnull(StringLocalizado n) {
             super();
+            this.n = n;
         }
+        public StringLocalizado str() {return n;}
         public void procesa(Procesamiento p) {
            p.procesa(this); 
         }     
@@ -1263,10 +1282,10 @@ public class TinyASint {
     public Exp ent(StringLocalizado num) {return new Ent(num);}
     public Exp idenExp(StringLocalizado id) {return new IdenExp(id);}
     public Exp lreal(StringLocalizado num) {return new Lreal(num);}
-    public static final Exp TRUE = new True();
-    public static final Exp FALSE = new False();
+    public Exp ttrue(StringLocalizado t) {return new True(t);}
+    public Exp ffalse(StringLocalizado f) {return new False(f);}
     public Exp cadena(StringLocalizado id) {return new Cadena(id);}
-    public static final Exp NULL = new Null();
+    public Exp nnull(StringLocalizado n) {return new Nnull(n);}
 
     public StringLocalizado str(String s, int fila, int col) {
         return new StringLocalizado(s,fila,col);

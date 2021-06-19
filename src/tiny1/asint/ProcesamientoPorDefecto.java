@@ -223,7 +223,7 @@ public class ProcesamientoPorDefecto implements Procesamiento {
     public void procesa(Cadena exp) {
         // naa
     }
-    public void procesa(Null exp) {
+    public void procesa(Nnull exp) {
         // naa
     }
     public void procesa(Suma exp) {

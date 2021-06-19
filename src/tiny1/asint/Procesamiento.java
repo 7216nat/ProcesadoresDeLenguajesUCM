@@ -71,5 +71,5 @@ public interface Procesamiento {
     void procesa(True exp);
     void procesa(False exp);
     void procesa(Cadena exp);
-    void procesa(Null exp);
+    void procesa(Nnull exp);
 }

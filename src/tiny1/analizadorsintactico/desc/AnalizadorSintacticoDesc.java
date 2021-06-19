@@ -834,11 +834,11 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
       break;
     case TRUE:
       id = jj_consume_token(TRUE);
-                                            {if (true) return asint.TRUE;}
+                                            {if (true) return asint.ttrue(asint.str(id.image,id.beginLine,id.beginColumn));}
       break;
     case FALSE:
       id = jj_consume_token(FALSE);
-                                             {if (true) return asint.FALSE;}
+                                             {if (true) return asint.ffalse(asint.str(id.image,id.beginLine,id.beginColumn));}
       break;
     case CADENA:
       id = jj_consume_token(CADENA);
@@ -850,7 +850,7 @@ public class AnalizadorSintacticoDesc implements AnalizadorSintacticoDescConstan
       break;
     case NULL:
       id = jj_consume_token(NULL);
-                                            {if (true) return asint.NULL;}
+                                            {if (true) return asint.nnull(asint.str(id.image,id.beginLine,id.beginColumn));}
       break;
     default:
       jj_la1[23] = jj_gen;

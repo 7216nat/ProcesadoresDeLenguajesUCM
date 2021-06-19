@@ -269,7 +269,7 @@ public class Etiquetado implements Procesamiento {
     public void procesa(Cadena exp) {
     	etq++;
     }
-    public void procesa(Null exp) {
+    public void procesa(Nnull exp) {
         
     }
     public void procesa(Suma exp) {

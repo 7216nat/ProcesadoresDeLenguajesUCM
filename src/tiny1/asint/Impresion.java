@@ -282,13 +282,13 @@ public class Impresion implements Procesamiento {
         System.out.print(")");
     }
     public void procesa(Ent exp) {
-        System.out.print(exp.ent());
+        System.out.print(exp.str());
     }
     public void procesa(IdenExp exp) {
-        System.out.print(exp.id());
+        System.out.print(exp.str());
     }
     public void procesa(Lreal exp) {
-        System.out.print(exp.lreal());
+        System.out.print(exp.str());
     }
     public void procesa(True exp) {
         System.out.print("true");
@@ -297,9 +297,9 @@ public class Impresion implements Procesamiento {
         System.out.print("false");
     }
     public void procesa(Cadena exp) {
-        System.out.print(exp.cadena());
+        System.out.print(exp.str());
     }
-    public void procesa(Null exp) {
+    public void procesa(Nnull exp) {
         System.out.print("null");
     }
     public void procesa(Suma exp) {

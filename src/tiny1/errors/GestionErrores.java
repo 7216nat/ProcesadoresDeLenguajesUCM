@@ -34,5 +34,11 @@ public class GestionErrores {
     }
     public static void errorParametrosNoCoinciden(StringLocalizado str){
         System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Parametros error: "+str.toString()); 
-    }         
+    }
+    public static void errorIntruccionConElementosInadecuados(StringLocalizado str){
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Instruccion error: "+str.toString()); 
+    }
+    public static void errorExpresionNoDesignador(StringLocalizado str){
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Instruccion error, expresion no designador: "+str.toString()); 
+    }          
 }   
