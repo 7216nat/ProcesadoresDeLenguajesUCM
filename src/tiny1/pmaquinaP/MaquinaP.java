@@ -107,7 +107,13 @@ public class MaquinaP {
    private class IWrite implements Instruccion {
       public void ejecuta() {
          Valor opnd1 = pilaEvaluacion.pop();
-         System.out.println(opnd1.valorCadena());
+         
+         if(opnd1 instanceof ValorCadena) {    
+             System.out.println(opnd1.valorCadena());
+         } else if(opnd1 instanceof ValorInt) {   
+        	 System.out.println(opnd1.valorInt());
+         }
+
          pc++;
       } 
       public String toString() {return "write";};

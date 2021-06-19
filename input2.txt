@@ -1,24 +1,12 @@
-var int test;
+var int a;
 
-type record {
-	int a;
-	int b;
-	int c
-} rec;
+proc test(int x, int y){
+	var int c	
+	&&
+	c = x + y;
+	write c
+}
 
-type record {
-	int a;
-	int b;
-	int c
-} rec2
 &&
 
-rec.a = 2;
-rec.b = 3;
-rec.c = 5;
-
-test = 4;
-
-rec2.a = 1;
-rec2.b = 2;
-rec2.c = 3
+call test(1, 2)

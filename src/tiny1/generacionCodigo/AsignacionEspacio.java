@@ -8,7 +8,8 @@ public class AsignacionEspacio implements Procesamiento {
 
 	private int despCounter = 0;
 	private int globalCounter = 0;
-
+	private int parCounter = 0;
+	
     public void procesa(Prog prog) {
         prog.decs().procesa(this);
         prog.insts().procesa(this);
@@ -38,29 +39,47 @@ public class AsignacionEspacio implements Procesamiento {
     public void procesa(DTipo dec) {
     	dec.tipo().procesa(this);
         dec.setDir(globalCounter);
-        globalCounter += dec.tipo().tam();
         dec.setTam(dec.tipo().tam());
+        globalCounter += dec.tam();
     }
     public void procesa(DProc dec) {
+    	
+    	parCounter = 0;
+    	
         dec.pars().procesa(this);
         dec.bloque().procesa(this);
-        dec.setTam(((Bloque)dec.bloque()).prog().decs().tam());
+        
+        int bloquetam = ((Bloque)dec.bloque()).prog().decs().tam();
+        int parstam =  dec.pars().tam();
+        
+        dec.setTam(parstam + bloquetam);
+        
     }
     public void procesa(NoPars decs){
         // naa
     }
     public void procesa(ParsComp pars) {
-        pars.pars().procesa(this);
         pars.par().procesa(this);
+        pars.pars().procesa(this);
     }
     public void procesa(ParsSimp pars) {
         pars.par().procesa(this);
     }
     public void procesa(ParRef par) {
         par.tipo().procesa(this);
+        par.setTam(par.tipo().tam());
+        par.setDir(parCounter);
+        parCounter += par.tam();
+        //par.setDir(globalCounter);
+        //globalCounter += par.tam();
     }
     public void procesa(ParSinRef par) {
         par.tipo().procesa(this);
+        par.setTam(par.tipo().tam());
+        par.setDir(parCounter);
+        parCounter += par.tam();
+        //par.setDir(globalCounter);
+        //globalCounter += par.tam();
     }
     public void procesa(INT t) {
     	t.setTam(1);
