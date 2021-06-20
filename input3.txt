@@ -30,7 +30,6 @@ endwhile
 }; # Fin del procedimiento lee_nombres
 # Construye un arbol de búsqueda sin duplicados con los nombres leídos
 # el programa principal
-type array [-10] of string aaa;
 proc construye_arbol() {
 var int i; # para iterar sobre la lista de nombres
 # Inserta el nombre actual en el árbol de búsqueda que recibe como parámetro.

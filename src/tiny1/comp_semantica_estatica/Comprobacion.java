@@ -54,7 +54,7 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(DVar exp) {
-        //exp.tipo().procesa(this);
+        exp.tipo().procesa(this);
     }
 
     @Override
@@ -86,12 +86,12 @@ public class Comprobacion implements Procesamiento{
 
     @Override
     public void procesa(ParRef exp) {
-        //exp.tipo().procesa(this);
+        exp.tipo().procesa(this);
     }
 
     @Override
     public void procesa(ParSinRef exp) {
-        //exp.tipo().procesa(this);
+        exp.tipo().procesa(this);
     }
 
     @Override
