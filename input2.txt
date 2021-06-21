@@ -1,12 +1,27 @@
-var int a;
+type record{
+	array [5] of int a;
+	int n
+} Array;
 
-proc test(int x, int y){
-	var int c	
+var Array ar;
+
+proc muestra_array(){
+
+	var int i;
+	var int j
 	&&
-	c = x + y;
-	write c
-}
 
+	while i < ar.n do
+		j = ar.n
+	endwhile
+}
+	
 &&
 
-call test(1, 2)
+ar[0] = 5;
+ar[1] = 4;
+ar[2] = 3;
+ar[3] = 2;
+ar[4] = 1;
+
+call muestra_array()

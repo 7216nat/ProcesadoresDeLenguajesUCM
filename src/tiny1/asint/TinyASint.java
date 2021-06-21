@@ -686,7 +686,8 @@ public class TinyASint {
         public Exps exps() { return exps;}
         public void procesa(Procesamiento p) { p.procesa(this); }
         public Dec vinculo(){return this.vinculo;}
-        public void setVinculo(Dec dec){this.vinculo = dec;}      
+        public void setVinculo(Dec dec){this.vinculo = dec;}   
+        public String toString(){return "ICall " + id.toString();}
     }
     public static class Bloque extends Inst {
         private Prog prog;  

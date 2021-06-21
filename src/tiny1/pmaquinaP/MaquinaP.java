@@ -10,6 +10,16 @@ import java.util.Stack;
 
 
 public class MaquinaP {
+	
+	
+   private boolean verbose = false;
+   private int tabs = 0;
+   
+   public void incTabs() {this.tabs++;}
+   public void decTabs() {this.tabs--;}
+   public int getTabs() {return tabs;}
+   
+   
    public static class EAccesoIlegitimo extends RuntimeException {} 
    public static class EAccesoAMemoriaNoInicializada extends RuntimeException {
       public EAccesoAMemoriaNoInicializada(int pc,int dir) {
@@ -98,7 +108,11 @@ public class MaquinaP {
       public void ejecuta() {
          Valor opnd2 = pilaEvaluacion.pop(); 
          Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorInt(opnd1.valorInt()+opnd2.valorInt()));
+         if(opnd1 instanceof ValorReal) {    
+        	 pilaEvaluacion.push(new ValorReal(opnd1.valorReal()+opnd2.valorReal()));
+         } else if(opnd1 instanceof ValorInt) {   
+        	 pilaEvaluacion.push(new ValorInt(opnd1.valorInt()+opnd2.valorInt()));
+         }
          pc++;
       } 
       public String toString() {return "suma";};
@@ -123,6 +137,7 @@ public class MaquinaP {
       public void ejecuta() {
     	  
     	BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    	
     	String str = "";
 		try {
 			str = reader.readLine();
@@ -130,82 +145,75 @@ public class MaquinaP {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	  
-        pilaEvaluacion.push(new ValorCadena(str));
+		
+
+		try {
+						
+			int i = Integer.parseInt(str);
+			pilaEvaluacion.push(new ValorInt(i));
+			
+		} catch (Exception e) {
+			
+			try {
+				double d = Double.parseDouble(str);
+				pilaEvaluacion.push(new ValorReal(d));
+				
+			} catch(Exception e1) {
+				
+				pilaEvaluacion.push(new ValorCadena(str));
+			}
+		}
+        
         pc++;
       } 
       public String toString() {return "read";};
    }
-   private ISumar ISUMAr;
-   private class ISumar implements Instruccion {
-      public void ejecuta() {
-         Valor opnd2 = pilaEvaluacion.pop(); 
-         Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorReal(opnd1.valorReal()+opnd2.valorReal()));
-         pc++;
-      } 
-      public String toString() {return "suma-r";};
-   }
+  
    private IResta IRESTA;
    private class IResta implements Instruccion {
       public void ejecuta() {
          Valor opnd2 = pilaEvaluacion.pop(); 
          Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorInt(opnd1.valorInt()-opnd2.valorInt()));
+         if(opnd1 instanceof ValorReal) {    
+        	 pilaEvaluacion.push(new ValorReal(opnd1.valorReal()-opnd2.valorReal()));
+         } else if(opnd1 instanceof ValorInt) {   
+        	 pilaEvaluacion.push(new ValorInt(opnd1.valorInt()-opnd2.valorInt()));
+         }
          pc++;
       } 
       public String toString() {return "resta";};
    }
-   private IRestar IRESTAr;
-   private class IRestar implements Instruccion {
-      public void ejecuta() {
-         Valor opnd2 = pilaEvaluacion.pop(); 
-         Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorReal(opnd1.valorReal()-opnd2.valorReal()));
-         pc++;
-      } 
-      public String toString() {return "resta-r";};
-   }
+  
    private IMul IMUL;
    private class IMul implements Instruccion {
       public void ejecuta() {
          Valor opnd2 = pilaEvaluacion.pop(); 
          Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorInt(opnd1.valorInt()*opnd2.valorInt()));
+         if(opnd1 instanceof ValorReal) {    
+        	 pilaEvaluacion.push(new ValorReal(opnd1.valorReal()*opnd2.valorReal()));
+         } else if(opnd1 instanceof ValorInt) {   
+        	 pilaEvaluacion.push(new ValorInt(opnd1.valorInt()*opnd2.valorInt()));
+         }
          pc++;
       } 
       public String toString() {return "mul";};
    }
-   private IMulr IMULr;
-   private class IMulr implements Instruccion {
-      public void ejecuta() {
-         Valor opnd2 = pilaEvaluacion.pop(); 
-         Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorReal(opnd1.valorReal()*opnd2.valorReal()));
-         pc++;
-      } 
-      public String toString() {return "mul-r";};
-   }
+  
    private IDiv IDIV;
    private class IDiv implements Instruccion {
       public void ejecuta() {
          Valor opnd2 = pilaEvaluacion.pop(); 
          Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorInt(opnd1.valorInt()/opnd2.valorInt()));
+         if(opnd1 instanceof ValorReal) {    
+        	 pilaEvaluacion.push(new ValorReal(opnd1.valorReal()/opnd2.valorReal()));
+         } else if(opnd1 instanceof ValorInt) {   
+        	 pilaEvaluacion.push(new ValorInt(opnd1.valorInt()/opnd2.valorInt()));
+         }
          pc++;
       } 
       public String toString() {return "div";};
    }
-   private IDivr IDIVr;
-   private class IDivr implements Instruccion {
-      public void ejecuta() {
-         Valor opnd2 = pilaEvaluacion.pop(); 
-         Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorReal(opnd1.valorReal()/opnd2.valorReal()));
-         pc++;
-      } 
-      public String toString() {return "div-r";};
-   }
+  
    private IMod IMOD;
    private class IMod implements Instruccion {
 	      public void ejecuta() {
@@ -575,15 +583,22 @@ public class MaquinaP {
           return "irind";                 
        }
    }
+   
+   private Instruccion IPASS;
+   private class IPass implements Instruccion {
+       public void ejecuta() {
+          pc++;  
+       }
+       public String toString() {
+          return "pass";                 
+       }
+   }
+
 
    public Instruccion suma() {return ISUMA;}
-   public Instruccion sumar() {return ISUMAr;}
    public Instruccion resta() {return IRESTA;}
-   public Instruccion restar() {return IRESTAr;}
    public Instruccion mul() {return IMUL;}
-   public Instruccion mulr() {return IMULr;}
    public Instruccion div() {return IDIV;}
-   public Instruccion divr() {return IDIVr;}
    public Instruccion mod() {return IMOD;}
    public Instruccion and() {return IAND;}
    public Instruccion or() {return IOR;}
@@ -598,6 +613,7 @@ public class MaquinaP {
    public Instruccion eq() {return IEQ;}
    public Instruccion neq() {return INEQ;}
    public Instruccion nl() {return INL;}
+   public Instruccion pass() {return IPASS;}
    public Instruccion apilaInt(int val) {return new IApilaInt(val);}
    public Instruccion apilaBool(boolean val) {return new IApilaBool(val);}
    public Instruccion apilaReal(double val) {return new IApilaReal(val);}
@@ -617,14 +633,17 @@ public class MaquinaP {
    public Instruccion dup() {return IDUP;}
    public Instruccion stop() {return ISTOP;}
    public void ponInstruccion(Instruccion i) {
-      codigoP.add(i); 
+	   if(verbose)
+		   System.out.println("	".repeat(tabs) + " " + codigoP.size() + ": " + i.toString());
+	   codigoP.add(i); 
    }
 
    private int tamdatos;
    private int tamheap;
    private int ndisplays;
-   public MaquinaP(int tamdatos, int tampila, int tamheap, int ndisplays) {
-      this.tamdatos = tamdatos;
+   public MaquinaP(int tamdatos, int tampila, int tamheap, int ndisplays, boolean verbose) {
+      this.verbose = verbose;
+	  this.tamdatos = tamdatos;
       this.tamheap = tamheap;
       this.ndisplays = ndisplays;
       this.codigoP = new ArrayList<>();  
@@ -640,6 +659,7 @@ public class MaquinaP {
       IDIV = new IDiv();
       IMOD = new IMod();
       INEG = new INeg();
+      IPASS = new IPass();
       IWRITE = new IWrite();
       IREAD = new IRead();
       INL = new INl();
@@ -660,6 +680,8 @@ public class MaquinaP {
    public void ejecuta() {
       while(pc != codigoP.size()) {
           codigoP.get(pc).ejecuta();
+          //System.out.println("PC: " + pc);
+          //muestraEstado();
       } 
    }
    public void muestraCodigo() {
@@ -687,36 +709,5 @@ public class MaquinaP {
      System.out.println("PC:"+pc);
    }
    
-   public static void main(String[] args) {
-       MaquinaP m = new MaquinaP(5,10,10,2);
-        
-          /*
-            int x;
-            proc store(int v) {
-             x = v
-            }
-           &&
-            call store(5)
-          */
-            
-       
-       m.ponInstruccion(m.activa(1,1,8));
-       m.ponInstruccion(m.dup());
-       m.ponInstruccion(m.apilaInt(0));
-       m.ponInstruccion(m.suma());
-       m.ponInstruccion(m.apilaInt(5));
-       m.ponInstruccion(m.desapilaInd());
-       m.ponInstruccion(m.desapilad(1));
-       m.ponInstruccion(m.irA(9));
-       m.ponInstruccion(m.stop());
-       m.ponInstruccion(m.apilaInt(0));
-       m.ponInstruccion(m.apilad(1));
-       m.ponInstruccion(m.apilaInt(0));
-       m.ponInstruccion(m.suma());
-       m.ponInstruccion(m.mueve(1));
-       m.ponInstruccion(m.desactiva(1,1));
-       m.ponInstruccion(m.irInd());       
-       m.ejecuta();
-       m.muestraEstado();
-   }
+ 
 }

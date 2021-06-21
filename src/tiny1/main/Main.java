@@ -28,63 +28,69 @@ public class Main {
     	} else {
     		
             Reader input = new InputStreamReader(new FileInputStream(args[0]));
+            
             boolean verbose = true;
+            
             Vinculacion vinc = new Vinculacion(verbose);
             SimplificacionTipo simp = new SimplificacionTipo(verbose);
             Comprobacion comp = new Comprobacion(verbose);
-            AsignacionEspacio asig = new AsignacionEspacio();
-            Etiquetado etiq = new Etiquetado();
-            Traduccion trad = new Traduccion(new MaquinaP(5,10,10,2));
+            AsignacionEspacio asig = new AsignacionEspacio(verbose);
+            Etiquetado etiq = new Etiquetado(verbose);
+       
+            
+            Prog prog = null;
             
             if(args[1].equals("asc")) {
             	System.out.println("Parseando el archivo " + args[0] + " con un analizador ascendente");
             	
             	AnalizadorLexico al = new AnalizadorLexico(input);
                 AnalizadorSintacticoAsc as = new AnalizadorSintacticoAsc(al);
-                Prog prog = (Prog)as.parse().value;
-                prog.procesa(new Impresion());
-                prog.procesa(vinc);
-                if (!vinc.isOk()){
-                    System.out.println("Error Vinculacion.");
-                    System.exit(-1);
-                }
-                prog.procesa(simp);
-                prog.procesa(comp);
-                if (!comp.isOk()){
-                    System.out.println("Error Comprobacion.");
-                    System.exit(-1);
-                }
-                System.out.println("Parseo finalizado sin errores");
+                prog = (Prog)as.parse().value;
+               
             }
             
             else if(args[1].equals("desc")) {
             	System.out.println("Parseando el archivo " + args[0] + " con un analizador descendente predictivo");
             
                 AnalizadorSintacticoDesc as = new AnalizadorSintacticoDesc(input);
-                Prog prog = as.Init();
-                prog.procesa(new Impresion());
-                prog.procesa(vinc);
-                if (!vinc.isOk()){
-                    System.out.println("Error Vinculacion.");
-                    System.exit(-1);
-                }
-                prog.procesa(simp);
-                prog.procesa(comp);
-                if (!comp.isOk()){
-                    System.out.println("Error Comprobacion.");
-                    System.exit(-1);
-                }
-                System.out.println("Parseo finalizado sin errores");
-                
-                
-                
-                // 
+                prog = as.Init();
             }
             
             else {
             	System.out.println("Error en el comando, ejemplo: analizador.jar 'file1.txt' asc");
+            	System.exit(-1);
             }
-    		
+            
+            prog.procesa(new Impresion());
+            
+            prog.procesa(vinc);
+            if (!vinc.isOk()){
+                System.out.println("Error Vinculacion.");
+                System.exit(-1);
+            }
+            
+            prog.procesa(simp);
+            
+            prog.procesa(comp);
+            if (!comp.isOk()){
+                System.out.println("Error Comprobacion.");
+                System.exit(-1);
+            }
+            
+            prog.procesa(asig);
+            prog.procesa(etiq);
+            
+            
+            Traduccion trad = new Traduccion(new MaquinaP(asig.getStaticMem(),10,10,vinc.getMaxAnid() + 1, verbose), verbose);
+            
+            prog.procesa(trad);
+            
+            trad.getMaquinaP().ponInstruccion(trad.getMaquinaP().stop());
+            trad.getMaquinaP().muestraCodigo();
+            trad.getMaquinaP().ejecuta();
+            trad.getMaquinaP().muestraEstado();
+            
+            System.out.println("Parseo finalizado sin errores");
     	}
     }  
 }

@@ -3,14 +3,14 @@ import tiny1.asint.Procesamiento;
 import tiny1.asint.TinyASint.*;
 public class Etiquetado implements Procesamiento {
     
-	private int etq;
+	private int etq = 0;
+	private boolean verbose = true;
 	
 	
-    public Etiquetado() {
-
+    public Etiquetado(boolean verbose) {
+    	this.verbose = verbose;
     }
     public void procesa(Prog prog) {
-    	etq = 0;
         prog.insts().procesa(this);
         prog.decs().procesa(this);
     }
@@ -131,6 +131,8 @@ public class Etiquetado implements Procesamiento {
     	etq++;
     	i.insts1().procesa(this);
     	i.setEtqs(etq);
+    	if(verbose)
+    		System.out.println("Etiquetado: " + i.toString() + " etqi: " + i.etqi() + " etqs: " +  i.etqs());
     }
     public void procesa(IWhile i) {
     	i.setEtqi(etq);
@@ -139,6 +141,8 @@ public class Etiquetado implements Procesamiento {
 		i.insts().procesa(this);
 		etq++;
 		i.setEtqs(etq);	
+		if(verbose)
+    		System.out.println("Etiquetado: " + i.toString() + " etqi: " + i.etqi() + " etqs: " +  i.etqs());
     }
     public void procesa(IRead i) {
     	i.setEtqi(etq);
@@ -146,6 +150,8 @@ public class Etiquetado implements Procesamiento {
 		etq++;		
 		etq++;
     	i.setEtqs(etq);	
+    	if(verbose)
+    		System.out.println("Etiquetado: " + i.toString() + " etqi: " + i.etqi() + " etqs: " +  i.etqs());
     }
     public void procesa(IWrite i) {
     	i.setEtqi(etq);
@@ -154,6 +160,8 @@ public class Etiquetado implements Procesamiento {
 		if(i.exp().esDesignador())
 			etq++;
 		i.setEtqs(etq);	
+		if(verbose)
+    		System.out.println("Etiquetado: " + i.toString() + " etqi: " + i.etqi() + " etqs: " +  i.etqs());
     }
     public void procesa(INew i) {
     	i.setEtqi(etq);
@@ -161,17 +169,23 @@ public class Etiquetado implements Procesamiento {
 		etq++;
 		etq++;
 		i.setEtqs(etq);	
+		if(verbose)
+    		System.out.println("Etiquetado: " + i.toString() + " etqi: " + i.etqi() + " etqs: " +  i.etqs());
     }
     public void procesa(IDelete i) {
     	i.setEtqi(etq);
 		i.exp().procesa(this);
 		etq++;
 		i.setEtqs(etq);	
+		if(verbose)
+    		System.out.println("Etiquetado: " + i.toString() + " etqi: " + i.etqi() + " etqs: " +  i.etqs());
     }
     public void procesa(INl i) {
     	i.setEtqi(etq);
 		etq++;
 		i.setEtqs(etq);	
+		if(verbose)
+    		System.out.println("Etiquetado: " + i.toString() + " etqi: " + i.etqi() + " etqs: " +  i.etqs());
     }
     public void procesa(ICall proc) {
 
@@ -180,12 +194,12 @@ public class Etiquetado implements Procesamiento {
 		Pars pars = ((DProc)proc.vinculo()).pars();
 		Exps exps = proc.exps();	
 		
+		Par par = pars.par();
+		Exp exp = exps.exp();
+		
 		etq++;
 		
-		do {
-			
-			Par par = pars.par();
-			Exp exp = exps.exp();
+		while(par != null && exp != null) {
 	
 			etq += 3;
 			
@@ -204,16 +218,23 @@ public class Etiquetado implements Procesamiento {
 			pars = pars.pars();
 			exps = exps.exps();
 			
-		} while(pars != null && exps != null);
+			par = pars != null ? pars.par() : null;
+			exp = exps != null ? exps.exp() : null;
+		} 
 		
 		etq += 2;	
 		
 		proc.setEtqs(etq);	
+		
+		if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " +  exp.etqs());
     }
     public void procesa(Bloque i) {
     	i.setEtqi(etq);
         i.prog().procesa(this);
         i.setEtqs(etq);
+    	if(verbose)
+    		System.out.println("Etiquetado: " + i.toString() + " etqi: " + i.etqi() + " etqs: " +  i.etqs());
     }
     public void procesa(NoExps decs){
         // naa
@@ -227,6 +248,9 @@ public class Etiquetado implements Procesamiento {
     }
     
     public void aux_expBin(ExpBin exp) {
+    	    	
+    	exp.setEtqi(etq);
+    	
 		exp.arg0().procesa(this);
 		if(exp.arg0().esDesignador())
 			etq++;		
@@ -235,14 +259,27 @@ public class Etiquetado implements Procesamiento {
 			etq++;
 		
 		etq++;
+		
+		exp.setEtqs(etq);
+
+    	if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " +  exp.etqs());
+   
 	}
     
     public void aux_expUni(ExpUni exp) {
+    	
+    	exp.setEtqi(etq);
+    	
 		exp.arg().procesa(this);
 		if(exp.arg().esDesignador())
 			etq++;		
 		
 		etq++;
+		
+		exp.setEtqs(etq);
+		if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " +  exp.etqs());
 	}
     
     public void procesa(And exp) {
@@ -279,6 +316,8 @@ public class Etiquetado implements Procesamiento {
     	aux_expUni(exp);
     }
     public void procesa(Index exp) {
+    	exp.setEtqi(etq);
+    	
 		exp.arg0().procesa(this);
 		exp.arg1().procesa(this);
 		
@@ -287,48 +326,86 @@ public class Etiquetado implements Procesamiento {
 		
 		// TODO ATENCI�N ESTO SE TIENE QUE HACER CON EL TAMA�O DEL TIPO BASE DEL ARRAY
 		etq += 3;
+		exp.setEtqs(etq);
+		if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " +  exp.etqs());
     }
     public void procesa(Ptr exp) {
-      
+    	exp.setEtqi(etq);
+    	exp.exp().procesa(this);
+    	etq+=3;
+    	exp.setEtqs(etq);
+    	if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " + exp.etqs());
     }
     public void procesa(Atr i) {
-    	/*
     	i.setEtqi(etq);
     	i.exp().procesa(this);
     	etq++;
     	etq++;
-    	i.setEtqi(etq);*/
+    	i.setEtqs(etq);
+    	if(verbose)
+    		System.out.println("Etiquetado: " + i.toString() + " etqi: " + i.etqi() + " etqs: " +  i.etqs());
     }
     public void procesa(Indir exp) {
+    	exp.setEtqi(etq);
 		exp.arg().procesa(this);
 		etq++;
+		exp.setEtqs(etq);
+		if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " +  exp.etqs());
     }
     public void procesa(Parentesis exp) {
-        
+        exp.arg().procesa(this);
     }
     public void procesa(Ent exp) {
     	etq++;
     }
     public void procesa(IdenExp exp) {
-
-		// TODO ATENCI�N AQU� HAY QUE DIFERENCIAR ENTRE VARIABLES LOCALES Y GLOBALES Y TAL
-		
-    	etq++;
+    	exp.setEtqi(etq);
+    	
+    	if(exp.vinculo().getAmbito() == 0) {
+			// Variable global
+			etq++;
+		} else {
+			etq += 3;
+			if(exp.vinculo() instanceof ParRef)
+				etq++;
+		}
+    	exp.setEtqs(etq);
+    	if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " +  exp.etqs());
     }
     public void procesa(Lreal exp) {
       
     }
     public void procesa(True exp) {
+    	exp.setEtqi(etq);
     	etq++;
+    	exp.setEtqs(etq);
+    	if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " +  exp.etqs());
     }
     public void procesa(False exp) {
+    	exp.setEtqi(etq);
     	etq++;
+    	exp.setEtqs(etq);
+    	if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " +  exp.etqs());
     }
     public void procesa(Cadena exp) {
+    	exp.setEtqi(etq);
     	etq++;
+    	exp.setEtqs(etq);
+    	if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " +  exp.etqs());
     }
     public void procesa(Nnull exp) {
-        
+    	exp.setEtqi(etq);
+    	etq++;
+    	exp.setEtqs(etq);
+    	if(verbose)
+    		System.out.println("Etiquetado: " + exp.toString() + " etqi: " + exp.etqi() + " etqs: " +  exp.etqs());
     }
     public void procesa(Suma exp) {
     	aux_expBin(exp);

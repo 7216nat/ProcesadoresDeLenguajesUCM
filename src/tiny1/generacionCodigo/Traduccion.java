@@ -1,29 +1,32 @@
 package tiny1.generacionCodigo;
 
-import java.util.HashMap;
-
 import tiny1.asint.Procesamiento;
 import tiny1.asint.TinyASint.*;
-import tiny1.errors.GestionErrores;
 import tiny1.pmaquinaP.MaquinaP;
 
 public class Traduccion implements Procesamiento{
 
 	private MaquinaP m;
+	private boolean verbose;
+
+	public void print(ASTNode obj) {
+		if(verbose) 
+			System.out.println("	".repeat(m.getTabs()) + "Generando: " + obj.toString() + " etqi " + obj.etqi() + " eqts " + obj.etqs());
+	}
 	
 	public MaquinaP getMaquinaP() {
 		return m;
 	}
 	
-	public Traduccion(MaquinaP m) {
+	public Traduccion(MaquinaP m, boolean verbose) {
 		this.m = m;
+		this.verbose = verbose;
 	}
 	
 	@Override
 	public void procesa(Prog prog) {
         prog.insts().procesa(this);
         prog.decs().procesa(this);
-        m.ponInstruccion(m.stop());
 	}
 
 	@Override
@@ -65,7 +68,13 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(DProc dec) {
+			
+		if(verbose) 
+			System.out.println("	".repeat(m.getTabs()) + "Generando: " + dec.toString());
+		
+		m.incTabs();
 		dec.bloque().procesa(this);
+		m.decTabs();
 		
 	}
 
@@ -76,12 +85,11 @@ public class Traduccion implements Procesamiento{
 	}
 
 	public void procesa(ParsComp pars) {
-		pars.pars().procesa(this);
-		pars.par().procesa(this);
+
 	}
 
 	public void procesa(ParsSimp pars) {
-		pars.par().procesa(this);
+
 	}
 
 	public void procesa(ParRef par) {
@@ -196,7 +204,10 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(IAsig exp) {
-
+		
+		print(exp);
+		
+		m.incTabs();
 		exp.exp0().procesa(this);
 		exp.exp1().procesa(this);
 		
@@ -205,74 +216,101 @@ public class Traduccion implements Procesamiento{
 		} else {
 			m.ponInstruccion(m.desapilaInd());
 		}
+		m.decTabs();
 
 	}
 
 	@Override
 	public void procesa(IIfThen exp) {
+		print(exp);
+		m.incTabs();
 		exp.exp().procesa(this);
 		m.ponInstruccion(m.irF(exp.etqs()));
 		exp.insts().procesa(this);
+		m.decTabs();
 	}
 
 	@Override
 	public void procesa(IIfThenElse exp) {
+		print(exp);
+		m.incTabs();
 		exp.exp().procesa(this);
 		m.ponInstruccion(m.irF(exp.insts1().etqi()));
 		exp.insts0().procesa(this);
 		m.ponInstruccion(m.irA(exp.insts1().etqs()));
 		exp.insts1().procesa(this);
+		m.decTabs();
 	}
 
 	@Override
 	public void procesa(IWhile exp) {
+		print(exp);
+		m.incTabs();
 		exp.exp().procesa(this);
 		m.ponInstruccion(m.irF(exp.etqs()));
 		exp.insts().procesa(this);
 		m.ponInstruccion(m.irA(exp.etqi()));	
+		m.decTabs();
 	}
 
 	@Override
 	public void procesa(IRead exp) {
+		print(exp);
+		m.incTabs();
 		exp.exp().procesa(this);	
 		m.ponInstruccion(m.read());			
 		m.ponInstruccion(m.desapilaInd());	
+		m.decTabs();
 	}
 
 	@Override
 	public void procesa(IWrite exp) {
+		
+		print(exp);
+		m.incTabs();
 		exp.exp().procesa(this);
 		
 		if(exp.exp().esDesignador())
 			m.ponInstruccion(m.apilaInd());
 		
 		m.ponInstruccion(m.write());
-		
+		m.decTabs();
 	}
 
 	@Override
 	public void procesa(INew exp) {	
+		print(exp);
+		m.incTabs();
 		exp.exp().procesa(this);
 		m.ponInstruccion(m.alloc(exp.exp().getTipo().tam()));		
 		m.ponInstruccion(m.desapilaInd());	
+		m.decTabs();
 
 	}
 
 	@Override
 	public void procesa(IDelete exp) {
+		print(exp);
+		m.incTabs();
 		exp.exp().procesa(this);
 		m.ponInstruccion(m.dealloc(exp.exp().getTipo().tam()));		
-		//GestionErrores.errorBorradoMemoriaDinamicaEjecucion(exp.exp().str());
+		m.decTabs();
 	}
 
 	@Override
 	public void procesa(INl exp) {
+		
+		m.incTabs();
 		m.ponInstruccion(m.nl());
+		m.decTabs();
 	}
 
 	@Override
 	public void procesa(ICall proc) {
 	
+		print(proc);
+		m.incTabs();
+		
 		int nivel = proc.vinculo().getAmbito() + 1;
 		int tam = proc.vinculo().tam();
 		int sigdir = proc.etqs();
@@ -281,27 +319,29 @@ public class Traduccion implements Procesamiento{
 		Pars pars = ((DProc)proc.vinculo()).pars();
 		Exps exps = proc.exps();	
 		
-		m.ponInstruccion(m.activa(nivel, tam, sigdir));
+		Par par = pars.par();
+		Exp exp = exps.exp();
 		
-		do {
-			
-			Par par = pars.par();
-			Exp exp = exps.exp();
+		m.ponInstruccion(m.activa(nivel, tam, sigdir));
+				
+		while(par != null && exp != null) {
 	
 			m.ponInstruccion(m.dup());
 			m.ponInstruccion(m.apilaInt(par.getDir()));
 			m.ponInstruccion(m.suma());
-			
+						
 			exp.procesa(this);
 			
-			if(proc.exps().exp().esDesignador()) {
-				if(par instanceof ParRef) {
+			if(exp.esDesignador()) {
+				if(par instanceof ParSinRef) {
 					m.ponInstruccion(m.mueve(par.tam()));
+
 				} else {
 					m.ponInstruccion(m.desapilaInd());
+					
 				}			
 			} else {
-				if(par instanceof ParRef) {
+				if(par instanceof ParSinRef) {
 
 				} else {
 					m.ponInstruccion(m.desapilaInd());
@@ -310,11 +350,16 @@ public class Traduccion implements Procesamiento{
 			
 			pars = pars.pars();
 			exps = exps.exps();
-			
-		} while(pars != null && exps != null);
+
+			par = pars != null ? pars.par() : null;
+			exp = exps != null ? exps.exp() : null;
+		}
 		
+
 		m.ponInstruccion(m.desapilad(nivel));
 		m.ponInstruccion(m.irA(pdir));		
+		
+		m.decTabs();
 		
 	}
 
@@ -341,12 +386,18 @@ public class Traduccion implements Procesamiento{
 	}
 
 	public void aux_expBin(ExpBin exp) {
+		
+		print(exp);
+		m.incTabs();
+		
 		exp.arg0().procesa(this);
 		if(exp.arg0().esDesignador())
 			m.ponInstruccion(m.apilaInd());		
 		exp.arg1().procesa(this);
 		if(exp.arg1().esDesignador())
 			m.ponInstruccion(m.apilaInd());	
+		
+		m.decTabs();
 	}
 	
 	public void aux_expUni(ExpUni exp) {
@@ -447,6 +498,10 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(Index exp) {
+		
+		print(exp);
+		m.incTabs();
+		
 		exp.arg0().procesa(this);
 		exp.arg1().procesa(this);
 		
@@ -456,22 +511,42 @@ public class Traduccion implements Procesamiento{
 		m.ponInstruccion(m.apilaInt(exp.getTipo().tam()));
 		m.ponInstruccion(m.mul());
 		m.ponInstruccion(m.suma());
+		
+		m.decTabs();
+		
 	}
 
 	@Override
 	public void procesa(Ptr exp) {
-		// TODO Auto-generated method stub
+				
+		print(exp);
+		m.incTabs();
 		
+		exp.exp().procesa(this);
+				
+		Tipo t = ((POINTER)exp.exp().getTipo()).tipo();
+		
+		Campo campo = ((REGISTRO)t).getList().get(exp.id().toString());
+		
+		m.ponInstruccion(m.apilaInd());
+		m.ponInstruccion(m.apilaInt(campo.desp()));
+		m.ponInstruccion(m.suma());
+		
+		m.decTabs();
 	}
 
 	@Override
 	public void procesa(Atr exp) {
-		exp.exp().procesa(this);
 		
+		print(exp);
+		m.incTabs();
+			
 		Campo campo = ((REGISTRO)exp.exp().vinculo().tipo()).getList().get(exp.id().toString());
 		
 		m.ponInstruccion(m.apilaInt(campo.desp()));
 		m.ponInstruccion(m.suma());
+		
+		m.decTabs();
 	}
 
 	@Override
@@ -482,7 +557,7 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(Parentesis exp) {
-		// TODO Auto-generated method stub
+		exp.arg().procesa(this);
 		
 	}
 
@@ -494,18 +569,24 @@ public class Traduccion implements Procesamiento{
 	@Override
 	public void procesa(IdenExp exp) {
 		
+		print(exp);
+		m.incTabs();
+		
 		if(exp.vinculo().getAmbito() == 0) {
 			// Variable global
 			m.ponInstruccion(m.apilaInt(exp.vinculo().getDir()));	
 		} else {
+			// Local o parámetro por valor
 			m.ponInstruccion(m.apilad(exp.vinculo().getAmbito()));	
 			m.ponInstruccion(m.apilaInt(exp.vinculo().getDir()));	
 			m.ponInstruccion(m.suma());	
+			
+			if(exp.vinculo() instanceof ParRef)
+				m.ponInstruccion(m.apilaInd());
 		}
 		
-		// TODO ATENCIï¿½N AQUï¿½ HAY QUE DIFERENCIAR ENTRE VARIABLES LOCALES Y GLOBALES Y TAL
-
 		
+		m.decTabs();
 		
 	}
 
@@ -516,7 +597,7 @@ public class Traduccion implements Procesamiento{
 	}
 
 	@Override
-	public void procesa(True exp) {
+	public void procesa(True exp) {		
 		m.ponInstruccion(m.apilaBool(true));	
 	}
 
@@ -532,7 +613,7 @@ public class Traduccion implements Procesamiento{
 
 	@Override
 	public void procesa(Nnull exp) {
-
+		m.ponInstruccion(m.apilaInt(-1));	
 		
 	}
 

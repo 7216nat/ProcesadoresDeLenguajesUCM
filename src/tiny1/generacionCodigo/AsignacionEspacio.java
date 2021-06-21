@@ -7,15 +7,24 @@ public class AsignacionEspacio implements Procesamiento {
 	
 
 	private int despCounter = 0;
-	private int globalCounter = 0;
 	private int parCounter = 0;
+	private int globalCounter = 0;
+	private boolean verbose = false;
+	
+	public int getStaticMem() {
+		return globalCounter;
+	}
+	
+	public AsignacionEspacio(boolean verbose) {
+		this.verbose = verbose;
+	}
 	
     public void procesa(Prog prog) {
         prog.decs().procesa(this);
         prog.insts().procesa(this);
     }
     public void procesa(NoDecs decs){
-        //naa
+       
     }
     public void procesa(AuxDecs decs){
         decs.decs().procesa(this);
@@ -32,15 +41,15 @@ public class AsignacionEspacio implements Procesamiento {
     }
     public void procesa(DVar dec) { 
         dec.tipo().procesa(this);
-        dec.setDir(globalCounter);
-        globalCounter += dec.tipo().tam();
         dec.setTam(dec.tipo().tam());
+        dec.setDir(globalCounter);
+    	globalCounter+=dec.tam();
     }
     public void procesa(DTipo dec) {
     	dec.tipo().procesa(this);
-        dec.setDir(globalCounter);
-        dec.setTam(dec.tipo().tam());
-        globalCounter += dec.tam();
+    	dec.setTam(dec.tipo().tam());
+    	dec.setDir(globalCounter);
+    	globalCounter+=dec.tam();
     }
     public void procesa(DProc dec) {
     	
@@ -53,6 +62,9 @@ public class AsignacionEspacio implements Procesamiento {
         int parstam =  dec.pars().tam();
         
         dec.setTam(parstam + bloquetam);
+        dec.setDir(globalCounter);
+        
+        globalCounter+=dec.pars().tam();
         
     }
     public void procesa(NoPars decs){
@@ -70,19 +82,22 @@ public class AsignacionEspacio implements Procesamiento {
         par.setTam(par.tipo().tam());
         par.setDir(parCounter);
         parCounter += par.tam();
-        //par.setDir(globalCounter);
-        //globalCounter += par.tam();
+        if(verbose)
+        	System.out.println("Asignación: " + par.toString() + " tam: " + par.tam() + " dir: " + par.getDir());
+
     }
     public void procesa(ParSinRef par) {
         par.tipo().procesa(this);
         par.setTam(par.tipo().tam());
         par.setDir(parCounter);
         parCounter += par.tam();
-        //par.setDir(globalCounter);
-        //globalCounter += par.tam();
+        if(verbose)
+        	System.out.println("Asignación: " + par.toString() + " tam: " + par.tam() + " dir: " + par.getDir());
+
     }
     public void procesa(INT t) {
     	t.setTam(1);
+    	
     }
     public void procesa(REAL t) {
     	t.setTam(1);
@@ -106,8 +121,8 @@ public class AsignacionEspacio implements Procesamiento {
     public void procesa(ERROR exp){
 
     }
-    public void procesa(NULL exp){
-
+    public void procesa(NULL t){
+    	t.setTam(1);
     }
     public void procesa(REGISTRO t) {
     	despCounter = 0;
@@ -127,7 +142,7 @@ public class AsignacionEspacio implements Procesamiento {
         despCounter += c.tipo().tam();
     }
     public void procesa(POINTER t) {
-
+    	t.setTam(1);
     }
     public void procesa(NoInsts decs){
         // naa

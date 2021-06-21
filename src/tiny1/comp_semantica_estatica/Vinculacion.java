@@ -16,6 +16,13 @@ public class Vinculacion implements Procesamiento{
     private VinculacionRef crefs;
     private boolean ok;
     private boolean verbose;
+    private int maxAnid = 0;
+    
+    
+    public int getMaxAnid() {
+    	return maxAnid;
+    }
+    
     public Vinculacion(boolean verbose){
 
         currBloque = -1;
@@ -36,6 +43,9 @@ public class Vinculacion implements Procesamiento{
     private void abreBloque(){
         pilaAnidada.add(new HashMap<>());
         currBloque++;
+        
+        if(currBloque > maxAnid)
+        	maxAnid = currBloque;
     }
 
     private void log(String msg) {
