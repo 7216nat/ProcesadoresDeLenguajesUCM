@@ -1,0 +1,12 @@
+var int a;
+
+proc test(int x, int y){
+	var int c	
+	&&
+	c = x + y;
+	write c
+}
+
+&&
+
+call test(1, 2)
