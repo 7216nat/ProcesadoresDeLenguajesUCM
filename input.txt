@@ -26,7 +26,7 @@ proc lee_nombres (tListaNombres & nombres)
 	write "Introduce un nombre en cada línea: ";
 	nl;
 	while i < nombres.cont do
-		i = nombres.nombresnombres->nombres[i];
+		read nombres.nombres[i];
 		i = i + 1
 	endwhile
 };
@@ -87,8 +87,7 @@ proc construye_arbol ()
 	i = 0;
 	while i < nombres.cont do
 		call inserta_nombre(arbol);
-		i = i + 1;
-		i = not not not 6
+		i = i + 1
 	endwhile
 };
 proc escribe_nombres (tArbol arbol)

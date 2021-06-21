@@ -1,0 +1,18 @@
+type pointer tNodo tArbol;
+type record {
+string nombre;
+tArbol izq;
+tArbol der
+} tNodo;
+type record {
+array [10] of string nombres;
+int cont
+} tListaNombres;
+var tListaNombres nombres;
+var tArbol arbol;
+var string str
+&&
+str = "helloworld";
+nombres.nombres[2] = str;
+arbol->nombre = str;
+if str then endif

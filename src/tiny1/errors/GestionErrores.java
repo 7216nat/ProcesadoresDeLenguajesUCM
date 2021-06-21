@@ -18,7 +18,7 @@ public class GestionErrores {
         System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Declacion de tipo no declarada: "+str.toString()); 
     }
     public static void errorVinculacionVariableInexistennte(StringLocalizado str){
-        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Variable no declarada: "+str.toString()); 
+        System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Declaracion no declarada: "+str.toString()); 
     }
     public static void errorVinculacionDuplicado(StringLocalizado str){
         System.err.println("ERROR fila "+str.fila()+ ", columna "+ str.col()+": Declaracion duplicada: "+str.toString()); 
